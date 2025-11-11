@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class APPConfig(BaseModel):
     app_host: str
     app_port: int
+    app_jwt_secret: str
 
 
 class DBConfig(BaseModel):

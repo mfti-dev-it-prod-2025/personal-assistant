@@ -15,7 +15,7 @@ class UserRole(Enum):
 class UserBase(SQLModel):
     name: str = Field(regex=name_pattern)
     email: EmailStr
-    role: UserRole
+    role: UserRole = Field(default=UserRole.user)
 
 
 class UserTable(UserBase, table=True):
