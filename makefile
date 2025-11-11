@@ -14,6 +14,6 @@ dev:
 	@echo "start dev server"
 	fastapi dev personal_assistant/src/main.py
 
-create_migration:
+mkmigrate:
 	@echo "create alembic migrations"
-	python3 personal_assistant/src/alembic/create_migrations.py
+	cd personal_assistant/src && python3 create_migrations.py
