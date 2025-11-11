@@ -1,0 +1,25 @@
+[project]
+name = "personal_assistant"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "AndreyQuantum",email = "zelentsov1254@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.121.1,<0.122.0)",
+    "dynaconf (>=3.2.12,<4.0.0)",
+    "sqlmodel (>=0.0.27,<0.0.28)"
+]
+
+[dependency-groups]
+dev = [
+    "mypy (>=1.18.2,<2.0.0)",
+    "ruff (>=0.14.4,<0.15.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
