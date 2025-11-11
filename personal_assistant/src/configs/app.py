@@ -15,7 +15,7 @@ class DBConfig(BaseModel):
     db_port: int
 
     @property
-    def dsl(self):
+    def dsl(self) -> str:
         return (
             f"postgresql+asyncpg://{self.db_user}:{self.db_password}"
             f"@{self.db_host}:{self.db_port}/{self.db_name}"

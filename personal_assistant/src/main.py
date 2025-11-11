@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from api.v1.misc import router as misc_router
+from personal_assistant.src.api.v1.misc import router as misc_router
 from personal_assistant.src.configs.app import settings
 
 app = FastAPI(
