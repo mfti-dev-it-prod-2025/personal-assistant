@@ -14,11 +14,11 @@ class UserRole(Enum):
 
 class UserBase(SQLModel):
     name: str = Field(regex=name_pattern)
-    email: EmailStr
-    role: UserRole = Field(default=UserRole.user)
+    email: EmailStr = Field(unique=True)
 
 
 class UserTable(UserBase, table=True):
     id: uuid.UUID | None = Field(default=None, primary_key=True)
     hashed_password: str
     telegram_id: int | None = Field(default=None)
+    role: UserRole = Field(default=UserRole.user)
