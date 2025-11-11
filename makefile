@@ -3,5 +3,5 @@ format:
 	poetry run ruff format personal_assistant/src
 
 type:
-	@echo "typing"
+	@echo "check typing"
 	poetry run mypy personal_assistant/src
