@@ -15,10 +15,9 @@ dev:
 	@echo "start dev server"
 	fastapi dev $(ROOT_PATH)/main.py
 
-BRANCH ?= main
 mkmigrate:
-	@echo "create alembic migrations with label $(BRANCH)"
-	cd $(ROOT_PATH) && python3 create_migrations.py --branch-label $(BRANCH)
+	@echo "create alembic migrations $(if $(BRANCH),with label $(BRANCH),without branch label)"
+	cd $(ROOT_PATH) && python3 create_migrations.py $(if $(BRANCH),--branch-label $(BRANCH))
 
 migrate:
 	@echo "perform alembic migrations"
