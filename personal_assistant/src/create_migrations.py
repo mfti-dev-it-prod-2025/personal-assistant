@@ -1,3 +1,5 @@
+import argparse
+
 from alembic import command
 from alembic.config import Config
 from testcontainers.postgres import PostgresContainer
@@ -6,6 +8,16 @@ from personal_assistant.src.configs.app import settings
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Create Alembic migrations.")
+    parser.add_argument(
+        "--branch-label",
+        type=str,
+        help="Name of the Alembic branch label.",
+        required=False,
+    )
+
+    args = parser.parse_args()
+    branch_label = args.branch_label
     postgres = PostgresContainer("postgres:18")
     postgres.start()
     settings.db.db_name = postgres.dbname
@@ -17,7 +29,13 @@ def main():
     alembic_cfg = Config("alembic.ini")
     command.upgrade(config=alembic_cfg, revision="head")
     upgrade_message = input("Введите описание миграции: ")
-    command.revision(config=alembic_cfg, autogenerate=True, message=upgrade_message)
+    command.revision(
+        config=alembic_cfg,
+        autogenerate=True,
+        message=upgrade_message,
+        branch_label=branch_label,
+    )
+
 
 if __name__ == "__main__":
     main()

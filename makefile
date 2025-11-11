@@ -1,23 +1,29 @@
+ROOT_PATH = personal_assistant/src
 format:
 	@echo "formating"
-	poetry run ruff format personal_assistant/src
+	poetry run ruff format $(ROOT_PATH)
 
 type:
 	@echo "check typing"
-	poetry run mypy personal_assistant/src
+	poetry run mypy $(ROOT_PATH)
 
 run:
 	@echo "start prod server"
-	fastapi run personal_assistant/src/main.py
+	fastapi run $(ROOT_PATH)/main.py
 
 dev:
 	@echo "start dev server"
-	fastapi dev personal_assistant/src/main.py
+	fastapi dev $(ROOT_PATH)/main.py
 
+BRANCH ?= main
 mkmigrate:
-	@echo "create alembic migrations"
-	cd personal_assistant/src && python3 create_migrations.py
+	@echo "create alembic migrations with label $(BRANCH)"
+	cd $(ROOT_PATH) && python3 create_migrations.py --branch-label $(BRANCH)
 
 migrate:
 	@echo "perform alembic migrations"
-	cd personal_assistant/src && alembic upgrade head
+	cd $(ROOT_PATH) && alembic upgrade head
+
+utest:
+	@echo "run unit test"
+	pytest personal_assistant/

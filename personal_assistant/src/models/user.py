@@ -4,7 +4,7 @@ from enum import Enum
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field
 
-name_pattern = r'^[А-Я][А-я]+'
+name_pattern = r"^[А-Я][А-я]+"
 
 
 class UserRole(Enum):
@@ -16,6 +16,7 @@ class UserBase(SQLModel):
     name: str = Field(regex=name_pattern)
     email: EmailStr
     role: UserRole
+
 
 class UserTable(UserBase, table=True):
     id: uuid.UUID | None = Field(default=None, primary_key=True)

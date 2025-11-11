@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from sqlmodel import SQLModel
-
 from personal_assistant.src.configs.app import settings
 
 # this is the Alembic Config object, which provides

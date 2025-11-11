@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: test_db
     ports:
-      - "5432:5432"   # внешний порт 5433 → внутренний 5432
+      - "5432:5432"
     volumes:
       - pgdata_test:/var/lib/postgresql/data
     healthcheck:

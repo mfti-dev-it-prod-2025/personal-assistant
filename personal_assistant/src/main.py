@@ -4,9 +4,7 @@ from fastapi import FastAPI
 from personal_assistant.src.api.v1.misc import router as misc_router
 from personal_assistant.src.configs.app import settings
 
-app = FastAPI(
-    title="Personal assistant"
-)
+app = FastAPI(title="Personal assistant")
 
 
 app.include_router(misc_router, prefix="/api/v1/misc", tags=["misc"])
