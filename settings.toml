@@ -2,7 +2,7 @@
 app_host = "0.0.0.0"
 app_port = 8000
 app_jwt_secret = "063e71de00f7f1978e463f8c6869cffdc25ee57a99fcc1f892d2d5adafc382fc"
-
+app_use_testcontainers = "True"
 
 [db_settings]
 db_name = "test_db"

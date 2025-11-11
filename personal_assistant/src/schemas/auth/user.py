@@ -1,3 +1,5 @@
+import uuid
+
 from personal_assistant.src.models.user import UserBase
 
 
@@ -6,4 +8,5 @@ class UserCreate(UserBase):
 
 
 class UserGet(UserBase):
-    pass
+    id: uuid.UUID
+    telegram_id: int | None

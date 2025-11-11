@@ -3,6 +3,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.auth.user import UserCreate
+from personal_assistant.src.services.auth.password import Password
 
 
 class UserRepository:
@@ -17,9 +18,10 @@ class UserRepository:
         return (await self.db_session.exec(select(UserTable))).all()
 
     async def create_user(self, user: UserCreate) -> UserTable:
-        user = UserTable.model_validate(user)
-        self.db_session.add(user)
+        user_table = UserTable(**user.model_dump())
+        user_table.hashed_password = Password().get_password_hash(user.password)
+        self.db_session.add(user_table)
         await self.db_session.commit()
-        await self.db_session.refresh(user)
-        return user
+        await self.db_session.refresh(user_table)
+        return user_table
 

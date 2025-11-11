@@ -1,8 +1,8 @@
 """init user model
 
-Revision ID: 353ce6400271
+Revision ID: 590086b59ce4
 Revises: 4fbe048ae27d
-Create Date: 2025-11-11 18:44:25.422091
+Create Date: 2025-11-11 20:35:42.494345
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = '353ce6400271'
+revision: str = '590086b59ce4'
 down_revision: Union[str, Sequence[str], None] = '4fbe048ae27d'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,11 +25,13 @@ def upgrade() -> None:
     op.create_table('usertable',
     sa.Column('name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('email', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('role', sa.Enum('administrator', 'user', name='userrole'), nullable=False),
     sa.Column('id', sa.Uuid(), nullable=False),
     sa.Column('hashed_password', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('telegram_id', sa.Integer(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.Column('role', sa.Enum('administrator', 'user', name='userrole'), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('telegram_id')
     )
     # ### end Alembic commands ###
 

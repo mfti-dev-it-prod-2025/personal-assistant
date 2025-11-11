@@ -23,6 +23,10 @@ migrate:
 	@echo "perform alembic migrations"
 	cd $(ROOT_PATH) && alembic upgrade head
 
+itest:
+	@echo "run integrational tests"
+	pytest personal_assistant/integrational_tests
+
 utest:
 	@echo "run unit test"
-	pytest personal_assistant/
+	pytest personal_assistant/tests

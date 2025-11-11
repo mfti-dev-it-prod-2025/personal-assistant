@@ -18,7 +18,7 @@ class UserBase(SQLModel):
 
 
 class UserTable(UserBase, table=True):
-    id: uuid.UUID | None = Field(default=None, primary_key=True)
+    id: uuid.UUID | None = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
-    telegram_id: int | None = Field(default=None)
+    telegram_id: int | None = Field(default=None, unique=True)
     role: UserRole = Field(default=UserRole.user)

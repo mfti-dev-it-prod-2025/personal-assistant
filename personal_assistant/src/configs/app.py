@@ -6,6 +6,7 @@ class APPConfig(BaseModel):
     app_host: str
     app_port: int
     app_jwt_secret: str
+    app_use_testcontainers: bool = False
 
 
 class DBConfig(BaseModel):
@@ -22,8 +23,8 @@ class DBConfig(BaseModel):
             f"@{self.db_host}:{self.db_port}/{self.db_name}"
         )
 
-    # driver://user:password@host:port/db_name
-
+class TestConfig(BaseModel):
+    use_testcontainers: bool = False
 
 class Settings(BaseModel):
     app: APPConfig
