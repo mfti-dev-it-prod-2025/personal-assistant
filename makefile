@@ -17,3 +17,7 @@ dev:
 mkmigrate:
 	@echo "create alembic migrations"
 	cd personal_assistant/src && python3 create_migrations.py
+
+migrate:
+	@echo "perform alembic migrations"
+	cd personal_assistant/src && alembic upgrade head
