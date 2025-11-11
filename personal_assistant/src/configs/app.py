@@ -5,7 +5,6 @@ from pydantic import BaseModel
 class APPConfig(BaseModel):
     app_host: str
     app_port: int
-    app_jwt_secret: str
     app_use_testcontainers: bool = False
 
 
@@ -26,14 +25,20 @@ class DBConfig(BaseModel):
 class TestConfig(BaseModel):
     use_testcontainers: bool = False
 
+class JWTConfig(BaseModel):
+    jwt_secret: str
+    jwt_algorithm: str
+    jwt_access_token_expire_minutes: int
+
 class Settings(BaseModel):
     app: APPConfig
     db: DBConfig
+    jwt: JWTConfig
 
 
 env_settings = Dynaconf(settings_file=["settings.toml"])
 
-settings = Settings(app=env_settings["app_settings"], db=env_settings["db_settings"])
+settings = Settings(app=env_settings["app_settings"], db=env_settings["db_settings"], jwt=env_settings["jwt_settings"])
 
 
 if __name__ == "__main__":
