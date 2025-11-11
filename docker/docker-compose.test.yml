@@ -1,11 +1,10 @@
 services:
   postgres_test:
     image: postgres:18
-    container_name: postgres_test
     restart: unless-stopped
     environment:
-      POSTGRES_USER: test_user
-      POSTGRES_PASSWORD: test_password
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: test_db
     ports:
       - "5432:5432"   # внешний порт 5433 → внутренний 5432
