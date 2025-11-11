@@ -13,3 +13,7 @@ run:
 dev:
 	@echo "start dev server"
 	fastapi dev personal_assistant/src/main.py
+
+create_migration:
+	@echo "create alembic migrations"
+	python3 personal_assistant/src/alembic/create_migrations.py

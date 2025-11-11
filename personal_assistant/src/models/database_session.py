@@ -5,11 +5,11 @@ from sqlmodel.ext.asyncio.session import AsyncSession, AsyncEngine
 
 from sqlalchemy.orm import sessionmaker
 
-from personal_assistant.src.configs.app import DBConfig
+from personal_assistant.src.configs.app import settings
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-engine = AsyncEngine(create_engine(url=DBConfig.dsl, echo=True, future=True))
+engine = AsyncEngine(create_engine(url=settings.db.dsl, echo=True, future=True))
 
 
 
