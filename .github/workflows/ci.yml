@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12-slim
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Poetry
+        run: pipx install poetry
+
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create false
+          poetry --version
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction --no-ansi
+
+      - name: Run unit tests
+        run: pytest personal_assistant/tests -q
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.12-slim
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d test_db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.create false
+          poetry --version
+
+      - name: Install dependencies
+        run: |
+          poetry install --no-interaction --no-ansi
+
+      - name: Configure settings.toml for integration tests
+        run: |
+          toml set settings.toml app_use_testcontainers false
+          toml set settings.toml db_host 127.0.0.1
+          toml set settings.toml db_port 5432
+          toml set settings.toml db_user user
+          toml set settings.toml db_password password
+          toml set settings.toml db_name test_db
+
+
+      - name: Run integration tests
+        run: pytest personal_assistant/integrational_tests -q
