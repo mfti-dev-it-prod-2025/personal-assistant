@@ -11,10 +11,13 @@ from personal_assistant.src.configs.auth import oauth2_scheme
 
 DbSessionDepends = Annotated[AsyncSession, Depends(get_session)]
 
-async def get_current_user_dependency(db_session: DbSessionDepends,
-                                      security_scopes: SecurityScopes,
-                                      token: Annotated[str, Depends(oauth2_scheme)]
-                                      )-> UserTable:
+
+async def get_current_user_dependency(
+    db_session: DbSessionDepends,
+    security_scopes: SecurityScopes,
+    token: Annotated[str, Depends(oauth2_scheme)],
+) -> UserTable:
     auth_utils = AuthAuthenticate(db_session=db_session)
-    return await auth_utils.get_current_user(security_scopes=security_scopes,
-                                             token=token)
+    return await auth_utils.get_current_user(
+        security_scopes=security_scopes, token=token
+    )

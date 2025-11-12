@@ -1,10 +1,9 @@
 import pytest
 from sqlmodel import select
 
-from personal_assistant.integrational_tests.utils import random_string
+from personal_assistant.integrational_tests.utils import random_email
 from personal_assistant.src.models import UserTable
 
-random_email = lambda: f"{random_string()}@{random_string()}.ru"
 
 @pytest.mark.asyncio
 async def test_create_user__then_user_exist_in_db(postgres_connection, router_api):
@@ -33,6 +32,7 @@ async def test_create_user__then_get_user(postgres_connection, router_api):
     response_post.raise_for_status()
 
     response_get = router_api.get("/api/v1/auth/user/")
+    response_get.raise_for_status()
     found_user = None
     print(f"Response_get = {response_get.json()}")
     for user in response_get.json():

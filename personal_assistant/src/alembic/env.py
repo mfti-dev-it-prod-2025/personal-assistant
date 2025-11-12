@@ -9,6 +9,7 @@ from alembic import context
 from sqlmodel import SQLModel
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.models import *
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

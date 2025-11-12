@@ -7,7 +7,7 @@ app_use_testcontainers = "True"
 jwt_secret = "063e71de00f7f1978e463f8c6869cffdc25ee57a99fcc1f892d2d5adafc382fc"
 jwt_algorithm = "HS256"
 jwt_access_token_expire_minutes = 30
-jwt_bypass_auth = "True"
+jwt_bypass_auth = "False"
 
 [db_settings]
 db_name = "test_db"

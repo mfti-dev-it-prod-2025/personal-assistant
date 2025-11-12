@@ -11,17 +11,16 @@ from testcontainers.postgres import PostgresContainer
 
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
+from personal_assistant.src.models.database_session import get_session
 
 
 @pytest.fixture(scope="session", autouse=True)
 def _bootstrap_db() -> Generator[None, Any, None]:
-    """Start Postgres testcontainer (if enabled) and run Alembic migrations once per test session."""
     postgres = None
     try:
         if settings.app.app_use_testcontainers:
             postgres = PostgresContainer("postgres:16-alpine")
             postgres.start()
-            # Propagate container connection details into runtime settings
             settings.db.db_name = postgres.dbname
             settings.db.db_port = int(postgres.get_exposed_port(5432))
             settings.db.db_user = postgres.username
@@ -37,8 +36,6 @@ def _bootstrap_db() -> Generator[None, Any, None]:
 
 @pytest_asyncio.fixture
 async def postgres_connection(_bootstrap_db) -> AsyncSession:
-    # Import here to pick up DB settings configured by _bootstrap_db
-    from personal_assistant.src.models.database_session import get_session
 
     agen = get_session()
     session = await agen.__anext__()
@@ -48,7 +45,6 @@ async def postgres_connection(_bootstrap_db) -> AsyncSession:
         await agen.aclose()
 
 def run_migrations(revision: str = "head") -> None:
-    # Build absolute path to alembic.ini located in personal_assistant/src
     repo_root = os.path.dirname(os.path.dirname(__file__))  # .../personal_assistant
     alembic_ini_path = os.path.join(repo_root, "src", "alembic.ini")
     alembic_cfg = Config(alembic_ini_path)
@@ -57,6 +53,5 @@ def run_migrations(revision: str = "head") -> None:
 
 @pytest.fixture
 def router_api():
-    # You can keep the sync TestClient if you want
     client = TestClient(app)
     yield client

@@ -22,14 +22,17 @@ class DBConfig(BaseModel):
             f"@{self.db_host}:{self.db_port}/{self.db_name}"
         )
 
+
 class TestConfig(BaseModel):
     use_testcontainers: bool = False
+
 
 class JWTConfig(BaseModel):
     jwt_secret: str
     jwt_algorithm: str
     jwt_access_token_expire_minutes: int
     jwt_bypass_auth: bool = False
+
 
 class Settings(BaseModel):
     app: APPConfig
@@ -39,7 +42,11 @@ class Settings(BaseModel):
 
 env_settings = Dynaconf(settings_file=["settings.toml"])
 
-settings = Settings(app=env_settings["app_settings"], db=env_settings["db_settings"], jwt=env_settings["jwt_settings"])
+settings = Settings(
+    app=env_settings["app_settings"],
+    db=env_settings["db_settings"],
+    jwt=env_settings["jwt_settings"],
+)
 
 
 if __name__ == "__main__":

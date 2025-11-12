@@ -18,11 +18,11 @@ auth_router.include_router(user_router, prefix="/user")
 
 @auth_router.post("/token")
 async def login_for_access_token(
-        db_session: DbSessionDepends,
-        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db_session: DbSessionDepends,
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
     auth_service = AuthAuthenticate(db_session=db_session)
-    user = await auth_service.authenticate_user(form_data.username, form_data.password)
+    user = await auth_service.authenticate_user(email = form_data.username.lower(), password=form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -31,9 +31,15 @@ async def login_for_access_token(
         )
     allowed_scopes = set(auth_service.get_user_scopes(user))
     requested_scopes = set(form_data.scopes or [])
-    granted_scopes = list(requested_scopes.intersection(allowed_scopes)) if requested_scopes else list(allowed_scopes)
+    granted_scopes = (
+        list(requested_scopes.intersection(allowed_scopes))
+        if requested_scopes
+        else list(allowed_scopes)
+    )
 
-    access_token_expires = timedelta(minutes=settings.jwt.jwt_access_token_expire_minutes)
+    access_token_expires = timedelta(
+        minutes=settings.jwt.jwt_access_token_expire_minutes
+    )
     access_token = auth_service.create_access_token(
         subject=str(user.id), scopes=granted_scopes, expires_delta=access_token_expires
     )

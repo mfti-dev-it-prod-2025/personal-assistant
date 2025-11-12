@@ -6,7 +6,7 @@ from personal_assistant.src.exceptions import UserAlreadyExist
 
 
 async def user_already_exists_exception_handler(
-        request: Request, exc: UserAlreadyExist
+    request: Request, exc: UserAlreadyExist
 ) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_409_CONFLICT,
