@@ -79,3 +79,21 @@ async def router_api_admin(postgres_connection):
     auth_response.raise_for_status()
     client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client
+
+@pytest_asyncio.fixture
+async def router_api_user(postgres_connection):
+    user_repository = UserRepository(db_session=postgres_connection)
+    await user_repository.create_user(user= UserCreate(name="user", email="user@test.ru", password="user"))
+    client = TestClient(app)
+    auth_response = client.post("/api/v1/auth/token",
+                                headers={"Content-Type": "application/x-www-form-urlencoded",
+                                         "accept": "application/json"},
+                                data={
+                                    "grant_type": "password",
+                                    "username": "user@test.ru",
+                                    "password": "user",
+                                },
+                                )
+    auth_response.raise_for_status()
+    client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
+    yield client
