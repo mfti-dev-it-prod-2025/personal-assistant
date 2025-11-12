@@ -1,3 +1,4 @@
+import uuid
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -11,8 +12,16 @@ class UserRepository:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def get_user_by_email(self, email: str) -> UserTable:
-        return (await self.db_session.exec(select(UserTable).where(UserTable.email == email))).one()
+    async def get_user_by_email(self, email: str) -> UserTable | None:
+        return (await self.db_session.exec(select(UserTable).where(UserTable.email == email))).one_or_none()
+
+    async def get_user_by_id(self, user_id: str | uuid.UUID) -> UserTable | None:
+        if isinstance(user_id, str):
+            try:
+                user_id = uuid.UUID(user_id)
+            except ValueError:
+                return None
+        return (await self.db_session.exec(select(UserTable).where(UserTable.id == user_id))).one_or_none()
 
     async def get_all_users(self) -> list[UserTable]:
         return (await self.db_session.exec(select(UserTable))).all()

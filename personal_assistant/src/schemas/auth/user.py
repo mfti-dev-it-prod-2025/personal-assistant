@@ -1,6 +1,6 @@
 import uuid
 
-from personal_assistant.src.models.user import UserBase
+from personal_assistant.src.models.user import UserBase, UserRole
 
 
 class UserCreate(UserBase):
@@ -10,3 +10,4 @@ class UserCreate(UserBase):
 class UserGet(UserBase):
     id: uuid.UUID
     telegram_id: int | None
+    role: UserRole
