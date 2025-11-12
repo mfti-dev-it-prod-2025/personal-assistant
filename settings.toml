@@ -13,5 +13,5 @@ jwt_bypass_auth = false
 db_name = "test_db"
 db_user = "user"
 db_password = "password"
-db_host = "postgres_test"
+db_host = "localhost"
 db_port = 5432

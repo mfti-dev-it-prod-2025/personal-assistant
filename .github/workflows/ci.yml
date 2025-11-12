@@ -13,6 +13,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install make
+        run: apt update && apt install make
+
       - name: Install Poetry
         run: pip install poetry
 
@@ -26,12 +29,12 @@ jobs:
           poetry install --no-interaction --no-ansi
 
       - name: Run unit tests
-        run: pytest personal_assistant/tests
+        run: make utest
 
   integration-tests:
     runs-on: ubuntu-latest
     container:
-      image: python:3.12
+      image: python:3.12-slim
     services:
       postgres:
         image: postgres:18-alpine
@@ -54,6 +57,9 @@ jobs:
       - name: Install Poetry
         run: pip install poetry toml-cli
 
+      - name: Install make
+        run: apt update && apt install make
+
       - name: Configure Poetry
         run: |
           poetry config virtualenvs.create false
@@ -74,4 +80,4 @@ jobs:
 
 
       - name: Run integration tests
-        run: pytest personal_assistant/integrational_tests
+        run: make itest
