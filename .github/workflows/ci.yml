@@ -65,12 +65,12 @@ jobs:
 
       - name: Configure settings.toml for integration tests
         run: |
-          toml set settings.toml app_use_testcontainers false
-          toml set settings.toml db_host 127.0.0.1
-          toml set settings.toml db_port 5432
-          toml set settings.toml db_user user
-          toml set settings.toml db_password password
-          toml set settings.toml db_name test_db
+          toml set --toml-path settings.toml app_use_testcontainers false
+          toml set --toml-path settings.toml db_host 127.0.0.1
+          toml set --toml-path settings.toml db_port 5432
+          toml set --toml-path settings.toml db_user user
+          toml set --toml-path settings.toml db_password password
+          toml set --toml-path settings.toml db_name test_db
 
 
       - name: Run integration tests
