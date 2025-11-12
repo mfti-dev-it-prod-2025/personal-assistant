@@ -12,6 +12,9 @@ from testcontainers.postgres import PostgresContainer
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
 from personal_assistant.src.models.database_session import get_session
+from personal_assistant.src.models.user import UserRole
+from personal_assistant.src.repositories.user import UserRepository
+from personal_assistant.src.schemas.auth.user import UserCreate
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -54,4 +57,25 @@ def run_migrations(revision: str = "head") -> None:
 @pytest.fixture
 def router_api():
     client = TestClient(app)
+    yield client
+
+@pytest_asyncio.fixture
+async def router_api_admin(postgres_connection):
+    user_repository = UserRepository(db_session=postgres_connection)
+    created_user = await user_repository.create_user(user= UserCreate(name="admin", email="admin@admin.ru", password="admin"))
+    created_user.role = UserRole.administrator
+    postgres_connection.add(created_user)
+    await postgres_connection.commit()
+    client = TestClient(app)
+    auth_response = client.post("/api/v1/auth/token",
+                    headers={"Content-Type": "application/x-www-form-urlencoded",
+                             "accept": "application/json"},
+                    data={
+                        "grant_type": "password",
+                        "username": "admin@admin.ru",
+                        "password": "admin",
+                    },
+                    )
+    auth_response.raise_for_status()
+    client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client

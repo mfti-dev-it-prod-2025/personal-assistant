@@ -23,15 +23,15 @@ async def test_create_user__then_user_exist_in_db(postgres_connection, router_ap
     assert db_result.hashed_password
 
 @pytest.mark.asyncio
-async def test_create_user__then_get_user(postgres_connection, router_api):
+async def test_create_user__then_get_user(postgres_connection, router_api_admin):
 
-    response_post = router_api.post("/api/v1/auth/user/", json={"name": "test_user",
+    response_post = router_api_admin.post("/api/v1/auth/user/", json={"name": "test_user",
                                                            "email": random_email(),
                                                            "password": "test"})
 
     response_post.raise_for_status()
 
-    response_get = router_api.get("/api/v1/auth/user/")
+    response_get = router_api_admin.get("/api/v1/auth/user/")
     response_get.raise_for_status()
     found_user = None
     print(f"Response_get = {response_get.json()}")
