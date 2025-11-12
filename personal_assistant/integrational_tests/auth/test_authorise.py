@@ -22,3 +22,8 @@ async def test_create_user__then_authorise(postgres_connection, router_api):
                                 },
                                )
     response.raise_for_status()
+
+    response = router_api.get("/api/v1/auth/user/me",
+                              headers={"Authorization": f"Bearer {response.json()['access_token']}"}
+                              )
+    response.raise_for_status()
