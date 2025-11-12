@@ -1,3 +1,4 @@
+import uuid
 from datetime import timedelta, datetime, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -56,6 +57,11 @@ class AuthAuthenticate:
                                security_scopes: SecurityScopes,
                                token: Annotated[str, Depends(oauth2_scheme)],
                                ) -> UserTable:
+        if settings.jwt.jwt_bypass_auth:
+            return UserTable(id=uuid.UUID, email="test@test.ru", role="admin",
+                             hashed_password=self.password_service.get_password_hash("test"),
+                             telegram_id=1234567890,
+                             name="Test")
         authenticate_value = f"Bearer scope=\"{' '.join(security_scopes.scopes)}\"" if security_scopes.scopes else "Bearer"
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

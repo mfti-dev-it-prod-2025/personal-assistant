@@ -29,6 +29,7 @@ class JWTConfig(BaseModel):
     jwt_secret: str
     jwt_algorithm: str
     jwt_access_token_expire_minutes: int
+    jwt_bypass_auth: bool = False
 
 class Settings(BaseModel):
     app: APPConfig
