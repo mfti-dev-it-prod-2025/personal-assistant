@@ -1,3 +1,9 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+
 jobs:
   build-docker-image:
     runs-on: ubuntu-latest
@@ -37,8 +43,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-on:
-  push:
-    branches:
-      - master
