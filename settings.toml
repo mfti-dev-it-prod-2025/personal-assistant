@@ -1,0 +1,17 @@
+[app_settings]
+app_host = "0.0.0.0"
+app_port = 8000
+app_use_testcontainers = "True"
+
+[jwt_settings]
+jwt_secret = "063e71de00f7f1978e463f8c6869cffdc25ee57a99fcc1f892d2d5adafc382fc"
+jwt_algorithm = "HS256"
+jwt_access_token_expire_minutes = 30
+jwt_bypass_auth = false
+
+[db_settings]
+db_name = "test_db"
+db_user = "user"
+db_password = "password"
+db_host = "localhost"
+db_port = 5432
