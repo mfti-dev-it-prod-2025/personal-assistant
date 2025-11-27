@@ -8,6 +8,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 
 class Base(DeclarativeBase):
+    # to add?
     pass
 
 
