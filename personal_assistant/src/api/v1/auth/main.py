@@ -13,8 +13,6 @@ from personal_assistant.src.services.auth.authenticate import AuthAuthenticate
 
 auth_router = APIRouter()
 
-auth_router.include_router(user_router, prefix="/user")
-
 
 @auth_router.post("/token")
 async def login_for_access_token(

@@ -3,6 +3,7 @@ from fastapi import FastAPI
 
 from personal_assistant.src.api.v1.auth.main import auth_router
 from personal_assistant.src.api.v1.misc import router as misc_router
+from personal_assistant.src.api.v1.user.user import user_router
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.exception_handlers import (
     user_already_exists_exception_handler,
@@ -17,7 +18,7 @@ app.include_router(misc_router, prefix=f"{api_base_prefix}misc", tags=["misc"])
 
 app.include_router(auth_router, prefix=f"{api_base_prefix}auth", tags=["auth"])
 
-app.include_router(auth_router, prefix=f"{api_base_prefix}user", tags=["user"])
+app.include_router(user_router, prefix=f"{api_base_prefix}user", tags=["user"])
 
 app.add_exception_handler(
     exc_class_or_status_code=UserAlreadyExist,

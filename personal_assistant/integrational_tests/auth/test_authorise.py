@@ -7,7 +7,7 @@ from personal_assistant.integrational_tests.utils import random_email
 async def test_create_user__then_authorise(postgres_connection, router_api):
     email = random_email()
     response = router_api.post(
-        "/api/v1/auth/user/",
+        "/api/v1/user/",
         json={"name": "test_user", "email": email, "password": "test"},
     )
 
@@ -28,7 +28,7 @@ async def test_create_user__then_authorise(postgres_connection, router_api):
     response.raise_for_status()
 
     response = router_api.get(
-        "/api/v1/auth/user/me",
+        "/api/v1/user/me",
         headers={"Authorization": f"Bearer {response.json()['access_token']}"},
     )
     response.raise_for_status()
