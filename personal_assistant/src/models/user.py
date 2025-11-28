@@ -4,6 +4,8 @@ from enum import Enum
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field
 
+from personal_assistant.src.models.base import BaseTable
+
 name_pattern = r"^[А-Я][А-я]+"
 
 
@@ -17,8 +19,7 @@ class UserBase(SQLModel):
     email: EmailStr = Field(unique=True)
 
 
-class UserTable(UserBase, table=True):
-    id: uuid.UUID | None = Field(default_factory=uuid.uuid4, primary_key=True)
+class UserTable(UserBase, BaseTable, table=True):
     hashed_password: str
     role: UserRole = Field(default=UserRole.user)
     telegram_id: int | None = Field(default=None, unique=True)

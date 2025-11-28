@@ -1,6 +1,6 @@
 import uuid
 from datetime import timedelta, datetime, timezone
-from personal_assistant.src.logging import logger
+from personal_assistant.src.logger import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from personal_assistant.src.configs.auth import ROLES_TO_SCOPES, oauth2_scheme
