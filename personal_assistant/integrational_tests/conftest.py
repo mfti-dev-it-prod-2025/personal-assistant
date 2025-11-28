@@ -39,13 +39,13 @@ def _bootstrap_db() -> Generator[None, Any, None]:
 
 @pytest_asyncio.fixture
 async def postgres_connection(_bootstrap_db) -> AsyncSession:
-
     agen = get_session()
     session = await agen.__anext__()
     try:
         yield session
     finally:
         await agen.aclose()
+
 
 def run_migrations(revision: str = "head") -> None:
     repo_root = os.path.dirname(os.path.dirname(__file__))  # .../personal_assistant
@@ -59,41 +59,53 @@ def router_api():
     client = TestClient(app)
     yield client
 
+
 @pytest_asyncio.fixture
 async def router_api_admin(postgres_connection):
     user_repository = UserRepository(db_session=postgres_connection)
-    created_user = await user_repository.create_user(user= UserCreate(name="admin", email="admin@admin.ru", password="admin"))
+    created_user = await user_repository.create_user(
+        user=UserCreate(name="admin", email="admin@admin.ru", password="admin")
+    )
     created_user.role = UserRole.administrator
     postgres_connection.add(created_user)
     await postgres_connection.commit()
     client = TestClient(app)
-    auth_response = client.post("/api/v1/auth/token",
-                    headers={"Content-Type": "application/x-www-form-urlencoded",
-                             "accept": "application/json"},
-                    data={
-                        "grant_type": "password",
-                        "username": "admin@admin.ru",
-                        "password": "admin",
-                    },
-                    )
+    auth_response = client.post(
+        "/api/v1/auth/token",
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded",
+            "accept": "application/json",
+        },
+        data={
+            "grant_type": "password",
+            "username": "admin@admin.ru",
+            "password": "admin",
+        },
+    )
     auth_response.raise_for_status()
     client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client
 
+
 @pytest_asyncio.fixture
 async def router_api_user(postgres_connection):
     user_repository = UserRepository(db_session=postgres_connection)
-    await user_repository.create_user(user= UserCreate(name="user", email="user@test.ru", password="user"))
+    await user_repository.create_user(
+        user=UserCreate(name="user", email="user@test.ru", password="user")
+    )
     client = TestClient(app)
-    auth_response = client.post("/api/v1/auth/token",
-                                headers={"Content-Type": "application/x-www-form-urlencoded",
-                                         "accept": "application/json"},
-                                data={
-                                    "grant_type": "password",
-                                    "username": "user@test.ru",
-                                    "password": "user",
-                                },
-                                )
+    auth_response = client.post(
+        "/api/v1/auth/token",
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded",
+            "accept": "application/json",
+        },
+        data={
+            "grant_type": "password",
+            "username": "user@test.ru",
+            "password": "user",
+        },
+    )
     auth_response.raise_for_status()
     client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client

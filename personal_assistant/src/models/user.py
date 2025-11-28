@@ -20,7 +20,6 @@ class UserBase(SQLModel):
 
 
 class UserTable(UserBase, BaseTable, table=True):
-
     hashed_password: str
     role: UserRole = Field(default=UserRole.user)
     telegram_id: int | None = Field(default=None, unique=True)
