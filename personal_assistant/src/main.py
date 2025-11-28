@@ -17,6 +17,8 @@ app.include_router(misc_router, prefix=f"{api_base_prefix}misc", tags=["misc"])
 
 app.include_router(auth_router, prefix=f"{api_base_prefix}auth", tags=["auth"])
 
+app.include_router(auth_router, prefix=f"{api_base_prefix}user", tags=["user"])
+
 app.add_exception_handler(
     exc_class_or_status_code=UserAlreadyExist,
     handler=user_already_exists_exception_handler,

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from personal_assistant.src.api.dependencies import DbSessionDepends
-from personal_assistant.src.api.v1.auth.user import user_router
+from personal_assistant.src.api.v1.user.user import user_router
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.schemas.auth.token import Token
 from personal_assistant.src.services.auth.authenticate import AuthAuthenticate
