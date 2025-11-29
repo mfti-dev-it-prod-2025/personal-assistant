@@ -18,14 +18,18 @@ user_router = APIRouter()
 @user_router.get("/")
 async def get_user(
     db_session: DbSessionDepends,
-    current_user: Annotated[UserTable, Security(get_current_user_dependency, scopes = ["users:read"])],
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=["users:read"])
+    ],
 ) -> list[UserGet]:
     return await UserRepository(db_session=db_session).get_all_users()
 
 
 @user_router.get("/me")
 async def get_current_user(
-    current_user: Annotated[UserTable, Security(get_current_user_dependency, scopes = ["me:read"])],
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=["me:read"])
+    ],
 ) -> UserGet:
     return current_user
 
