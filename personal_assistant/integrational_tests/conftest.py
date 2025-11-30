@@ -9,6 +9,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
 
+from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
 from personal_assistant.src.models.database_session import get_session
@@ -64,7 +65,7 @@ def router_api():
 async def router_api_admin(postgres_connection):
     user_repository = UserRepository(db_session=postgres_connection)
     admin_email = "admin@admin.ru"
-    if not await user_repository.get_user_by_email(admin_email):
+    if not await user_repository.get_users(params=UserParams(email=admin_email)):
         created_user = await user_repository.create_user(
             user=UserCreate(name="admin", email=admin_email, password="admin")
         )

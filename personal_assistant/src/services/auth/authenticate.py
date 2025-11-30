@@ -94,7 +94,7 @@ class AuthAuthenticate:
         if subject is None:
             raise credentials_exception
 
-        user = await self.user_repository.get_user_by_id(subject)
+        user = (await self.user_repository.get_users(params=UserParams(id=subject, limit=1)))[0]
         if not user:
             raise credentials_exception
 

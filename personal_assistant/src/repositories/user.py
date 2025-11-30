@@ -15,23 +15,6 @@ class UserRepository:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def get_user_by_email(self, email: str) -> UserTable | None:
-        return (
-            await self.db_session.exec(
-                select(UserTable).where(UserTable.email == email)
-            )
-        ).one_or_none()
-
-    async def get_user_by_id(self, user_id: str | uuid.UUID) -> UserTable | None:
-        if isinstance(user_id, str):
-            try:
-                user_id = uuid.UUID(user_id)
-            except ValueError:
-                return None
-        return (
-            await self.db_session.exec(select(UserTable).where(UserTable.id == user_id))
-        ).one_or_none()
-
     async def get_users(self, params: UserParams) -> list[UserTable]:
         statement = select(UserTable)
         if params.limit:
