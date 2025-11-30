@@ -43,11 +43,16 @@ class UserRepository:
                 continue
             if param in {"limit", "offset"}:
                 continue
-            if "__contains" in param:
-                field_name = param.replace("__contains", "")
-                statement = statement.where(getattr(UserTable, field_name).contains(value))
-            else:
-                statement = statement.where(getattr(UserTable, param) == value)
+            # Support operators using double underscore notation, e.g. "email__contains"
+            if "__" in param:
+                field_name, operator = param.split("__", 1)
+                if operator == "contains":
+                    statement = statement.where(
+                        getattr(UserTable, field_name).contains(value)
+                    )
+                    continue
+            # Default: exact match
+            statement = statement.where(getattr(UserTable, param) == value)
         return (await self.db_session.exec(statement)).all()
 
     async def create_user(self, user: UserCreate) -> UserTable:
