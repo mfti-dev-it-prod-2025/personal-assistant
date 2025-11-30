@@ -1,12 +1,13 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Security
+from fastapi import APIRouter, Security, Depends
 from fastapi.security import SecurityScopes
 
 from personal_assistant.src.api.dependencies import (
     DbSessionDepends,
     get_current_user_dependency,
 )
+from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserGet, UserCreate
@@ -21,8 +22,9 @@ async def get_user(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["users:read"])
     ],
+    user_params: Annotated[UserParams, Depends()]
 ) -> list[UserGet]:
-    return await UserRepository(db_session=db_session).get_all_users()
+    return await UserRepository(db_session=db_session).get_users(params=user_params)
 
 
 @user_router.get("/me")

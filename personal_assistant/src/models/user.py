@@ -1,7 +1,7 @@
 import uuid
 from enum import Enum
 
-from pydantic import EmailStr
+from pydantic import EmailStr, field_serializer, field_validator
 from sqlmodel import SQLModel, Field
 
 from personal_assistant.src.models.base import BaseTable
@@ -18,6 +18,13 @@ class UserBase(SQLModel):
     name: str = Field(regex=name_pattern)
     email: EmailStr = Field(unique=True)
 
+    @field_validator("email")
+    def normalize_email(cls, v):
+        return v.lower() if isinstance(v, str) else v
+
+    @field_serializer("email")
+    def serialize_email(self, value: EmailStr, _info):
+        return str(value).lower()
 
 class UserTable(UserBase, BaseTable, table=True):
     hashed_password: str

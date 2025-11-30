@@ -26,7 +26,7 @@ async def test_create_user__then_user_exist_in_db(postgres_connection, router_ap
 
 
 @pytest.mark.asyncio
-async def test_create_user__then_get_user(postgres_connection, router_api_admin):
+async def test_create_user__then_get_user(router_api_admin):
     response_post = router_api_admin.post(
         "/api/v1/user/",
         json={"name": "test_user", "email": random_email(), "password": "test"},
@@ -37,10 +37,46 @@ async def test_create_user__then_get_user(postgres_connection, router_api_admin)
     response_get = router_api_admin.get("/api/v1/user/")
     response_get.raise_for_status()
     found_user = None
-    print(f"Response_get = {response_get.json()}")
     for user in response_get.json():
         if user["id"] == response_post.json()["id"]:
             found_user = user
 
     assert found_user
     assert found_user == response_post.json()
+
+@pytest.mark.asyncio
+async def test_create_user_uppercase_email__then_get_user_lowercase_email(router_api_admin):
+    email = random_email().upper()
+    response_post = router_api_admin.post(
+        "/api/v1/user/",
+        json={"name": "test_user", "email": email, "password": "test"},
+    )
+
+    response_post.raise_for_status()
+
+    response_get = router_api_admin.get("/api/v1/user/")
+    response_get.raise_for_status()
+    found_user = None
+    for user in response_get.json():
+        if user["id"] == response_post.json()["id"]:
+            found_user = user
+
+
+    assert found_user
+    assert found_user["email"] == email.lower()
+
+@pytest.mark.asyncio
+async def test_create_user_uppercase_email__then_user_email_in_db_lowercase(postgres_connection, router_api_admin):
+    email = random_email().upper()
+    response_post = router_api_admin.post(
+        "/api/v1/user/",
+        json={"name": "test_user", "email": email, "password": "test"},
+    )
+
+    response_post.raise_for_status()
+    db_result = await postgres_connection.exec(
+        select(UserTable).where(UserTable.id == response_post.json()["id"])
+    )
+    db_result = db_result.one()
+
+    assert db_result.email == email.lower()
