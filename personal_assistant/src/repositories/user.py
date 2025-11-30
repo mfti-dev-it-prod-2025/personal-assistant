@@ -1,6 +1,5 @@
 import uuid
 
-import asyncpg
 import sqlalchemy
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -36,9 +35,7 @@ class UserRepository:
         return (await self.db_session.exec(select(UserTable))).all()
 
     async def create_user(self, user: UserCreate) -> UserTable:
-        user_table = UserTable(**user.model_dump())
-        user_table.email = str(user.email).lower()
-        user_table.hashed_password = Password().get_password_hash(user.password)
+        user_table = UserTable.model_validate(user, update={"hashed_password": Password().get_password_hash(user.password)})
         try:
             self.db_session.add(user_table)
             await self.db_session.commit()

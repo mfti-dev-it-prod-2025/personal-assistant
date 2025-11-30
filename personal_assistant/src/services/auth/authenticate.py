@@ -7,7 +7,7 @@ from personal_assistant.src.configs.auth import ROLES_TO_SCOPES, oauth2_scheme
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.auth.user import UserGet
 from personal_assistant.src.services.auth.password import Password
-from typing import Optional, Annotated
+from typing import Annotated
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -87,7 +87,7 @@ class AuthAuthenticate:
         payload = jwt.decode(
             token, settings.jwt.jwt_secret, algorithms=[settings.jwt.jwt_algorithm]
         )
-        subject: Optional[str] = payload.get("sub")
+        subject: str | None = payload.get("sub")
         token_scopes: list[str] = payload.get("scopes", [])
         if subject is None:
             raise credentials_exception
