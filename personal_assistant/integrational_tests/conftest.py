@@ -5,7 +5,7 @@ import pytest
 import pytest_asyncio
 from alembic import command
 from alembic.config import Config
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
 
@@ -63,12 +63,14 @@ def router_api():
 @pytest_asyncio.fixture
 async def router_api_admin(postgres_connection):
     user_repository = UserRepository(db_session=postgres_connection)
-    created_user = await user_repository.create_user(
-        user=UserCreate(name="admin", email="admin@admin.ru", password="admin")
-    )
-    created_user.role = UserRole.administrator
-    postgres_connection.add(created_user)
-    await postgres_connection.commit()
+    admin_email = "admin@admin.ru"
+    if not await user_repository.get_user_by_email(admin_email):
+        created_user = await user_repository.create_user(
+            user=UserCreate(name="admin", email=admin_email, password="admin")
+        )
+        created_user.role = UserRole.administrator
+        postgres_connection.add(created_user)
+        await postgres_connection.commit()
     client = TestClient(app)
     auth_response = client.post(
         "/api/v1/auth/token",
