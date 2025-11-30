@@ -4,27 +4,27 @@ from datetime import date
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import Optional
+from fastapi import Depends
 
-from personal_assistant.src.models.expense_category import ExpenseCategoryTable
+from personal_assistant.src.models.database_session import get_session
+from personal_assistant.src.models.budget import ExpenseCategoryTable
 from personal_assistant.src.schemas.budget.expense_category import ExpenseCategoryCreate, ExpenseCategoryUpdate
 
 class ExpenseCategoryRepository:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def get_all_categories(self) -> list[ExpenseCategoryTable]:
+    async def get_all_categories(self, skip: int = 0, limit: int = 100) -> list[ExpenseCategoryTable]:
+        stmt = select(ExpenseCategoryTable).offset(skip).limit(limit)
+        result = await self.db_session.exec(stmt)
+        return result.all()
+
+    async def get_expense_category_by_id(self, id: uuid.UUID) -> ExpenseCategoryTable | None:
         return (
             await self.db_session.exec(
-                select(ExpenseCategoryTable)
+                select(ExpenseCategoryTable).where(ExpenseCategoryTable.id == id)
             )
-        ).all()
-
-    # async def get_expense_category_by_id(self, id: uuid.UUID) -> ExpenseCategoryTable | None:
-    #     return (
-    #         await self.db_session.exec(
-    #             select(ExpenseCategoryTable).where(ExpenseCategoryTable.id == id)
-    #         )
-    #     ).one_or_none()
+        ).one_or_none()
 
     async def get_expense_category_by_name(self, name: str) -> ExpenseCategoryTable | None:
         return (
@@ -36,14 +36,12 @@ class ExpenseCategoryRepository:
     async def create_expense_category(
         self,
         expense_data: ExpenseCategoryCreate,
-        user_id: uuid.UUID,
     ) -> ExpenseCategoryTable:
         """
         Создаёт новую категоррию расходов.
         """
         new_expense_category = ExpenseCategoryTable(
             **expense_data.model_dump(),
-            user_id=user_id
         )
 
         self.db_session.add(new_expense_category)
@@ -72,3 +70,19 @@ class ExpenseCategoryRepository:
         await self.db_session.refresh(expense)
 
         return expense
+
+    async def delete_expense_category(self, expense_category_name: str) -> None:
+        """
+        Удаляет категорию расходов по имени.
+        """
+        category = await self.get_expense_category_by_name(expense_category_name)
+        if not category:
+            return
+
+        await self.db_session.delete(category)
+        await self.db_session.commit()
+
+async def get_expense_category_repository(
+    db: AsyncSession = Depends(get_session),
+) -> ExpenseCategoryRepository:
+    return ExpenseCategoryRepository(db)

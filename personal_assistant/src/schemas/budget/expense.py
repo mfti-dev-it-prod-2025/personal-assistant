@@ -35,3 +35,16 @@ class ExpenseUpdate(BaseModel):
     tag: Optional[str] = None
     shared: Optional[bool] = None
     date: Optional[date] = None
+
+class ExpenseResponse(BaseModel):
+    name: str
+    amount: float
+    currency: str
+    user_id: uuid.UUID
+    category_id: uuid.UUID
+    tag: Optional[str]
+    shared: bool
+    date: date
+
+    class Config:
+        from_attributes = True
