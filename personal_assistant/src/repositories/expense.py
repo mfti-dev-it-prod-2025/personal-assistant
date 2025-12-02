@@ -1,5 +1,5 @@
 import uuid
-from datetime import date
+from datetime import date, datetime
 
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -8,7 +8,6 @@ from fastapi import Depends
 
 from personal_assistant.src.models.database_session import get_session
 from personal_assistant.src.models.budget import ExpenseTable, ExpenseCategoryTable
-# from personal_assistant.src.models.expense_category import ExpenseCategoryTable
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense import ExpenseCreate, ExpenseUpdate
 
@@ -43,21 +42,27 @@ class ExpenseRepository:
             .where(ExpenseCategoryTable.name == category))
         return result.all()
 
+
     async def get_expenses_by_date_range(
             self,
-            start_date: Optional[date] = None,
-            end_date: Optional[date] = None
+            start_date: Optional[str] = None,
+            end_date: Optional[str] = None
     ) -> list[ExpenseTable]:
         """
         Возвращает список расходов в заданном диапазоне дат.
         Если start_date не указан — с начала,
         если end_date не указан — до конца.
         """
+        if start_date:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        if end_date:
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+
         stmt = select(ExpenseTable)
         if start_date:
-            stmt = stmt.where(ExpenseTable.date >= start_date)
+            stmt = stmt.where(ExpenseTable.expense_date >= start_date)
         if end_date:
-            stmt = stmt.where(ExpenseTable.date <= end_date)
+            stmt = stmt.where(ExpenseTable.expense_date <= end_date)
 
         result = await self.db_session.exec(stmt)
         return result.all()

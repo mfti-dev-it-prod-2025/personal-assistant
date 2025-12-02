@@ -58,7 +58,9 @@ class ExpenseCategoryRepository:
         """
         Обновляет существующий расход.
         """
+        print(type(update_data))
         expense = await self.get_expense_category_by_name(expense_name)
+        print(expense.name, "этот расход меняем")
         if not expense:
             return None
 

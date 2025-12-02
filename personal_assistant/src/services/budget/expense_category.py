@@ -45,7 +45,7 @@ class ExpenseCategoryService:
                 detail="Категория с таким именем уже существует",
             )
 
-        return new_category #ExpenseCategoryResponse.from_orm(new_category)
+        return new_category
 
     async def update(self, name: str, in_data: ExpenseCategoryUpdate) -> ExpenseCategoryResponse:
         existing_category = await self.repo.get_expense_category_by_name(name)
@@ -55,11 +55,9 @@ class ExpenseCategoryService:
                 detail="Категория с таким именем не существует",
             )
 
-        update_dict = {k: v for k, v in in_data.model_dump().items() if v is not None}
 
-        if update_dict:
-            res = await self.repo.update_expense_category(name, update_dict)
-            return res
+        res = await self.repo.update_expense_category(name, in_data)
+        return res
 
     async def delete(self, name: str) -> None:
         existing_category = await self.repo.get_expense_category_by_name(name)

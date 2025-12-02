@@ -11,7 +11,7 @@ class ExpenseCreate(BaseModel):
     category_id: uuid.UUID
     tag: Optional[str] = None
     shared: bool = False
-    date: date
+    expense_date: date
 
 class ExpenseGet(BaseModel):
     id: uuid.UUID
@@ -24,7 +24,7 @@ class ExpenseGet(BaseModel):
     shared: bool
     date: date
     created_at: Optional[str]
-    updated_at: Optional[str]
+    expense_date: Optional[str]
 
 class ExpenseUpdate(BaseModel):
     name: Optional[str] = None
@@ -34,7 +34,7 @@ class ExpenseUpdate(BaseModel):
     category_id: Optional[uuid.UUID] = None
     tag: Optional[str] = None
     shared: Optional[bool] = None
-    date: Optional[date] = None
+    expense_date: Optional[date] = None
 
 class ExpenseResponse(BaseModel):
     name: str
@@ -44,7 +44,7 @@ class ExpenseResponse(BaseModel):
     category_id: uuid.UUID
     tag: Optional[str]
     shared: bool
-    date: date
+    expense_date: date
 
     class Config:
         from_attributes = True
