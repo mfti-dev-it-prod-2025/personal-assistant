@@ -1,9 +1,7 @@
 import uuid
-from datetime import date
 
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from typing import Optional
 from fastapi import Depends
 
 from personal_assistant.src.models.database_session import get_session

@@ -1,5 +1,5 @@
 import uuid
-from datetime import date, datetime
+from datetime import datetime
 
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -112,7 +112,7 @@ class ExpenseRepository:
         """
         expense = await self.get_expense_by_id(expense_id)
         if not expense:
-            return  # ничего не делаем, сервис сам проверяет существование
+            return
 
         await self.db_session.delete(expense)
         await self.db_session.commit()
