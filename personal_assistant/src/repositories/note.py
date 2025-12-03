@@ -1,5 +1,3 @@
-# personal_assistant/src/repositories/note.py
-
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select, and_
 from typing import List, Optional
@@ -13,11 +11,7 @@ class NoteRepository:
         self.session = session
 
     async def create_note(self, note_data: NoteCreate, user_id: uuid.UUID) -> Note:
-        db_note = Note(
-            title=note_data.title,
-            content=note_data.content,
-            user_id=user_id
-        )
+        db_note = Note.model_validate(note_data, update={"user_id": user_id})
         self.session.add(db_note)
         await self.session.commit()
         await self.session.refresh(db_note)
@@ -28,7 +22,7 @@ class NoteRepository:
         result = await self.session.exec(statement)
         return result.first()
 
-    async def get_notes_by_user(self, user_id: uuid.UUID, skip: int = 0, limit: int = 100) -> List[Note]:
+    async def get_notes_by_user(self, user_id: uuid.UUID, skip: int = 0, limit: int = 1000) -> List[Note]:
         statement = select(Note).where(Note.user_id == user_id).offset(skip).limit(limit)
         result = await self.session.exec(statement)
         return result.all()
@@ -41,8 +35,6 @@ class NoteRepository:
         update_data = note_data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(db_note, field, value)
-
-        db_note.updated_at = datetime.utcnow()
 
         self.session.add(db_note)
         await self.session.commit()

@@ -1,6 +1,6 @@
 from personal_assistant.src.repositories.note import NoteRepository
 from personal_assistant.src.models.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
-from typing import List, Optional
+from typing import Optional
 from sqlmodel.ext.asyncio.session import AsyncSession
 import uuid
 
@@ -18,7 +18,7 @@ class NoteService:
             return NoteRead.model_validate(db_note)
         return None
 
-    async def get_notes(self, user_id: uuid.UUID, skip: int = 0, limit: int = 100) -> List[NoteRead]:
+    async def get_notes(self, user_id: uuid.UUID, skip: int = 0, limit: int = 1000) -> list[NoteRead]:
         db_notes = await self.note_repo.get_notes_by_user(user_id, skip, limit)
         return [NoteRead.model_validate(note) for note in db_notes]
 

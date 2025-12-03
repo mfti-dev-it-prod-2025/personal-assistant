@@ -6,7 +6,6 @@ from ....services.note_service import NoteService
 from ....models.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
 from ...dependencies import get_current_user_dependency as get_current_user
 from ....models.user import UserTable
-from typing import List
 
 router = APIRouter(prefix="", tags=["notes"])
 
@@ -33,24 +32,22 @@ async def read_note(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Заметка не найдена")
     return note
 
-
-@router.get("/", response_model=List[NoteRead])
+@router.get("/", response_model=list[NoteRead])
 async def read_notes(
     skip: int = 0,
-    limit: int = 100,
+    limit: int = 1000,
     current_user: UserTable = Depends(get_current_user),
     note_service: NoteService = Depends(get_note_service)
-):
+) -> list[NoteRead]:
     return await note_service.get_notes(current_user.id, skip=skip, limit=limit)
 
-
-@router.put("/{note_id}", response_model=NoteReadUpdate)
+@router.put("/{note_id}")
 async def update_note(
     note_id: uuid.UUID,
     note_data: NoteUpdate,
     current_user: UserTable = Depends(get_current_user),
     note_service: NoteService = Depends(get_note_service)
-):
+) -> NoteReadUpdate:
     updated_note = await note_service.update_note(note_id, current_user.id, note_data)
     if not updated_note:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Заметка не найдена")
