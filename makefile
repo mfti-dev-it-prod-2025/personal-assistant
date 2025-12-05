@@ -25,7 +25,7 @@ mkmigrate:
 
 migrate:
 	@echo "perform alembic migrations"
-	cd $(ROOT_PATH) && alembic upgrade head
+	cd $(ROOT_PATH) && alembic upgrade heads
 
 itest:
 	@echo "run integrational tests"
