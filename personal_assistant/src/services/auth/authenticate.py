@@ -1,5 +1,7 @@
 import uuid
 from datetime import timedelta, datetime, timezone
+
+from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.logger import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -7,7 +9,7 @@ from personal_assistant.src.configs.auth import ROLES_TO_SCOPES, oauth2_scheme
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.auth.user import UserGet
 from personal_assistant.src.services.auth.password import Password
-from typing import Optional, Annotated
+from typing import Annotated
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -45,8 +47,8 @@ class AuthAuthenticate:
         return encoded_jwt
 
     async def authenticate_user(self, email: str, password: str) -> UserGet | None:
-        logger.info(f"authentificating user with email: {email}")
-        user = await self.user_repository.get_user_by_email(email)
+        logger.info(f"authenticating user with email: {email}")
+        user = (await self.user_repository.get_users(params=UserParams(email=email)))[0]
         if not user:
             logger.info(f"User was not found with credentials: {email}")
             return None
@@ -54,7 +56,7 @@ class AuthAuthenticate:
             logger.info(f"User provided incorrect password: {email}")
             return None
         logger.info(f"User was found, returning the instance: {email}")
-        return UserGet(**user.model_dump())
+        return UserGet.model_validate(user)
 
     def get_user_scopes(self, user: UserGet) -> list[str]:
         return ROLES_TO_SCOPES[user.role.value]
@@ -87,12 +89,12 @@ class AuthAuthenticate:
         payload = jwt.decode(
             token, settings.jwt.jwt_secret, algorithms=[settings.jwt.jwt_algorithm]
         )
-        subject: Optional[str] = payload.get("sub")
+        subject: str | None = payload.get("sub")
         token_scopes: list[str] = payload.get("scopes", [])
         if subject is None:
             raise credentials_exception
 
-        user = await self.user_repository.get_user_by_id(subject)
+        user = (await self.user_repository.get_users(params=UserParams(id=subject, limit=1)))[0]
         if not user:
             raise credentials_exception
 
