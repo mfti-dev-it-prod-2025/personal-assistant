@@ -1,9 +1,8 @@
 import uuid
 from enum import Enum
 from typing import List, Optional
-from pydantic import EmailStr
+from pydantic import EmailStr, field_serializer, field_validator
 from sqlmodel import SQLModel, Field, Relationship
-
 
 from personal_assistant.src.models.base import BaseTable
 
