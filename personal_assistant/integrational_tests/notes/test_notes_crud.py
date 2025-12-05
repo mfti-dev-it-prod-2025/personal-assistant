@@ -1,5 +1,7 @@
 import pytest
 import uuid
+
+from dateutil.parser import isoparse
 from sqlmodel import select
 from datetime import datetime, timezone
 from personal_assistant.integrational_tests.utils import random_email
@@ -47,9 +49,11 @@ async def test_read_note_by_id__existing_note(postgres_connection, router_api_ad
 
     assert response.status_code == 200
     retrieved_note_data = response.json()
-    assert retrieved_note_data['id'] == created_note_id
-    assert retrieved_note_data['title'] == note_data["title"]
-    assert retrieved_note_data['content'] == note_data["content"]
+    retrieved_note = NoteRead.model_validate(retrieved_note_data)
+    assert str(retrieved_note.id) == created_note_id
+    assert retrieved_note.title == note_data["title"]
+    assert retrieved_note.content == note_data["content"]
+    assert isinstance(retrieved_note.user_id, uuid.UUID)
 
 
 @pytest.mark.asyncio
@@ -90,11 +94,13 @@ async def test_update_note__changes_data_in_db_and_returns_updated(postgres_conn
 
     assert response.status_code == 200
     updated_note_resp_data = response.json()
-    assert updated_note_resp_data['id'] == note_id
-    assert updated_note_resp_data['title'] == updated_note_data["title"]
-    assert updated_note_resp_data['content'] == updated_note_data["content"]
-    original_created_at = create_response.json()["created_at"]
-    assert updated_note_resp_data['created_at'] == original_created_at
+    updated_note_resp = NoteReadUpdate.model_validate(updated_note_resp_data)
+    assert str(updated_note_resp.id) == note_id
+    assert updated_note_resp.title == updated_note_data["title"]
+    assert updated_note_resp.content == updated_note_data["content"]
+    original_created_at_dt = isoparse(create_response.json()["created_at"])  # распознает Z
+    assert updated_note_resp.created_at == original_created_at_dt
+    assert isinstance(updated_note_resp.updated_at, datetime)
 
     db_result = await postgres_connection.exec(
         select(Note).where(Note.id == note_id)
