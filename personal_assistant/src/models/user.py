@@ -1,8 +1,8 @@
 import uuid
 from enum import Enum
-
+from typing import List, Optional
 from pydantic import EmailStr, field_serializer, field_validator
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 
 from personal_assistant.src.models.base import BaseTable
 
@@ -27,6 +27,8 @@ class UserBase(SQLModel):
         return str(value).lower()
 
 class UserTable(UserBase, BaseTable, table=True):
+    __tablename__ = "usertable"
     hashed_password: str
     role: UserRole = Field(default=UserRole.user)
     telegram_id: int | None = Field(default=None, unique=True)
+    expenses: List["ExpenseTable"] = Relationship(back_populates="user")
