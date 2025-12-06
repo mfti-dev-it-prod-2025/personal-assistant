@@ -1,9 +1,12 @@
 from typing import Optional
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, HTTPException, status, Query, Security
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from personal_assistant.src.api.deps import get_current_user, get_db
+from personal_assistant.src.api.dependencies import (
+    get_current_user_dependency,
+    DbSessionDepends,
+)
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.tasks.schemas import (
     TaskCreate,
@@ -19,8 +22,8 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 @router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 async def create_task(
     task_data: TaskCreate,
-    current_user: UserTable = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
+    current_user: UserTable = Security(get_current_user_dependency, scopes=["tasks:write"]),
+    session: AsyncSession = DbSessionDepends,
 ):
     service = TaskService(session)
     return await service.create_task(current_user.id, task_data)
@@ -31,8 +34,8 @@ async def get_tasks(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     completed: Optional[bool] = None,
-    current_user: UserTable = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
+    current_user: UserTable = Security(get_current_user_dependency, scopes=["tasks:read"]),
+    session: AsyncSession = DbSessionDepends,
 ):
     service = TaskService(session)
     return await service.get_all_tasks(
@@ -46,8 +49,8 @@ async def get_tasks(
 @router.get("/{task_id}", response_model=TaskResponse)
 async def get_task(
     task_id: UUID,
-    current_user: UserTable = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
+    current_user: UserTable = Security(get_current_user_dependency, scopes=["tasks:read"]),
+    session: AsyncSession = DbSessionDepends,
 ):
     service = TaskService(session)
     task = await service.get_task(task_id, current_user.id)
@@ -63,8 +66,8 @@ async def get_task(
 async def update_task(
     task_id: UUID,
     task_data: TaskUpdate,
-    current_user: UserTable = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
+    current_user: UserTable = Security(get_current_user_dependency, scopes=["tasks:write"]),
+    session: AsyncSession = DbSessionDepends,
 ):
     service = TaskService(session)
     task = await service.update_task(task_id, current_user.id, task_data)
@@ -79,8 +82,8 @@ async def update_task(
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(
     task_id: UUID,
-    current_user: UserTable = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
+    current_user: UserTable = Security(get_current_user_dependency, scopes=["tasks:write"]),
+    session: AsyncSession = DbSessionDepends,
 ):
     service = TaskService(session)
     deleted = await service.delete_task(task_id, current_user.id)
@@ -94,8 +97,8 @@ async def delete_task(
 @router.post("/{task_id}/complete", response_model=TaskResponse)
 async def mark_task_completed(
     task_id: UUID,
-    current_user: UserTable = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
+    current_user: UserTable = Security(get_current_user_dependency, scopes=["tasks:write"]),
+    session: AsyncSession = DbSessionDepends,
 ):
     service = TaskService(session)
     task = await service.mark_task_completed(task_id, current_user.id, completed=True)
@@ -110,8 +113,8 @@ async def mark_task_completed(
 @router.post("/{task_id}/uncomplete", response_model=TaskResponse)
 async def mark_task_uncompleted(
     task_id: UUID,
-    current_user: UserTable = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
+    current_user: UserTable = Security(get_current_user_dependency, scopes=["tasks:write"]),
+    session: AsyncSession = DbSessionDepends,
 ):
     service = TaskService(session)
     task = await service.mark_task_completed(task_id, current_user.id, completed=False)
@@ -125,8 +128,8 @@ async def mark_task_uncompleted(
 
 @router.get("/stats/me")
 async def get_my_tasks_stats(
-    current_user: UserTable = Depends(get_current_user),
-    session: AsyncSession = Depends(get_db),
+    current_user: UserTable = Security(get_current_user_dependency, scopes=["tasks:read"]),
+    session: AsyncSession = DbSessionDepends,
 ):
     service = TaskService(session)
     return await service.get_tasks_stats(current_user.id)
