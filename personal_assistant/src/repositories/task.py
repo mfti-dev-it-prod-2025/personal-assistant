@@ -100,4 +100,4 @@ class TaskRepository:
             query = query.where(Task.is_completed == completed)
 
         result = await self.session.execute(query)
-        return result.scalar()
+        return result.scalar() or 0
