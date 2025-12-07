@@ -27,7 +27,7 @@ def main():
     settings.db.db_host = postgres.get_container_host_ip()
 
     alembic_cfg = Config("alembic.ini")
-    command.upgrade(config=alembic_cfg, revision="head")
+    command.upgrade(config=alembic_cfg, revision="heads")
     upgrade_message = input("Введите описание миграции: ")
     command.revision(
         config=alembic_cfg,
