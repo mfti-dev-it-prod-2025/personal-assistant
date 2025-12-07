@@ -9,7 +9,7 @@ class ExpenseTable(BaseTable, table=True):
     __tablename__ = "expenses"
 
     # Основные поля
-    name: str = Field(nullable=False, unique=True)
+    name: str = Field(nullable=False)
     amount: float = Field(nullable=False)
     currency: str = Field(default="RUB", nullable=False)
 

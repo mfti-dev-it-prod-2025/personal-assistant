@@ -7,7 +7,7 @@ from personal_assistant.src.schemas.budget.expense import (
     ExpenseCreate,
     ExpenseUpdate,
 )
-from personal_assistant.src.services.budget.expense import ExpenseService, get_category_service  # исправь get_category_service на get_expense_service, если у тебя так называется
+from personal_assistant.src.services.budget.expense import ExpenseService, get_expense_service
 
 expense_router = APIRouter()
 
@@ -21,7 +21,7 @@ expense_router = APIRouter()
 async def get_all_expenses(
     skip: int = Query(0, ge=0, description="Количество записей для пропуска"),
     limit: int = Query(100, ge=1, le=1000, description="Лимит записей"),
-    service: ExpenseService = Depends(get_category_service),
+    service: ExpenseService = Depends(get_expense_service),
 ):
     """
     Получить список всех расходов
@@ -36,7 +36,7 @@ async def get_all_expenses(
 )
 async def get_expense_by_id(
     expense_id: UUID,
-    service: ExpenseService = Depends(get_category_service),
+    service: ExpenseService = Depends(get_expense_service),
 ):
     """
     Получить расход по идентификатору
@@ -51,7 +51,7 @@ async def get_expense_by_id(
 )
 async def get_expenses_by_user(
     email: str,
-    service: ExpenseService = Depends(get_category_service),
+    service: ExpenseService = Depends(get_expense_service),
 ):
     """
     Получить список расходов по email пользователя
@@ -66,7 +66,7 @@ async def get_expenses_by_user(
 )
 async def get_expenses_by_category(
     category_name: str,
-    service: ExpenseService = Depends(get_category_service),
+    service: ExpenseService = Depends(get_expense_service),
 ):
     """
     Получить список расходов по названию категории
@@ -82,7 +82,7 @@ async def get_expenses_by_category(
 async def get_expenses_by_date_range(
     start_date: Optional[str] = Query(None, description="Начальная дата в формате YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="Конечная дата в формате YYYY-MM-DD"),
-    service: ExpenseService = Depends(get_category_service),
+    service: ExpenseService = Depends(get_expense_service),
 ):
     """
     Получить список расходов за указанный диапазон дат
@@ -100,7 +100,7 @@ async def get_expenses_by_date_range(
 )
 async def create_expense(
     expense_data: ExpenseCreate,
-    service: ExpenseService = Depends(get_category_service),
+    service: ExpenseService = Depends(get_expense_service),
 ):
     """
     Создать новый расход
@@ -118,7 +118,7 @@ async def create_expense(
 async def update_expense(
     expense_id: UUID,
     update_data: ExpenseUpdate,
-    service: ExpenseService = Depends(get_category_service),
+    service: ExpenseService = Depends(get_expense_service),
 ):
     """
     Обновить существующий расход
@@ -135,7 +135,7 @@ async def update_expense(
 )
 async def delete_expense(
     expense_id: UUID,
-    service: ExpenseService = Depends(get_category_service),
+    service: ExpenseService = Depends(get_expense_service),
 ):
     """
     Удалить расход

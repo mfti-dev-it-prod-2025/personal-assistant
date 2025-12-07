@@ -27,6 +27,7 @@ class ExpenseGet(BaseModel):
     expense_date: Optional[str]
 
 class ExpenseUpdate(BaseModel):
+    id: uuid.UUID
     name: Optional[str] = None
     amount: Optional[float] = None
     currency: Optional[str] = None
@@ -37,6 +38,7 @@ class ExpenseUpdate(BaseModel):
     expense_date: Optional[date] = None
 
 class ExpenseResponse(BaseModel):
+    id: uuid.UUID
     name: str
     amount: float
     currency: str

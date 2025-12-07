@@ -18,6 +18,7 @@ class ExpenseCategoryUpdate(BaseModel):
     description: str
 
 class ExpenseCategoryResponse(BaseModel):
+    id: uuid.UUID
     name: str
     description: str
 

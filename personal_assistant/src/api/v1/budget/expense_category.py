@@ -37,7 +37,6 @@ async def get_all_categories(
 async def create_category(
     category_data: ExpenseCategoryCreate,
     service: ExpenseCategoryService = Depends(get_category_service),
-    # repository: CategoryRepository = Depends(get_category_repository)
 ):
     """
     Создать новую категорию
