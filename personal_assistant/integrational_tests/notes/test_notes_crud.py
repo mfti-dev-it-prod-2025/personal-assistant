@@ -10,11 +10,11 @@ from personal_assistant.src.models.user import UserTable
 
 
 @pytest.mark.asyncio
-async def test_create_note__then_note_exists_in_db_and_returned(postgres_connection, router_api_admin):
+async def test_create_note__then_note_exists_in_db_and_returned(postgres_connection, router_api_user):
     
     note_data = {"title": "Test Note Title", "content": "Test Note Content"}
 
-    response = router_api_admin.post("/api/v1/notes/", json=note_data)
+    response = router_api_user.post("/api/v1/notes/", json=note_data)
 
     assert response.status_code == 201
     created_note_data = response.json()
@@ -38,14 +38,14 @@ async def test_create_note__then_note_exists_in_db_and_returned(postgres_connect
     assert db_note.updated_at is not None
 
 @pytest.mark.asyncio
-async def test_read_note_by_id__existing_note(postgres_connection, router_api_admin):
+async def test_read_note_by_id__existing_note(postgres_connection, router_api_user):
 
     note_data = {"title": "Read Test Note", "content": "Read Test Content"}
-    create_response = router_api_admin.post("/api/v1/notes/", json=note_data)
+    create_response = router_api_user.post("/api/v1/notes/", json=note_data)
     assert create_response.status_code == 201
     created_note_id = create_response.json()["id"]
 
-    response = router_api_admin.get(f"/api/v1/notes/{created_note_id}")
+    response = router_api_user.get(f"/api/v1/notes/{created_note_id}")
 
     assert response.status_code == 200
     retrieved_note_data = response.json()
@@ -57,14 +57,14 @@ async def test_read_note_by_id__existing_note(postgres_connection, router_api_ad
 
 
 @pytest.mark.asyncio
-async def test_read_notes_list__includes_created_note(postgres_connection, router_api_admin):
+async def test_read_notes_list__includes_created_note(postgres_connection, router_api_user):
 
     note_data = {"title": "List Test Note", "content": "List Test Content"}
-    create_response = router_api_admin.post("/api/v1/notes/", json=note_data)
+    create_response = router_api_user.post("/api/v1/notes/", json=note_data)
     assert create_response.status_code == 201
     created_note_id = create_response.json()["id"]
 
-    response = router_api_admin.get("/api/v1/notes/")
+    response = router_api_user.get("/api/v1/notes/")
 
     assert response.status_code == 200
     notes_list_data = response.json()
@@ -81,16 +81,16 @@ async def test_read_notes_list__includes_created_note(postgres_connection, route
 
 
 @pytest.mark.asyncio
-async def test_update_note__changes_data_in_db_and_returns_updated(postgres_connection, router_api_admin):
+async def test_update_note__changes_data_in_db_and_returns_updated(postgres_connection, router_api_user):
 
     initial_note_data = {"title": "Initial Title", "content": "Initial Content"}
-    create_response = router_api_admin.post("/api/v1/notes/", json=initial_note_data)
+    create_response = router_api_user.post("/api/v1/notes/", json=initial_note_data)
     assert create_response.status_code == 201
     note_id = create_response.json()["id"]
 
     updated_note_data = {"title": "Updated Title", "content": "Updated Content"}
 
-    response = router_api_admin.put(f"/api/v1/notes/{note_id}", json=updated_note_data)
+    response = router_api_user.put(f"/api/v1/notes/{note_id}", json=updated_note_data)
 
     assert response.status_code == 200
     updated_note_resp_data = response.json()
@@ -114,14 +114,14 @@ async def test_update_note__changes_data_in_db_and_returns_updated(postgres_conn
 
 
 @pytest.mark.asyncio
-async def test_delete_note__removes_from_db_and_get_returns_404(postgres_connection, router_api_admin):
+async def test_delete_note__removes_from_db_and_get_returns_404(postgres_connection, router_api_user):
     
     note_data = {"title": "Delete Test Note", "content": "Delete Test Content"}
-    create_response = router_api_admin.post("/api/v1/notes/", json=note_data)
+    create_response = router_api_user.post("/api/v1/notes/", json=note_data)
     assert create_response.status_code == 201
     note_id_to_delete = create_response.json()["id"]
 
-    response = router_api_admin.delete(f"/api/v1/notes/{note_id_to_delete}")
+    response = router_api_user.delete(f"/api/v1/notes/{note_id_to_delete}")
 
     assert response.status_code == 204
 
@@ -132,5 +132,5 @@ async def test_delete_note__removes_from_db_and_get_returns_404(postgres_connect
 
     assert db_note_after_delete is None
 
-    get_response = router_api_admin.get(f"/api/v1/notes/{note_id_to_delete}")
+    get_response = router_api_user.get(f"/api/v1/notes/{note_id_to_delete}")
     assert get_response.status_code == 404
