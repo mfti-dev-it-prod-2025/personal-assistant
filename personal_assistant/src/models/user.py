@@ -5,6 +5,7 @@ from pydantic import EmailStr, field_serializer, field_validator
 from sqlmodel import SQLModel, Field, Relationship
 
 from personal_assistant.src.models.base import BaseTable
+from personal_assistant.src.models.budget import ExpenseTable
 
 name_pattern = r"^[А-Я][А-я]+"
 
