@@ -18,7 +18,6 @@ from personal_assistant.src.models.user import UserRole
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserCreate
 from personal_assistant.src.models.todo import Task
-from personal_assistant.src.models.note import Note
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -120,12 +119,10 @@ async def router_api_user(postgres_connection):
 @pytest_asyncio.fixture(autouse=True)
 async def clean_database(postgres_connection):
     """
-    Фикстура для автоматической очистки таблиц задач и заметок перед каждым тестом.
-    Удаляет все задачи и заметки, чтобы тесты были изолированы.
+    Фикстура для автоматической очистки таблицы задач перед каждым тестом.
+    Удаляет все задачи, чтобы тесты были изолированы.
     """
-    # Очищаем таблицы в порядке, который не нарушает foreign keys
-    # Сначала задачи (tasks), потом заметки (notes)
+    # Очищаем только таблицу задач (tasks)
     await postgres_connection.exec(delete(Task))
-    await postgres_connection.exec(delete(Note))
     await postgres_connection.commit()
     yield
