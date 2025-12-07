@@ -48,7 +48,7 @@ async def postgres_connection(_bootstrap_db) -> AsyncSession:
         await agen.aclose()
 
 
-def run_migrations(revision: str = "head") -> None:
+def run_migrations(revision: str = "heads") -> None:
     repo_root = os.path.dirname(os.path.dirname(__file__))  # .../personal_assistant
     alembic_ini_path = os.path.join(repo_root, "src", "alembic.ini")
     alembic_cfg = Config(alembic_ini_path)
