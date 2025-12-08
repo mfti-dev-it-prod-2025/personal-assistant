@@ -7,30 +7,12 @@ import uuid
 class TaskCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = Field(None, max_length=2000)
-    
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "title": "Купить молоко",
-                "description": "2.5%, 1 литр"
-            }
-        }
-    )
 
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = Field(None, max_length=2000)
     is_completed: Optional[bool] = None
-    
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "title": "Купить молоко и хлеб",
-                "is_completed": True
-            }
-        }
-    )
 
 
 class TaskResponse(BaseModel):
@@ -41,23 +23,22 @@ class TaskResponse(BaseModel):
     user_id: uuid.UUID
     created_at: datetime
     updated_at: Optional[datetime]
-    
-    model_config = ConfigDict(
-        from_attributes=True,
-        json_schema_extra={
-            "example": {
-                "id": "123e4567-e89b-12d3-a456-426614174000",
-                "title": "Купить молоко",
-                "description": "2.5%, 1 литр",
-                "is_completed": False,
-                "user_id": "123e4567-e89b-12d3-a456-426614174001",
-                "created_at": "2024-01-01T12:00:00Z",
-                "updated_at": "2024-01-01T12:00:00Z"
-            }
-        }
-    )
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskListResponse(BaseModel):
     tasks: list[TaskResponse]
     total: int
+
+
+class TasksStats(BaseModel):
+    total: int = Field(..., description="Общее количество задач")
+    completed: int = Field(..., description="Количество выполненных задач")
+    pending: int = Field(..., description="Количество невыполненных задач")
+    completion_rate: float = Field(
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Процент завершения (от 0.0 до 1.0)"
+    )

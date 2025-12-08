@@ -12,7 +12,6 @@ class TaskRepository:
         self.session = session
 
     async def create(self, user_id: UUID, task_data: TaskCreate) -> Task:
-        """Создать новую задачу"""
         task = Task(**task_data.model_dump(), user_id=user_id)
         self.session.add(task)
         await self.session.commit()
@@ -20,7 +19,6 @@ class TaskRepository:
         return task
 
     async def get_by_id(self, task_id: UUID, user_id: UUID) -> Optional[Task]:
-        """Получить задачу по ID (с проверкой владельца)"""
         result = await self.session.execute(
             select(Task).where(Task.id == task_id, Task.user_id == user_id)
         )
@@ -33,7 +31,6 @@ class TaskRepository:
             limit: int = 100,
             completed: Optional[bool] = None
     ) -> List[Task]:
-        """Получить все задачи пользователя с фильтрацией"""
         query = select(Task).where(Task.user_id == user_id)
 
         if completed is not None:
@@ -52,12 +49,10 @@ class TaskRepository:
             user_id: UUID,
             task_data: TaskUpdate
     ) -> Optional[Task]:
-        """Обновить задачу"""
         task = await self.get_by_id(task_id, user_id)
         if not task:
             return None
 
-        # Обновляем только переданные поля
         update_data = task_data.model_dump(exclude_unset=True)
         for field, value in update_data.items():
             setattr(task, field, value)
@@ -67,7 +62,6 @@ class TaskRepository:
         return task
 
     async def delete(self, task_id: UUID, user_id: UUID) -> bool:
-        """Удалить задачу"""
         task = await self.get_by_id(task_id, user_id)
         if not task:
             return False
@@ -82,7 +76,6 @@ class TaskRepository:
             user_id: UUID,
             completed: bool = True
     ) -> Optional[Task]:
-        """Отметить задачу как выполненную/невыполненную"""
         task = await self.get_by_id(task_id, user_id)
         if not task:
             return None
@@ -93,7 +86,6 @@ class TaskRepository:
         return task
 
     async def count(self, user_id: UUID, completed: Optional[bool] = None) -> int:
-        """Посчитать количество задач пользователя"""
         query = select(func.count()).where(Task.user_id == user_id)
 
         if completed is not None:

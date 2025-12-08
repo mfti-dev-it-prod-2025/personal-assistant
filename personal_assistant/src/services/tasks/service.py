@@ -7,7 +7,8 @@ from personal_assistant.src.schemas.tasks.schemas import (
     TaskCreate,
     TaskUpdate,
     TaskResponse,
-    TaskListResponse
+    TaskListResponse,
+    TasksStats,
 )
 from personal_assistant.src.models.todo import Task
 
@@ -17,12 +18,10 @@ class TaskService:
         self.repository = TaskRepository(session)
 
     async def create_task(self, user_id: UUID, task_data: TaskCreate) -> TaskResponse:
-        """Создать новую задачу"""
         task = await self.repository.create(user_id, task_data)
         return TaskResponse.model_validate(task)
 
     async def get_task(self, task_id: UUID, user_id: UUID) -> Optional[TaskResponse]:
-        """Получить задачу по ID"""
         task = await self.repository.get_by_id(task_id, user_id)
         if task:
             return TaskResponse.model_validate(task)
@@ -35,7 +34,6 @@ class TaskService:
             limit: int = 100,
             completed: Optional[bool] = None
     ) -> TaskListResponse:
-        """Получить все задачи пользователя"""
         tasks = await self.repository.get_all(user_id, skip, limit, completed)
         total = await self.repository.count(user_id, completed)
 
@@ -50,14 +48,12 @@ class TaskService:
             user_id: UUID,
             task_data: TaskUpdate
     ) -> Optional[TaskResponse]:
-        """Обновить задачу"""
         task = await self.repository.update(task_id, user_id, task_data)
         if task:
             return TaskResponse.model_validate(task)
         return None
 
     async def delete_task(self, task_id: UUID, user_id: UUID) -> bool:
-        """Удалить задачу"""
         return await self.repository.delete(task_id, user_id)
 
     async def mark_task_completed(
@@ -66,14 +62,12 @@ class TaskService:
             user_id: UUID,
             completed: bool = True
     ) -> Optional[TaskResponse]:
-        """Отметить задачу как выполненную/невыполненную"""
         task = await self.repository.mark_completed(task_id, user_id, completed)
         if task:
             return TaskResponse.model_validate(task)
         return None
 
     async def get_completed_tasks(self, user_id: UUID) -> TaskListResponse:
-        """Получить выполненные задачи"""
         tasks = await self.repository.get_all(user_id, completed=True)
         total = await self.repository.count(user_id, completed=True)
 
@@ -83,7 +77,6 @@ class TaskService:
         )
 
     async def get_pending_tasks(self, user_id: UUID) -> TaskListResponse:
-        """Получить невыполненные задачи"""
         tasks = await self.repository.get_all(user_id, completed=False)
         total = await self.repository.count(user_id, completed=False)
 
@@ -92,17 +85,16 @@ class TaskService:
             total=total
         )
 
-    async def get_tasks_stats(self, user_id: UUID) -> dict:
-        """Получить статистику по задачам"""
+    async def get_tasks_stats(self, user_id: UUID) -> TasksStats:
         total_tasks = await self.repository.count(user_id)
         completed_tasks = await self.repository.count(user_id, completed=True)
         pending_tasks = await self.repository.count(user_id, completed=False)
 
-        return {
-            "total": total_tasks,
-            "completed": completed_tasks,
-            "pending": pending_tasks,
-            "completion_rate": (
+        return TasksStats(
+            total=total_tasks,
+            completed=completed_tasks,
+            pending=pending_tasks,
+            completion_rate=(
                 completed_tasks / total_tasks if total_tasks > 0 else 0
             )
-        }
+        )

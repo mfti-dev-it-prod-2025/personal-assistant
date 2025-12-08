@@ -15,6 +15,5 @@ class Task(BaseTable, table=True):
     description: Optional[str] = Field(default=None, max_length=2000)
     is_completed: bool = Field(default=False)
 
-    # Связь с пользователем (один пользователь - много задач)
     user_id: uuid.UUID = Field(foreign_key="usertable.id", nullable=False)
     user: "UserTable" = Relationship(back_populates="tasks")

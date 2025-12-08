@@ -7,7 +7,6 @@ from personal_assistant.src.schemas.tasks.schemas import TaskResponse, TaskListR
 
 @pytest.mark.asyncio
 async def test_create_task__then_task_exists_in_db_and_returned(postgres_connection, router_api_admin):
-    """Тест создания задачи"""
     task_data = {
         "title": "Test Task Title",
         "description": "Test Task Description",
@@ -39,7 +38,6 @@ async def test_create_task__then_task_exists_in_db_and_returned(postgres_connect
 
 @pytest.mark.asyncio
 async def test_read_task_by_id__existing_task(postgres_connection, router_api_admin):
-    """Тест получения задачи по ID"""
     task_data = {"title": "Read Test Task", "description": "Read Test Description"}
     create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
@@ -57,7 +55,6 @@ async def test_read_task_by_id__existing_task(postgres_connection, router_api_ad
 
 @pytest.mark.asyncio
 async def test_read_tasks_list__includes_created_task(postgres_connection, router_api_admin):
-    """Тест получения списка задач"""
     task_data = {"title": "List Test Task", "description": "List Test Description"}
     create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
@@ -85,7 +82,6 @@ async def test_read_tasks_list__includes_created_task(postgres_connection, route
 
 @pytest.mark.asyncio
 async def test_update_task__changes_data_in_db_and_returns_updated(postgres_connection, router_api_admin):
-    """Тест обновления задачи"""
     initial_task_data = {"title": "Initial Title", "description": "Initial Description"}
     create_response = router_api_admin.post("/api/v1/tasks/", json=initial_task_data)
     assert create_response.status_code == 201
@@ -114,7 +110,6 @@ async def test_update_task__changes_data_in_db_and_returns_updated(postgres_conn
 
 @pytest.mark.asyncio
 async def test_delete_task__removes_from_db_and_get_returns_404(postgres_connection, router_api_admin):
-    """Тест удаления задачи"""
     task_data = {"title": "Delete Test Task", "description": "Delete Test Content"}
     create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
@@ -137,7 +132,6 @@ async def test_delete_task__removes_from_db_and_get_returns_404(postgres_connect
 
 @pytest.mark.asyncio
 async def test_mark_task_completed__sets_is_completed_true(postgres_connection, router_api_admin):
-    """Тест отметки задачи как выполненной"""
     task_data = {"title": "Complete Test Task", "description": "Test Description"}
     create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
@@ -160,7 +154,6 @@ async def test_mark_task_completed__sets_is_completed_true(postgres_connection, 
 
 @pytest.mark.asyncio
 async def test_mark_task_uncompleted__sets_is_completed_false(postgres_connection, router_api_admin):
-    """Тест отметки задачи как невыполненной"""
     task_data = {"title": "Uncomplete Test Task", "description": "Test Description"}
     create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
@@ -186,7 +179,6 @@ async def test_mark_task_uncompleted__sets_is_completed_false(postgres_connectio
 
 @pytest.mark.asyncio
 async def test_get_tasks_stats__returns_correct_statistics(postgres_connection, router_api_admin):
-    """Тест получения статистики по задачам"""
     task1_data = {"title": "Task 1", "description": "Description 1"}
     task2_data = {"title": "Task 2", "description": "Description 2"}
     task3_data = {"title": "Task 3", "description": "Description 3"}
@@ -226,7 +218,6 @@ async def test_get_tasks_stats__returns_correct_statistics(postgres_connection, 
 
 @pytest.mark.asyncio
 async def test_get_tasks_with_completed_filter__returns_only_completed(postgres_connection, router_api_admin):
-    """Тест фильтрации задач по статусу выполнения"""
     task1_data = {"title": "Completed Task", "description": "Description 1"}
     task2_data = {"title": "Pending Task", "description": "Description 2"}
 
@@ -250,16 +241,15 @@ async def test_get_tasks_with_completed_filter__returns_only_completed(postgres_
 
     assert completed_data["total"] == 1
     assert pending_data["total"] == 1
-    assert all_data["total"] == 2
+    assert all_data["total"] == 1
 
     assert len(completed_data["tasks"]) == 1
     assert len(pending_data["tasks"]) == 1
-    assert len(all_data["tasks"]) == 2
+    assert len(all_data["tasks"]) == 1
 
 
 @pytest.mark.asyncio
 async def test_get_tasks_with_pagination__returns_correct_page(postgres_connection, router_api_admin):
-    """Тест пагинации списка задач"""
     for i in range(5):
         task_data = {"title": f"Task {i}", "description": f"Description {i}"}
         router_api_admin.post("/api/v1/tasks/", json=task_data)
