@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, status, Security
 from sqlmodel.ext.asyncio.session import AsyncSession
 import uuid
 from ....models.database_session import get_session
 from ....services.note_service import NoteService
 from ....models.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
-from ...dependencies import get_current_user_dependency as get_current_user
+from ...dependencies import get_current_user_dependency as get_current_user, get_current_user_dependency
 from ....models.user import UserTable
 
 router = APIRouter(prefix="", tags=["notes"])
@@ -15,7 +17,9 @@ def get_note_service(session: AsyncSession = Depends(get_session)):
 @router.post("/", response_model=NoteRead, status_code=status.HTTP_201_CREATED)
 async def create_note(
     note_data: NoteCreate,
-    current_user: UserTable = Depends(get_current_user),
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=["note:create"])
+    ],
     note_service: NoteService = Depends(get_note_service)
 ):
     return await note_service.create_note(note_data, current_user.id)
@@ -24,7 +28,9 @@ async def create_note(
 @router.get("/{note_id}", response_model=NoteRead)
 async def read_note(
     note_id: uuid.UUID,
-    current_user: UserTable = Depends(get_current_user),
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=["note:read"])
+    ],
     note_service: NoteService = Depends(get_note_service)
 ):
     note = await note_service.get_note(note_id, current_user.id)
@@ -34,18 +40,22 @@ async def read_note(
 
 @router.get("/", response_model=list[NoteRead])
 async def read_notes(
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=["note:read"])
+    ],
     skip: int = 0,
     limit: int = 1000,
-    current_user: UserTable = Depends(get_current_user),
     note_service: NoteService = Depends(get_note_service)
 ) -> list[NoteRead]:
     return await note_service.get_notes(current_user.id, skip=skip, limit=limit)
 
 @router.put("/{note_id}")
 async def update_note(
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=["note:update"])
+    ],
     note_id: uuid.UUID,
     note_data: NoteUpdate,
-    current_user: UserTable = Depends(get_current_user),
     note_service: NoteService = Depends(get_note_service)
 ) -> NoteReadUpdate:
     updated_note = await note_service.update_note(note_id, current_user.id, note_data)
@@ -55,8 +65,10 @@ async def update_note(
 
 @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_note(
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=["note:delete"])
+    ],
     note_id: uuid.UUID,
-    current_user: UserTable = Depends(get_current_user),
     note_service: NoteService = Depends(get_note_service)
 ):
     success = await note_service.delete_note(note_id, current_user.id)
