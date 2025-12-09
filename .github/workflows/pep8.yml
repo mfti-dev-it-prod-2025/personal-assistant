@@ -1,7 +1,6 @@
 name: PEP8 check
 on:
   push:
-  pull_request:
 
 jobs:
   pep8:
