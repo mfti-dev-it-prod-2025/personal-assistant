@@ -19,6 +19,10 @@ ddev:
 	@echo "start docker dev containers"
 	docker compose -f docker/docker-compose.test.yml up
 
+dprod:
+	@echo "start docker prod containers"
+	docker compose -f docker/docker-compose.prod.yml up
+
 mkmigrate:
 	@echo "create alembic migrations $(if $(BRANCH),with label $(BRANCH),without branch label)"
 	cd $(ROOT_PATH) && python3 create_migrations.py $(if $(BRANCH),--branch-label $(BRANCH))
