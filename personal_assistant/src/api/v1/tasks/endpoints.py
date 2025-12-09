@@ -19,7 +19,7 @@ from personal_assistant.src.services.tasks.service import TaskService
 router = APIRouter(tags=["tasks"])
 
 
-@router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/",status_code=status.HTTP_201_CREATED)
 async def create_task(
     task_data: TaskCreate,
     session: DbSessionDepends,
@@ -31,7 +31,7 @@ async def create_task(
     return await service.create_task(current_user.id, task_data)
 
 
-@router.get("/", response_model=TaskListResponse)
+@router.get("/")
 async def get_tasks(
     session: DbSessionDepends,
     current_user: Annotated[
@@ -50,7 +50,7 @@ async def get_tasks(
     )
 
 
-@router.get("/{task_id}", response_model=TaskResponse)
+@router.get("/{task_id}")
 async def get_task(
     task_id: UUID,
     session: DbSessionDepends,
@@ -68,7 +68,7 @@ async def get_task(
     return task
 
 
-@router.patch("/{task_id}", response_model=TaskResponse)
+@router.put("/{task_id}")
 async def update_task(
     task_id: UUID,
     task_data: TaskUpdate,
@@ -104,43 +104,9 @@ async def delete_task(
         )
 
 
-@router.post("/{task_id}/complete", response_model=TaskResponse)
-async def mark_task_completed(
-    task_id: UUID,
-    session: DbSessionDepends,
-    current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["tasks:update"])
-    ],
-) -> TaskResponse:
-    service = TaskService(session)
-    task = await service.mark_task_completed(task_id, current_user.id, completed=True)
-    if not task:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Task not found",
-        )
-    return task
 
 
-@router.post("/{task_id}/uncomplete", response_model=TaskResponse)
-async def mark_task_uncompleted(
-    task_id: UUID,
-    session: DbSessionDepends,
-    current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["tasks:update"])
-    ],
-) -> TaskResponse:
-    service = TaskService(session)
-    task = await service.mark_task_completed(task_id, current_user.id, completed=False)
-    if not task:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Task not found",
-        )
-    return task
-
-
-@router.get("/stats/me", response_model=TasksStats)
+@router.get("/stats/me")
 async def get_my_tasks_stats(
     session: DbSessionDepends,
     current_user: Annotated[

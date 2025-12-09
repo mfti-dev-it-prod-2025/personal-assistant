@@ -89,7 +89,7 @@ async def test_update_task__changes_data_in_db_and_returns_updated(postgres_conn
 
     updated_task_data = {"title": "Updated Title", "description": "Updated Description"}
 
-    response = router_api_user.patch(f"/api/v1/tasks/{task_id}", json=updated_task_data)
+    response = router_api_user.put(f"/api/v1/tasks/{task_id}", json=updated_task_data)
 
     assert response.status_code == 200
     updated_task_resp_data = response.json()
@@ -138,7 +138,7 @@ async def test_mark_task_completed__sets_is_completed_true(postgres_connection, 
     task_id = create_response.json()["id"]
     assert create_response.json()["is_completed"] == False
 
-    response = router_api_user.post(f"/api/v1/tasks/{task_id}/complete")
+    response = router_api_user.put(f"/api/v1/tasks/{task_id}", json={**task_data, "is_completed": True})
 
     assert response.status_code == 200
     completed_task_data = response.json()
@@ -159,11 +159,11 @@ async def test_mark_task_uncompleted__sets_is_completed_false(postgres_connectio
     assert create_response.status_code == 201
     task_id = create_response.json()["id"]
 
-    complete_response = router_api_user.post(f"/api/v1/tasks/{task_id}/complete")
+    complete_response = router_api_user.put(f"/api/v1/tasks/{task_id}", json={**task_data, "is_completed": True})
     assert complete_response.status_code == 200
     assert complete_response.json()["is_completed"] == True
 
-    response = router_api_user.post(f"/api/v1/tasks/{task_id}/uncomplete")
+    response = router_api_user.put(f"/api/v1/tasks/{task_id}", json={**task_data, "is_completed": False})
 
     assert response.status_code == 200
     uncompleted_task_data = response.json()
@@ -194,8 +194,8 @@ async def test_get_tasks_stats__returns_correct_statistics(postgres_connection, 
     task1_id = create_response1.json()["id"]
     task2_id = create_response2.json()["id"]
 
-    complete_response1 = router_api_user.post(f"/api/v1/tasks/{task1_id}/complete")
-    complete_response2 = router_api_user.post(f"/api/v1/tasks/{task2_id}/complete")
+    complete_response1 = router_api_user.put(f"/api/v1/tasks/{task1_id}", json={**task1_data, "is_completed": True})
+    complete_response2 = router_api_user.put(f"/api/v1/tasks/{task2_id}", json={**task2_data, "is_completed": True})
 
     assert complete_response1.status_code == 200
     assert complete_response2.status_code == 200
@@ -225,7 +225,7 @@ async def test_get_tasks_with_completed_filter__returns_only_completed(postgres_
     create_response2 = router_api_user.post("/api/v1/tasks/", json=task2_data)
 
     task1_id = create_response1.json()["id"]
-    router_api_user.post(f"/api/v1/tasks/{task1_id}/complete")
+    router_api_user.put(f"/api/v1/tasks/{task1_id}", json={**task1_data, "is_completed": True})
 
     response_completed = router_api_user.get("/api/v1/tasks/?completed=true")
     response_pending = router_api_user.get("/api/v1/tasks/?completed=false")
