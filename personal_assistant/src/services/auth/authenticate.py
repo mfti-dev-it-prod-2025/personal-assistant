@@ -7,13 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from personal_assistant.src.configs.auth import ROLES_TO_SCOPES, oauth2_scheme
 from personal_assistant.src.models import UserTable
+from personal_assistant.src.schemas.auth.token import Token
 from personal_assistant.src.schemas.auth.user import UserGet
 from personal_assistant.src.services.auth.password import Password
 from typing import Annotated
 
 import jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import SecurityScopes
+from fastapi.security import SecurityScopes, OAuth2PasswordRequestForm
 
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.configs.app import settings
@@ -107,3 +108,29 @@ class AuthAuthenticate:
                 )
 
         return user
+    
+    async def form_token(self, form_data: OAuth2PasswordRequestForm)-> Token:
+        user = await self.authenticate_user(
+            email=form_data.username.lower(), password=form_data.password
+        )
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        allowed_scopes = set(self.get_user_scopes(user))
+        requested_scopes = set(form_data.scopes or [])
+        granted_scopes = (
+            list(requested_scopes.intersection(allowed_scopes))
+            if requested_scopes
+            else list(allowed_scopes)
+        )
+    
+        access_token_expires = timedelta(
+            minutes=settings.jwt.jwt_access_token_expire_minutes
+        )
+        access_token = self.create_access_token(
+            subject=str(user.id), scopes=granted_scopes, expires_delta=access_token_expires
+        )
+        return Token(access_token=access_token, token_type="bearer")

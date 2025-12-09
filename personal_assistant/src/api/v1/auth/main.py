@@ -12,34 +12,15 @@ from personal_assistant.src.services.auth.authenticate import AuthAuthenticate
 
 auth_router = APIRouter()
 
+def get_auth_service(session: DbSessionDepends) -> AuthAuthenticate:
+    return AuthAuthenticate(session)
+
+auth_service_dependency = Annotated[AuthAuthenticate, Depends(get_auth_service)]
+
 
 @auth_router.post("/token")
 async def login_for_access_token(
-    db_session: DbSessionDepends,
+    auth_service: auth_service_dependency,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
-    auth_service = AuthAuthenticate(db_session=db_session)
-    user = await auth_service.authenticate_user(
-        email=form_data.username.lower(), password=form_data.password
-    )
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    allowed_scopes = set(auth_service.get_user_scopes(user))
-    requested_scopes = set(form_data.scopes or [])
-    granted_scopes = (
-        list(requested_scopes.intersection(allowed_scopes))
-        if requested_scopes
-        else list(allowed_scopes)
-    )
-
-    access_token_expires = timedelta(
-        minutes=settings.jwt.jwt_access_token_expire_minutes
-    )
-    access_token = auth_service.create_access_token(
-        subject=str(user.id), scopes=granted_scopes, expires_delta=access_token_expires
-    )
-    return Token(access_token=access_token, token_type="bearer")
+    return await auth_service.form_token(form_data)
