@@ -28,25 +28,21 @@ class TaskService:
         return None
 
     async def get_all_tasks(
-            self,
-            user_id: UUID,
-            skip: int = 0,
-            limit: int = 100,
-            completed: Optional[bool] = None
+        self,
+        user_id: UUID,
+        skip: int = 0,
+        limit: int = 100,
+        completed: Optional[bool] = None,
     ) -> TaskListResponse:
         tasks = await self.repository.get_all(user_id, skip, limit, completed)
         total = await self.repository.count(user_id, completed)
 
         return TaskListResponse(
-            tasks=[TaskResponse.model_validate(task) for task in tasks],
-            total=total
+            tasks=[TaskResponse.model_validate(task) for task in tasks], total=total
         )
 
     async def update_task(
-            self,
-            task_id: UUID,
-            user_id: UUID,
-            task_data: TaskUpdate
+        self, task_id: UUID, user_id: UUID, task_data: TaskUpdate
     ) -> Optional[TaskResponse]:
         task = await self.repository.update(task_id, user_id, task_data)
         if task:
@@ -56,14 +52,12 @@ class TaskService:
     async def delete_task(self, task_id: UUID, user_id: UUID) -> bool:
         return await self.repository.delete(task_id, user_id)
 
-
     async def get_pending_tasks(self, user_id: UUID) -> TaskListResponse:
         tasks = await self.repository.get_all(user_id, completed=False)
         total = await self.repository.count(user_id, completed=False)
 
         return TaskListResponse(
-            tasks=[TaskResponse.model_validate(task) for task in tasks],
-            total=total
+            tasks=[TaskResponse.model_validate(task) for task in tasks], total=total
         )
 
     async def get_tasks_stats(self, user_id: UUID) -> TasksStats:
@@ -75,7 +69,5 @@ class TaskService:
             total=total_tasks,
             completed=completed_tasks,
             pending=pending_tasks,
-            completion_rate=(
-                completed_tasks / total_tasks if total_tasks > 0 else 0
-            )
+            completion_rate=(completed_tasks / total_tasks if total_tasks > 0 else 0),
         )

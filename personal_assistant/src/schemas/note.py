@@ -1,22 +1,32 @@
+import uuid
 from datetime import datetime
-from pydantic import BaseModel
-from typing import Optional
 
-class NoteCreate(BaseModel):
+from sqlmodel import SQLModel
+
+
+class NoteCreate(SQLModel):
     title: str
     content: str
 
-class NoteUpdate(BaseModel):
-    title: Optional[str] = None
-    content: Optional[str] = None
 
-class NoteRead(BaseModel):
-    id: int
+class NoteUpdate(SQLModel):
+    title: str | None = None
+    content: str | None = None
+
+
+class NoteRead(SQLModel):
+    id: uuid.UUID
     title: str
     content: str
     created_at: datetime
     updated_at: datetime
-    user_id: int
+    user_id: uuid.UUID
 
-    class Config:
-        orm_mode = True
+
+class NoteReadUpdate(SQLModel):
+    id: uuid.UUID
+    title: str
+    content: str
+    created_at: datetime
+    updated_at: datetime
+    user_id: uuid.UUID

@@ -1,6 +1,6 @@
 import uuid
 
-from pydantic import  EmailStr
+from pydantic import EmailStr
 from sqlmodel import SQLModel, Field
 
 from personal_assistant.src.models.user import UserRole, name_pattern
