@@ -48,7 +48,7 @@ async def postgres_connection(_bootstrap_db) -> AsyncSession:
         await agen.aclose()
 
 
-def run_migrations(revision: str = "head") -> None:
+def run_migrations(revision: str = "heads") -> None:
     repo_root = os.path.dirname(os.path.dirname(__file__))  # .../personal_assistant
     alembic_ini_path = os.path.join(repo_root, "src", "alembic.ini")
     alembic_cfg = Config(alembic_ini_path)
@@ -93,9 +93,11 @@ async def router_api_admin(postgres_connection):
 @pytest_asyncio.fixture
 async def router_api_user(postgres_connection):
     user_repository = UserRepository(db_session=postgres_connection)
-    await user_repository.create_user(
-        user=UserCreate(name="user", email="user@test.ru", password="user")
-    )
+    user_email = "user@test.ru"
+    if not await user_repository.get_users(params=UserParams(email=user_email)):
+        await user_repository.create_user(
+            user=UserCreate(name="user", email=user_email, password="user")
+        )
     client = TestClient(app)
     auth_response = client.post(
         "/api/v1/auth/token",
@@ -105,7 +107,7 @@ async def router_api_user(postgres_connection):
         },
         data={
             "grant_type": "password",
-            "username": "user@test.ru",
+            "username": user_email,
             "password": "user",
         },
     )
