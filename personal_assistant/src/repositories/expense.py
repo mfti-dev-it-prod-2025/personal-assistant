@@ -27,6 +27,14 @@ class ExpenseRepository:
             )
         ).one_or_none()
 
+    async def get_expense_by_name(self, name: str) -> ExpenseTable | None:
+        return (
+            await self.db_session.exec(
+                select(ExpenseTable).where(ExpenseTable.name == name)
+            )
+        ).one_or_none()
+
+
     async def get_by_user(self, email: str) -> list[ExpenseTable]:
         result = await self.db_session.exec(
             select(ExpenseTable)
@@ -74,9 +82,7 @@ class ExpenseRepository:
         """
         Создаёт новый расход.
         """
-        new_expense = ExpenseTable(
-            **expense_data.model_dump(),
-        )
+        new_expense = ExpenseTable.model_validate(expense_data.model_dump())
 
         self.db_session.add(new_expense)
         await self.db_session.commit()

@@ -35,6 +35,18 @@ class ExpenseCategoryService:
             )
 
         return res
+
+    async def get_by_id(self, id) -> ExpenseCategoryResponse:
+        res = await self.repo.get_expense_category_by_id(id)
+
+        if not res:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Категория с таким именем не существует",
+            )
+
+        return res
+
     async def add_category(self, in_data: ExpenseCategoryCreate) -> ExpenseCategoryResponse:
         try:
             new_category = await self.repo.create_expense_category(in_data)

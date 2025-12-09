@@ -17,7 +17,7 @@ class ExpenseTable(BaseTable, table=True):
     user_id: uuid.UUID = Field(foreign_key="usertable.id", nullable=False)
     category_id: uuid.UUID = Field(foreign_key="expenses_categories.id", nullable=False)
 
-    tag: Optional[str] = None
+    tag:  str | None = None
     shared: bool = Field(default=False, nullable=False)
     expense_date: date = Field(nullable=False)
 

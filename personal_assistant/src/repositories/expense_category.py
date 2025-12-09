@@ -33,14 +33,12 @@ class ExpenseCategoryRepository:
 
     async def create_expense_category(
         self,
-        expense_data: ExpenseCategoryCreate,
+        expense_category_data: ExpenseCategoryCreate,
     ) -> ExpenseCategoryTable:
         """
         Создаёт новую категоррию расходов.
         """
-        new_expense_category = ExpenseCategoryTable(
-            **expense_data.model_dump(),
-        )
+        new_expense_category = ExpenseCategoryTable.model_validate(expense_category_data.model_dump())
 
         self.db_session.add(new_expense_category)
         await self.db_session.commit()
@@ -50,15 +48,11 @@ class ExpenseCategoryRepository:
 
     async def update_expense_category(
         self,
-        expense_name: str,
+        expense_category_data: str,
         update_data: ExpenseCategoryUpdate,
     ) -> ExpenseCategoryTable | None:
-        """
-        Обновляет существующий расход.
-        """
-        print(type(update_data))
-        expense = await self.get_expense_category_by_name(expense_name)
-        print(expense.name, "этот расход меняем")
+        """ Обновляет существующий расход."""
+        expense = await self.get_expense_category_by_name(expense_category_data)
         if not expense:
             return None
 

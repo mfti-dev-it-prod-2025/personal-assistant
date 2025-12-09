@@ -13,19 +13,6 @@ class ExpenseCreate(BaseModel):
     shared: bool = False
     expense_date: date
 
-class ExpenseGet(BaseModel):
-    id: uuid.UUID
-    name: str
-    amount: float
-    currency: str
-    user_id: uuid.UUID
-    category_id: uuid.UUID
-    tag: Optional[str]
-    shared: bool
-    date: date
-    created_at: Optional[str]
-    expense_date: Optional[str]
-
 class ExpenseUpdate(BaseModel):
     id: uuid.UUID
     name: Optional[str] = None

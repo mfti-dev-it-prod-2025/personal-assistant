@@ -1,6 +1,5 @@
-from typing import List, Optional
 from uuid import UUID
-from fastapi import APIRouter, Depends, status, Query
+from fastapi import  status,  HTTPException
 
 from personal_assistant.src.schemas.budget.expense import (
     ExpenseResponse,
@@ -8,125 +7,101 @@ from personal_assistant.src.schemas.budget.expense import (
     ExpenseUpdate,
 )
 from personal_assistant.src.services.budget.expense import ExpenseService, get_expense_service
+from personal_assistant.src.api.v1.budget.params import ExpensesParams, ExpenseParams
+from typing import Annotated
+from fastapi import APIRouter, Security, Depends
+from personal_assistant.src.api.dependencies import (
+    get_current_user_dependency,
+)
+from personal_assistant.src.models import UserTable
 
 expense_router = APIRouter()
 
-# ------------------ GET ------------------
-
 @expense_router.get(
     "/",
-    response_model=List[ExpenseResponse],
-    summary="Получить все расходы",
+    summary="Получить расход",
 )
-async def get_all_expenses(
-    skip: int = Query(0, ge=0, description="Количество записей для пропуска"),
-    limit: int = Query(100, ge=1, le=1000, description="Лимит записей"),
+async def get_expense(
+    params: Annotated[ExpenseParams, Depends()],
+    current_user: Annotated[UserTable, Security(get_current_user_dependency, scopes=[])],
     service: ExpenseService = Depends(get_expense_service),
-):
-    """
-    Получить список всех расходов
-    """
-    expenses = await service.get_all(skip=skip, limit=limit)  # передаем skip и limit
-    return expenses
+)->ExpenseResponse:
+    """Получить расход по id или name"""
+    if params.id is not None:
+        return await service.get_by_id(params.id)
+
+    if params.name is not None:
+        return await service.get_by_name(params.name)
+
+    raise HTTPException(
+        status_code=400,
+        detail="Необходимо указать 'id' либо 'name'."
+    )
 
 @expense_router.get(
-    "/{expense_id}",
-    response_model=ExpenseResponse,
-    summary="Получить расход по ID",
+    "/all",
+    summary="Получить расходы по параметрам (если параметры не указаны - будут выведены все расходы)",
 )
-async def get_expense_by_id(
-    expense_id: UUID,
+async def get_expenses(
+    params: Annotated[ExpensesParams, Depends()],
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=[])
+    ],
     service: ExpenseService = Depends(get_expense_service),
-):
+)->list[ExpenseResponse]:
     """
-    Получить расход по идентификатору
+    Получить список расходов с фильтрами (одновременно работает только 1 фильтр):
+    - email
+    - category_name
+    - start_date, end_date
+    - если параметры не указаны — вернуть все расходы.
     """
-    expense = await service.get_by_id(expense_id)
-    return expense
 
-@expense_router.get(
-    "/by-user/{email}",
-    response_model=List[ExpenseResponse],
-    summary="Получить расходы по пользователю",
-)
-async def get_expenses_by_user(
-    email: str,
-    service: ExpenseService = Depends(get_expense_service),
-):
-    """
-    Получить список расходов по email пользователя
-    """
-    expenses = await service.get_by_user(email)
-    return expenses
+    if params.email:
+        return await service.get_by_user(params.email)
 
-@expense_router.get(
-    "/by-category/{category_name}",
-    response_model=List[ExpenseResponse],
-    summary="Получить расходы по категории",
-)
-async def get_expenses_by_category(
-    category_name: str,
-    service: ExpenseService = Depends(get_expense_service),
-):
-    """
-    Получить список расходов по названию категории
-    """
-    expenses = await service.get_by_category(category_name)
-    return expenses
+    if params.category_name:
+        return await service.get_by_category(params.category_name)
 
-@expense_router.get(
-    "/by-date/",
-    response_model=List[ExpenseResponse],
-    summary="Получить расходы за диапазон дат",
-)
-async def get_expenses_by_date_range(
-    start_date: Optional[str] = Query(None, description="Начальная дата в формате YYYY-MM-DD"),
-    end_date: Optional[str] = Query(None, description="Конечная дата в формате YYYY-MM-DD"),
-    service: ExpenseService = Depends(get_expense_service),
-):
-    """
-    Получить список расходов за указанный диапазон дат
-    """
-    expenses = await service.get_by_date_range(start_date=start_date, end_date=end_date)
-    return expenses
+    if params.start_date or params.end_date:
+        return await service.get_by_date_range(
+            start_date=params.start_date,
+            end_date=params.end_date,
+        )
 
-# ------------------ POST ------------------
+    return await service.get_all()
 
 @expense_router.post(
     "/",
-    response_model=ExpenseResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Создать расход",
 )
 async def create_expense(
     expense_data: ExpenseCreate,
+    current_user: Annotated[
+            UserTable, Security(get_current_user_dependency, scopes=[])
+        ],
     service: ExpenseService = Depends(get_expense_service),
-):
-    """
-    Создать новый расход
-    """
+) ->ExpenseResponse:
+    """ Создать новый расход """
     new_expense = await service.add_expense(expense_data)
     return new_expense
 
-# ------------------ PUT ------------------
-
 @expense_router.put(
     "/{expense_id}",
-    response_model=ExpenseResponse,
     summary="Обновить расход",
 )
 async def update_expense(
     expense_id: UUID,
     update_data: ExpenseUpdate,
+    current_user: Annotated[
+            UserTable, Security(get_current_user_dependency, scopes=[])
+        ],
     service: ExpenseService = Depends(get_expense_service),
-):
-    """
-    Обновить существующий расход
-    """
+) ->ExpenseResponse:
+    """ Обновить существующий расход """
     updated_expense = await service.update_expense(expense_id, update_data)
     return updated_expense
-
-# ------------------ DELETE ------------------
 
 @expense_router.delete(
     "/{expense_id}",
@@ -135,9 +110,10 @@ async def update_expense(
 )
 async def delete_expense(
     expense_id: UUID,
+    current_user: Annotated[
+            UserTable, Security(get_current_user_dependency, scopes=[])
+        ],
     service: ExpenseService = Depends(get_expense_service),
 ):
-    """
-    Удалить расход
-    """
+    """ Удалить расход """
     await service.delete_expense(expense_id)
