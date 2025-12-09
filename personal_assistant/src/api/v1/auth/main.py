@@ -12,8 +12,10 @@ from personal_assistant.src.services.auth.authenticate import AuthAuthenticate
 
 auth_router = APIRouter()
 
+
 def get_auth_service(session: DbSessionDepends) -> AuthAuthenticate:
     return AuthAuthenticate(session)
+
 
 auth_service_dependency = Annotated[AuthAuthenticate, Depends(get_auth_service)]
 

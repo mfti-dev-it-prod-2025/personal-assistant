@@ -25,11 +25,11 @@ class TaskRepository:
         return result.scalar_one_or_none()
 
     async def get_all(
-            self,
-            user_id: UUID,
-            skip: int = 0,
-            limit: int = 100,
-            completed: Optional[bool] = None
+        self,
+        user_id: UUID,
+        skip: int = 0,
+        limit: int = 100,
+        completed: Optional[bool] = None,
     ) -> List[Task]:
         query = select(Task).where(Task.user_id == user_id)
 
@@ -37,17 +37,12 @@ class TaskRepository:
             query = query.where(Task.is_completed == completed)
 
         result = await self.session.execute(
-            query.order_by(Task.created_at.desc())
-            .offset(skip)
-            .limit(limit)
+            query.order_by(Task.created_at.desc()).offset(skip).limit(limit)
         )
         return list(result.scalars().all())
 
     async def update(
-            self,
-            task_id: UUID,
-            user_id: UUID,
-            task_data: TaskUpdate
+        self, task_id: UUID, user_id: UUID, task_data: TaskUpdate
     ) -> Optional[Task]:
         task = await self.get_by_id(task_id, user_id)
         if not task:
@@ -71,10 +66,7 @@ class TaskRepository:
         return True
 
     async def mark_completed(
-            self,
-            task_id: UUID,
-            user_id: UUID,
-            completed: bool = True
+        self, task_id: UUID, user_id: UUID, completed: bool = True
     ) -> Optional[Task]:
         task = await self.get_by_id(task_id, user_id)
         if not task:

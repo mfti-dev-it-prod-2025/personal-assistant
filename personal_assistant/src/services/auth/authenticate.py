@@ -95,7 +95,9 @@ class AuthAuthenticate:
         if subject is None:
             raise credentials_exception
 
-        user = (await self.user_repository.get_users(params=UserParams(id=subject, limit=1)))[0]
+        user = (
+            await self.user_repository.get_users(params=UserParams(id=subject, limit=1))
+        )[0]
         if not user:
             raise credentials_exception
 
@@ -108,8 +110,8 @@ class AuthAuthenticate:
                 )
 
         return user
-    
-    async def form_token(self, form_data: OAuth2PasswordRequestForm)-> Token:
+
+    async def form_token(self, form_data: OAuth2PasswordRequestForm) -> Token:
         user = await self.authenticate_user(
             email=form_data.username.lower(), password=form_data.password
         )
@@ -126,11 +128,13 @@ class AuthAuthenticate:
             if requested_scopes
             else list(allowed_scopes)
         )
-    
+
         access_token_expires = timedelta(
             minutes=settings.jwt.jwt_access_token_expire_minutes
         )
         access_token = self.create_access_token(
-            subject=str(user.id), scopes=granted_scopes, expires_delta=access_token_expires
+            subject=str(user.id),
+            scopes=granted_scopes,
+            expires_delta=access_token_expires,
         )
         return Token(access_token=access_token, token_type="bearer")

@@ -6,7 +6,6 @@ from personal_assistant.src.repositories import UserRepository
 
 
 class UserService:
-
     def __init__(self, db_session: AsyncSession):
         self.repository = UserRepository(db_session)
 

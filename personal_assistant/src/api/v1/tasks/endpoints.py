@@ -18,13 +18,15 @@ from personal_assistant.src.services.tasks.service import TaskService
 
 router = APIRouter(tags=["tasks"])
 
+
 def get_task_service(session: DbSessionDepends):
     return TaskService(session)
+
 
 task_service_dependency = Annotated[TaskService, Depends(get_task_service)]
 
 
-@router.post("/",status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_task(
     task_data: TaskCreate,
     task_service: task_service_dependency,
@@ -102,8 +104,6 @@ async def delete_task(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Task not found",
         )
-
-
 
 
 @router.get("/stats/me")

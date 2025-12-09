@@ -15,8 +15,17 @@ SCOPES: dict[str, str] = {
 
 ROLES_TO_SCOPES = {
     "administrator": list(SCOPES.keys()),
-    "user": ["me:read", "note:create", "note:update", "note:delete", "note:read","tasks:read", "tasks:write","tasks:update","tasks:delete"],
-
+    "user": [
+        "me:read",
+        "note:create",
+        "note:update",
+        "note:delete",
+        "note:read",
+        "tasks:read",
+        "tasks:write",
+        "tasks:update",
+        "tasks:delete",
+    ],
 }
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl="/api/v1/auth/token",

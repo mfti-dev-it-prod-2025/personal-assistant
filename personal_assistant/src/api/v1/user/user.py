@@ -13,10 +13,13 @@ from personal_assistant.src.services.user_service import UserService
 
 user_router = APIRouter()
 
+
 def get_user_service(session: DbSessionDepends) -> UserService:
     return UserService(session)
 
-user_service_dependency = Annotated[UserService ,Depends(get_user_service)]
+
+user_service_dependency = Annotated[UserService, Depends(get_user_service)]
+
 
 @user_router.get("/")
 async def get_user(
@@ -24,7 +27,7 @@ async def get_user(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["users:read"])
     ],
-    user_params: Annotated[UserParams, Depends()]
+    user_params: Annotated[UserParams, Depends()],
 ) -> list[UserGet]:
     return await user_service.get_users(params=user_params)
 
@@ -39,5 +42,7 @@ async def get_current_user(
 
 
 @user_router.post("/")
-async def create_user(user: UserCreate, user_service: user_service_dependency) -> UserGet:
+async def create_user(
+    user: UserCreate, user_service: user_service_dependency
+) -> UserGet:
     return await user_service.create_user(user)

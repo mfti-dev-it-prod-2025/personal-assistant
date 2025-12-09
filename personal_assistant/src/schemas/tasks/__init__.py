@@ -11,10 +11,7 @@ class TaskCreate(BaseModel):
 
     model_config = ConfigDict(
         json_schema_extra={
-            "example": {
-                "title": "Купить молоко",
-                "description": "2.5%, 1 литр"
-            }
+            "example": {"title": "Купить молоко", "description": "2.5%, 1 литр"}
         }
     )
 
@@ -27,10 +24,7 @@ class TaskUpdate(BaseModel):
 
     model_config = ConfigDict(
         json_schema_extra={
-            "example": {
-                "title": "Купить молоко и хлеб",
-                "is_completed": True
-            }
+            "example": {"title": "Купить молоко и хлеб", "is_completed": True}
         }
     )
 
@@ -55,9 +49,9 @@ class TaskResponse(BaseModel):
                 "is_completed": False,
                 "user_id": "123e4567-e89b-12d3-a456-426614174001",
                 "created_at": "2024-01-01T12:00:00Z",
-                "updated_at": "2024-01-01T12:00:00Z"
+                "updated_at": "2024-01-01T12:00:00Z",
             }
-        }
+        },
     )
 
 

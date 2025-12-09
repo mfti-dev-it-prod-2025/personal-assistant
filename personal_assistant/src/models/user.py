@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 name_pattern = r"^[А-Я][А-я]+"
 
 
-
 class UserRole(Enum):
     administrator = "administrator"
     user = "user"

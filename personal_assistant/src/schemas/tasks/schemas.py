@@ -33,7 +33,5 @@ class TasksStats(BaseModel):
     completed: int
     pending: int
     completion_rate: float = Field(
-        ge=0.0,
-        le=1.0,
-        description="Процент завершения (от 0.0 до 1.0)"
+        ge=0.0, le=1.0, description="Процент завершения (от 0.0 до 1.0)"
     )

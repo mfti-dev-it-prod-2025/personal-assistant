@@ -4,7 +4,6 @@ from sqlmodel import Field
 from personal_assistant.src.models.base import BaseTable
 
 
-
 class Task(BaseTable, table=True):
     __tablename__ = "tasks"
 
