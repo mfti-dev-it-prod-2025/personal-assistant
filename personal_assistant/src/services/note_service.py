@@ -1,5 +1,5 @@
 from personal_assistant.src.repositories.note import NoteRepository
-from personal_assistant.src.models.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
+from personal_assistant.src.schemas.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
 from typing import Optional
 from sqlmodel.ext.asyncio.session import AsyncSession
 import uuid

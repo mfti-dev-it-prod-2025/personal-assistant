@@ -5,7 +5,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 import uuid
 from ....models.database_session import get_session
 from ....services.note_service import NoteService
-from ....models.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
+from ....schemas.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
 from ...dependencies import get_current_user_dependency as get_current_user, get_current_user_dependency
 from ....models.user import UserTable
 

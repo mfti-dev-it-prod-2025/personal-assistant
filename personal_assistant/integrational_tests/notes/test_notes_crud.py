@@ -5,7 +5,8 @@ from dateutil.parser import isoparse
 from sqlmodel import select
 from datetime import datetime, timezone
 from personal_assistant.integrational_tests.utils import random_email
-from personal_assistant.src.models.note import Note, NoteRead, NoteReadUpdate
+from personal_assistant.src.models.note import Note
+from personal_assistant.src.schemas.note import NoteRead, NoteReadUpdate
 from personal_assistant.src.models.user import UserTable
 
 

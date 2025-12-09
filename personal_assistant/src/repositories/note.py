@@ -3,7 +3,8 @@ from sqlmodel import select, and_
 from typing import List, Optional
 from datetime import datetime, timezone
 import uuid
-from ..models.note import Note, NoteCreate, NoteUpdate
+from ..models.note import Note
+from ..schemas.note import NoteCreate, NoteUpdate
 
 
 class NoteRepository:
