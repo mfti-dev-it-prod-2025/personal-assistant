@@ -6,14 +6,14 @@ from personal_assistant.src.schemas.tasks.schemas import TaskResponse, TaskListR
 
 
 @pytest.mark.asyncio
-async def test_create_task__then_task_exists_in_db_and_returned(postgres_connection, router_api_admin):
+async def test_create_task__then_task_exists_in_db_and_returned(postgres_connection, router_api_user):
     task_data = {
         "title": "Test Task Title",
         "description": "Test Task Description",
         "is_completed": False
     }
 
-    response = router_api_admin.post("/api/v1/tasks/", json=task_data)
+    response = router_api_user.post("/api/v1/tasks/", json=task_data)
 
     assert response.status_code == 201
     created_task_data = response.json()
@@ -37,13 +37,13 @@ async def test_create_task__then_task_exists_in_db_and_returned(postgres_connect
 
 
 @pytest.mark.asyncio
-async def test_read_task_by_id__existing_task(postgres_connection, router_api_admin):
+async def test_read_task_by_id__existing_task(postgres_connection, router_api_user):
     task_data = {"title": "Read Test Task", "description": "Read Test Description"}
-    create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
+    create_response = router_api_user.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
     created_task_id = create_response.json()["id"]
 
-    response = router_api_admin.get(f"/api/v1/tasks/{created_task_id}")
+    response = router_api_user.get(f"/api/v1/tasks/{created_task_id}")
 
     assert response.status_code == 200
     retrieved_task_data = response.json()
@@ -54,13 +54,13 @@ async def test_read_task_by_id__existing_task(postgres_connection, router_api_ad
 
 
 @pytest.mark.asyncio
-async def test_read_tasks_list__includes_created_task(postgres_connection, router_api_admin):
+async def test_read_tasks_list__includes_created_task(postgres_connection, router_api_user):
     task_data = {"title": "List Test Task", "description": "List Test Description"}
-    create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
+    create_response = router_api_user.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
     created_task_id = create_response.json()["id"]
 
-    response = router_api_admin.get("/api/v1/tasks/")
+    response = router_api_user.get("/api/v1/tasks/")
 
     assert response.status_code == 200
     tasks_list_data = response.json()
@@ -81,15 +81,15 @@ async def test_read_tasks_list__includes_created_task(postgres_connection, route
 
 
 @pytest.mark.asyncio
-async def test_update_task__changes_data_in_db_and_returns_updated(postgres_connection, router_api_admin):
+async def test_update_task__changes_data_in_db_and_returns_updated(postgres_connection, router_api_user):
     initial_task_data = {"title": "Initial Title", "description": "Initial Description"}
-    create_response = router_api_admin.post("/api/v1/tasks/", json=initial_task_data)
+    create_response = router_api_user.post("/api/v1/tasks/", json=initial_task_data)
     assert create_response.status_code == 201
     task_id = create_response.json()["id"]
 
     updated_task_data = {"title": "Updated Title", "description": "Updated Description"}
 
-    response = router_api_admin.patch(f"/api/v1/tasks/{task_id}", json=updated_task_data)
+    response = router_api_user.patch(f"/api/v1/tasks/{task_id}", json=updated_task_data)
 
     assert response.status_code == 200
     updated_task_resp_data = response.json()
@@ -109,13 +109,13 @@ async def test_update_task__changes_data_in_db_and_returns_updated(postgres_conn
 
 
 @pytest.mark.asyncio
-async def test_delete_task__removes_from_db_and_get_returns_404(postgres_connection, router_api_admin):
+async def test_delete_task__removes_from_db_and_get_returns_404(postgres_connection, router_api_user):
     task_data = {"title": "Delete Test Task", "description": "Delete Test Content"}
-    create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
+    create_response = router_api_user.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
     task_id_to_delete = create_response.json()["id"]
 
-    response = router_api_admin.delete(f"/api/v1/tasks/{task_id_to_delete}")
+    response = router_api_user.delete(f"/api/v1/tasks/{task_id_to_delete}")
 
     assert response.status_code == 204
 
@@ -126,19 +126,19 @@ async def test_delete_task__removes_from_db_and_get_returns_404(postgres_connect
 
     assert db_task_after_delete is None
 
-    get_response = router_api_admin.get(f"/api/v1/tasks/{task_id_to_delete}")
+    get_response = router_api_user.get(f"/api/v1/tasks/{task_id_to_delete}")
     assert get_response.status_code == 404
 
 
 @pytest.mark.asyncio
-async def test_mark_task_completed__sets_is_completed_true(postgres_connection, router_api_admin):
+async def test_mark_task_completed__sets_is_completed_true(postgres_connection, router_api_user):
     task_data = {"title": "Complete Test Task", "description": "Test Description"}
-    create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
+    create_response = router_api_user.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
     task_id = create_response.json()["id"]
     assert create_response.json()["is_completed"] == False
 
-    response = router_api_admin.post(f"/api/v1/tasks/{task_id}/complete")
+    response = router_api_user.post(f"/api/v1/tasks/{task_id}/complete")
 
     assert response.status_code == 200
     completed_task_data = response.json()
@@ -153,17 +153,17 @@ async def test_mark_task_completed__sets_is_completed_true(postgres_connection, 
 
 
 @pytest.mark.asyncio
-async def test_mark_task_uncompleted__sets_is_completed_false(postgres_connection, router_api_admin):
+async def test_mark_task_uncompleted__sets_is_completed_false(postgres_connection, router_api_user):
     task_data = {"title": "Uncomplete Test Task", "description": "Test Description"}
-    create_response = router_api_admin.post("/api/v1/tasks/", json=task_data)
+    create_response = router_api_user.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
     task_id = create_response.json()["id"]
 
-    complete_response = router_api_admin.post(f"/api/v1/tasks/{task_id}/complete")
+    complete_response = router_api_user.post(f"/api/v1/tasks/{task_id}/complete")
     assert complete_response.status_code == 200
     assert complete_response.json()["is_completed"] == True
 
-    response = router_api_admin.post(f"/api/v1/tasks/{task_id}/uncomplete")
+    response = router_api_user.post(f"/api/v1/tasks/{task_id}/uncomplete")
 
     assert response.status_code == 200
     uncompleted_task_data = response.json()
@@ -178,14 +178,14 @@ async def test_mark_task_uncompleted__sets_is_completed_false(postgres_connectio
 
 
 @pytest.mark.asyncio
-async def test_get_tasks_stats__returns_correct_statistics(postgres_connection, router_api_admin):
+async def test_get_tasks_stats__returns_correct_statistics(postgres_connection, router_api_user):
     task1_data = {"title": "Task 1", "description": "Description 1"}
     task2_data = {"title": "Task 2", "description": "Description 2"}
     task3_data = {"title": "Task 3", "description": "Description 3"}
 
-    create_response1 = router_api_admin.post("/api/v1/tasks/", json=task1_data)
-    create_response2 = router_api_admin.post("/api/v1/tasks/", json=task2_data)
-    create_response3 = router_api_admin.post("/api/v1/tasks/", json=task3_data)
+    create_response1 = router_api_user.post("/api/v1/tasks/", json=task1_data)
+    create_response2 = router_api_user.post("/api/v1/tasks/", json=task2_data)
+    create_response3 = router_api_user.post("/api/v1/tasks/", json=task3_data)
 
     assert create_response1.status_code == 201
     assert create_response2.status_code == 201
@@ -194,13 +194,13 @@ async def test_get_tasks_stats__returns_correct_statistics(postgres_connection, 
     task1_id = create_response1.json()["id"]
     task2_id = create_response2.json()["id"]
 
-    complete_response1 = router_api_admin.post(f"/api/v1/tasks/{task1_id}/complete")
-    complete_response2 = router_api_admin.post(f"/api/v1/tasks/{task2_id}/complete")
+    complete_response1 = router_api_user.post(f"/api/v1/tasks/{task1_id}/complete")
+    complete_response2 = router_api_user.post(f"/api/v1/tasks/{task2_id}/complete")
 
     assert complete_response1.status_code == 200
     assert complete_response2.status_code == 200
 
-    response = router_api_admin.get("/api/v1/tasks/stats/me")
+    response = router_api_user.get("/api/v1/tasks/stats/me")
 
     assert response.status_code == 200
     stats_data = response.json()
@@ -217,19 +217,19 @@ async def test_get_tasks_stats__returns_correct_statistics(postgres_connection, 
 
 
 @pytest.mark.asyncio
-async def test_get_tasks_with_completed_filter__returns_only_completed(postgres_connection, router_api_admin):
+async def test_get_tasks_with_completed_filter__returns_only_completed(postgres_connection, router_api_user):
     task1_data = {"title": "Completed Task", "description": "Description 1"}
     task2_data = {"title": "Pending Task", "description": "Description 2"}
 
-    create_response1 = router_api_admin.post("/api/v1/tasks/", json=task1_data)
-    create_response2 = router_api_admin.post("/api/v1/tasks/", json=task2_data)
+    create_response1 = router_api_user.post("/api/v1/tasks/", json=task1_data)
+    create_response2 = router_api_user.post("/api/v1/tasks/", json=task2_data)
 
     task1_id = create_response1.json()["id"]
-    router_api_admin.post(f"/api/v1/tasks/{task1_id}/complete")
+    router_api_user.post(f"/api/v1/tasks/{task1_id}/complete")
 
-    response_completed = router_api_admin.get("/api/v1/tasks/?completed=true")
-    response_pending = router_api_admin.get("/api/v1/tasks/?completed=false")
-    response_all = router_api_admin.get("/api/v1/tasks/")
+    response_completed = router_api_user.get("/api/v1/tasks/?completed=true")
+    response_pending = router_api_user.get("/api/v1/tasks/?completed=false")
+    response_all = router_api_user.get("/api/v1/tasks/")
 
     assert response_completed.status_code == 200
     assert response_pending.status_code == 200
@@ -249,14 +249,14 @@ async def test_get_tasks_with_completed_filter__returns_only_completed(postgres_
 
 
 @pytest.mark.asyncio
-async def test_get_tasks_with_pagination__returns_correct_page(postgres_connection, router_api_admin):
+async def test_get_tasks_with_pagination__returns_correct_page(postgres_connection, router_api_user):
     for i in range(5):
         task_data = {"title": f"Task {i}", "description": f"Description {i}"}
-        router_api_admin.post("/api/v1/tasks/", json=task_data)
+        router_api_user.post("/api/v1/tasks/", json=task_data)
 
-    response_page1 = router_api_admin.get("/api/v1/tasks/?skip=0&limit=2")
-    response_page2 = router_api_admin.get("/api/v1/tasks/?skip=2&limit=2")
-    response_page3 = router_api_admin.get("/api/v1/tasks/?skip=4&limit=2")
+    response_page1 = router_api_user.get("/api/v1/tasks/?skip=0&limit=2")
+    response_page2 = router_api_user.get("/api/v1/tasks/?skip=2&limit=2")
+    response_page3 = router_api_user.get("/api/v1/tasks/?skip=4&limit=2")
 
     assert response_page1.status_code == 200
     assert response_page2.status_code == 200

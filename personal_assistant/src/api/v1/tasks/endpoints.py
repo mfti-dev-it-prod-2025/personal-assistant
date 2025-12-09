@@ -74,7 +74,7 @@ async def update_task(
     task_data: TaskUpdate,
     session: DbSessionDepends,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["tasks:write"])
+        UserTable, Security(get_current_user_dependency, scopes=["tasks:update"])
     ],
 ) -> TaskResponse:
     service = TaskService(session)
@@ -92,7 +92,7 @@ async def delete_task(
     task_id: UUID,
     session: DbSessionDepends,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["tasks:write"])
+        UserTable, Security(get_current_user_dependency, scopes=["tasks:delete"])
     ],
 ) -> None:
     service = TaskService(session)
@@ -109,7 +109,7 @@ async def mark_task_completed(
     task_id: UUID,
     session: DbSessionDepends,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["tasks:write"])
+        UserTable, Security(get_current_user_dependency, scopes=["tasks:update"])
     ],
 ) -> TaskResponse:
     service = TaskService(session)
@@ -127,7 +127,7 @@ async def mark_task_uncompleted(
     task_id: UUID,
     session: DbSessionDepends,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["tasks:write"])
+        UserTable, Security(get_current_user_dependency, scopes=["tasks:update"])
     ],
 ) -> TaskResponse:
     service = TaskService(session)

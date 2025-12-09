@@ -12,7 +12,7 @@ class TaskRepository:
         self.session = session
 
     async def create(self, user_id: UUID, task_data: TaskCreate) -> Task:
-        task = Task(**task_data.model_dump(), user_id=user_id)
+        task = Task.model_validate(task_data, update={"user_id": user_id})
         self.session.add(task)
         await self.session.commit()
         await self.session.refresh(task)
