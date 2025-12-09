@@ -5,8 +5,14 @@ from pydantic import EmailStr, field_serializer, field_validator
 from sqlmodel import SQLModel, Field
 
 from personal_assistant.src.models.base import BaseTable
+from typing import TYPE_CHECKING, List
+from sqlmodel import Relationship
+
+if TYPE_CHECKING:
+    from personal_assistant.src.models.todo import Task
 
 name_pattern = r"^[А-Я][А-я]+"
+
 
 
 class UserRole(Enum):
@@ -25,6 +31,7 @@ class UserBase(SQLModel):
     @field_serializer("email")
     def serialize_email(self, value: EmailStr, _info):
         return str(value).lower()
+
 
 class UserTable(UserBase, BaseTable, table=True):
     hashed_password: str
