@@ -17,10 +17,6 @@ from personal_assistant.src.models.user import UserRole
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserCreate
 
-from uuid import uuid4
-from datetime import datetime
-from personal_assistant.src.models.budget import ExpenseCategoryTable
-
 @pytest.fixture(scope="session", autouse=True)
 def _bootstrap_db() -> Generator[None, Any, None]:
     postgres = None
