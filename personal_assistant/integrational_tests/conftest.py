@@ -17,6 +17,9 @@ from personal_assistant.src.models.user import UserRole
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserCreate
 
+from uuid import uuid4
+from datetime import datetime
+from personal_assistant.src.models.budget import ExpenseCategoryTable
 
 @pytest.fixture(scope="session", autouse=True)
 def _bootstrap_db() -> Generator[None, Any, None]:
@@ -114,3 +117,27 @@ async def router_api_user(postgres_connection):
     auth_response.raise_for_status()
     client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client
+
+
+
+import pytest_asyncio
+from uuid import uuid4
+from personal_assistant.src.models.budget import ExpenseCategoryTable
+
+@pytest_asyncio.fixture
+async def create_category(postgres_connection):
+    db_session = postgres_connection
+
+    category = ExpenseCategoryTable(
+        id=uuid4(),
+        name="Test Category",
+        description="Test description",
+    )
+    db_session.add(category)
+    await db_session.commit()
+    await db_session.refresh(category)
+
+    yield category
+
+    await db_session.delete(category)
+    await db_session.commit()

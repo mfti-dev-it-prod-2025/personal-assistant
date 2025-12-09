@@ -45,8 +45,8 @@ class ExpenseService:
         expenses = await self.repo.get_expenses_by_date_range(start_date=start_date, end_date=end_date)
         return expenses
 
-    async def add_expense(self, in_data: ExpenseCreate) -> ExpenseTable:
-        new_expense = await self.repo.create_expense(in_data)
+    async def add_expense(self, in_data: ExpenseCreate, current_user) -> ExpenseTable:
+        new_expense = await self.repo.create_expense(in_data, current_user)
         return new_expense
 
     async def update_expense(self, expense_id: UUID, in_data: ExpenseUpdate) -> ExpenseTable:

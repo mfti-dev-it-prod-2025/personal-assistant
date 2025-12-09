@@ -7,7 +7,6 @@ class ExpenseCreate(BaseModel):
     name: str
     amount: float
     currency: str = "RUB"
-    user_id: uuid.UUID
     category_id: uuid.UUID
     tag: Optional[str] = None
     shared: bool = False

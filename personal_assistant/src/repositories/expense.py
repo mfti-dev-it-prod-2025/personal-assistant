@@ -78,11 +78,14 @@ class ExpenseRepository:
     async def create_expense(
         self,
         expense_data: ExpenseCreate,
+        current_user: UserTable
     ) -> ExpenseTable:
         """
-        Создаёт новый расход.
+        Создаёт новый расход для текущего пользователя.
         """
-        new_expense = ExpenseTable.model_validate(expense_data.model_dump())
+        in_data = expense_data.model_dump()
+        in_data["user_id"] = current_user.id
+        new_expense = ExpenseTable.model_validate(in_data)
 
         self.db_session.add(new_expense)
         await self.db_session.commit()

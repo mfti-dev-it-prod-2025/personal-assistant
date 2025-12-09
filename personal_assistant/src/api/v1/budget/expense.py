@@ -84,7 +84,7 @@ async def create_expense(
     service: ExpenseService = Depends(get_expense_service),
 ) ->ExpenseResponse:
     """ Создать новый расход """
-    new_expense = await service.add_expense(expense_data)
+    new_expense = await service.add_expense(expense_data, current_user)
     return new_expense
 
 @expense_router.put(
