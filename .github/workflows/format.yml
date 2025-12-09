@@ -2,7 +2,8 @@ name: Auto format
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
 
 jobs:
   format:

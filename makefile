@@ -7,6 +7,10 @@ type:
 	@echo "check typing"
 	poetry run mypy $(ROOT_PATH)
 
+lint:
+	@echo "check PEP8"
+	flake8 .
+
 run:
 	@echo "start prod server"
 	fastapi run $(ROOT_PATH)/main.py
