@@ -6,13 +6,16 @@ import uuid
 from ....models.database_session import get_session
 from ....services.note_service import NoteService
 from ....schemas.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
-from ...dependencies import get_current_user_dependency as get_current_user, get_current_user_dependency
+from ...dependencies import get_current_user_dependency as get_current_user, get_current_user_dependency, \
+    DbSessionDepends
 from ....models.user import UserTable
 
 router = APIRouter(prefix="", tags=["notes"])
 
-def get_note_service(session: AsyncSession = Depends(get_session)):
+def get_note_service(session: DbSessionDepends):
     return NoteService(session)
+
+note_service_dependency = Annotated[NoteService, Depends(get_note_service)]
 
 @router.post("/", response_model=NoteRead, status_code=status.HTTP_201_CREATED)
 async def create_note(
@@ -20,7 +23,7 @@ async def create_note(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["note:create"])
     ],
-    note_service: NoteService = Depends(get_note_service)
+    note_service: note_service_dependency
 ):
     return await note_service.create_note(note_data, current_user.id)
 
@@ -31,7 +34,7 @@ async def read_note(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["note:read"])
     ],
-    note_service: NoteService = Depends(get_note_service)
+    note_service: note_service_dependency
 ):
     note = await note_service.get_note(note_id, current_user.id)
     if not note:
@@ -43,9 +46,9 @@ async def read_notes(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["note:read"])
     ],
+    note_service: note_service_dependency,
     skip: int = 0,
     limit: int = 1000,
-    note_service: NoteService = Depends(get_note_service)
 ) -> list[NoteRead]:
     return await note_service.get_notes(current_user.id, skip=skip, limit=limit)
 
@@ -56,7 +59,7 @@ async def update_note(
     ],
     note_id: uuid.UUID,
     note_data: NoteUpdate,
-    note_service: NoteService = Depends(get_note_service)
+    note_service: note_service_dependency,
 ) -> NoteReadUpdate:
     updated_note = await note_service.update_note(note_id, current_user.id, note_data)
     if not updated_note:
@@ -69,7 +72,7 @@ async def delete_note(
         UserTable, Security(get_current_user_dependency, scopes=["note:delete"])
     ],
     note_id: uuid.UUID,
-    note_service: NoteService = Depends(get_note_service)
+    note_service: note_service_dependency,
 ):
     success = await note_service.delete_note(note_id, current_user.id)
     if not success:
