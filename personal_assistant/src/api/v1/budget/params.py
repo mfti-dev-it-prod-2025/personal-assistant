@@ -4,7 +4,7 @@ from pydantic import Field, EmailStr, validator
 from typing import Optional
 from datetime import datetime
 from sqlmodel import SQLModel
-from fastapi import Query
+
 
 class ExpensesParams(SQLModel):
     email: EmailStr | None = Field(default=None)
@@ -39,10 +39,6 @@ class ExpensesParams(SQLModel):
 class ExpenseParams(SQLModel):
     id: uuid.UUID | None = None
     name: str | None = None
-
-# class ExpenseParams(SQLModel):
-#     id: uuid.UUID | None = Query(default=None)
-#     name: str | None = Query(default=None)
 
 class ExpenseCategoryParams(SQLModel):
     id: uuid.UUID | None = None
