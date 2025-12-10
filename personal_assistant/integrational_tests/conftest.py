@@ -147,7 +147,7 @@ async def router_api_category(postgres_connection, router_api_user):
             name=category_name,
             description="Тестовая категория"
         )
-        await postgres_connection.add(query)
+        postgres_connection.add(query)
         await postgres_connection.commit()
         category_data = {
             "id": str(category_id),
@@ -198,7 +198,7 @@ async def router_api_expense(router_api_user, router_api_category, postgres_conn
         expense_date=date.fromisoformat(payload["expense_date"]),
     )
 
-    await postgres_connection.add(query)
+    postgres_connection.add(query)
     await postgres_connection.commit()
 
     yield {
