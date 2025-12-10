@@ -50,7 +50,12 @@ class ExpenseCategoryService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Категория с таким именем уже существует",
             )
-
+        except Exception as exc:
+            await self.repo.db_session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Ошибка при создании категории: {exc}",
+            )
         return new_category
 
     async def update(self, name: str, in_data: ExpenseCategoryUpdate) -> ExpenseCategoryResponse:
