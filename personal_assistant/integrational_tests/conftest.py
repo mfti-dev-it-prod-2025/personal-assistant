@@ -129,9 +129,12 @@ async def router_api_category(postgres_connection, router_api_user):
 
     try:
         resp = router_api_user.post("/api/v1/expense_category/", json=payload)
-        print(resp.status_code, resp.text)  # для отладки в CI
+        if resp.status_code >= 400:
+            raise Exception("API returned an error")
+
         resp.raise_for_status()
         category_data = resp.json()
+
     except Exception as e:
         from datetime import datetime, timezone
 
@@ -144,7 +147,7 @@ async def router_api_category(postgres_connection, router_api_user):
             name=category_name,
             description="Тестовая категория"
         )
-        postgres_connection.add(query)
+        await postgres_connection.add(query)
         await postgres_connection.commit()
         category_data = {
             "id": str(category_id),
@@ -166,38 +169,46 @@ async def router_api_expense(router_api_user, router_api_category, postgres_conn
         "shared": False,
         "expense_date": date.today().isoformat(),
     }
-    try:
-        resp = router_api_user.post("/api/v1/expense/", json=payload)
-        assert resp.status_code == 201
-        expense_data = resp.json()
-    except Exception as e:
-        # Если API не доступен или объект уже существует, fallback в базу
-        expense_id = uuid4()  # <-- добавлен импорт uuid4
-        now = datetime.now(tz=timezone.utc)
-        query = ExpenseTable(
-            id=expense_id,
-            created_at=now,
-            updated_at=now,
-            amount=payload["amount"],
-            currency=payload["currency"],
-            category_id=router_api_category["id"],
-            name=payload["name"],
-            shared=payload["shared"],
-            expense_date=date.fromisoformat(payload["expense_date"])
-        )
-        # Добавление в базу
-        postgres_connection.add(query)  # <-- убран await, add синхронный
-        await postgres_connection.commit()  # <-- commit оставлен как await
-        expense_data = {
-            "id": str(expense_id),
-            "amount": payload["amount"],
-            "currency": payload["currency"],
-            "category_id": router_api_category["id"],
-            "name": payload["name"],
-            "shared": payload["shared"],
-            "expense_date": payload["expense_date"],
-            "created_at": now.isoformat(),
-            "updated_at": now.isoformat()
-        }
 
-    yield expense_data
+    resp = router_api_user.post("/api/v1/expense/", json=payload)
+
+    if resp.status_code == 201:
+        yield resp.json()
+        return
+
+    if resp.status_code == 409:
+        get_resp = router_api_user.get(
+            f"/api/v1/expense/?name={payload['name']}&amount={payload['amount']}"
+        )
+        assert get_resp.status_code == 200
+        yield get_resp.json()
+        return
+
+    expense_id = uuid4()
+    now = datetime.now(tz=timezone.utc)
+    query = ExpenseTable(
+        id=expense_id,
+        created_at=now,
+        updated_at=now,
+        amount=payload["amount"],
+        currency=payload["currency"],
+        category_id=router_api_category["id"],
+        name=payload["name"],
+        shared=payload["shared"],
+        expense_date=date.fromisoformat(payload["expense_date"]),
+    )
+
+    await postgres_connection.add(query)
+    await postgres_connection.commit()
+
+    yield {
+        "id": str(expense_id),
+        "amount": payload["amount"],
+        "currency": payload["currency"],
+        "category_id": router_api_category["id"],
+        "name": payload["name"],
+        "shared": payload["shared"],
+        "expense_date": payload["expense_date"],
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat(),
+    }
