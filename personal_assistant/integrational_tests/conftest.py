@@ -121,7 +121,7 @@ async def router_api_user(postgres_connection):
 
 @pytest_asyncio.fixture
 async def router_api_category(postgres_connection, router_api_user):
-    category_name = "Тест"
+    category_name = f"Тест-{uuid4().hex[:6]}"
     payload = {
         "name": category_name,
         "description": "Тестовая категория"
