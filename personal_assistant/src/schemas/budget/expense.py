@@ -13,7 +13,7 @@ class ExpenseCreate(BaseModel):
     expense_date: date
 
 class ExpenseUpdate(BaseModel):
-    id: uuid.UUID
+    id: Optional[uuid.UUID] = None
     name: Optional[str] = None
     amount: Optional[float] = None
     currency: Optional[str] = None

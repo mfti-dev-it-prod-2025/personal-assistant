@@ -9,7 +9,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
 from uuid import uuid4
-
+from datetime import date
 
 from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.configs.app import settings
@@ -120,7 +120,7 @@ async def router_api_user(postgres_connection):
 
 
 @pytest_asyncio.fixture
-async def test_category(router_api_user, postgres_connection):
+async def router_api_category(router_api_user, postgres_connection):
     category_name = "Тест"
     payload = {
         "name": category_name,
@@ -129,7 +129,6 @@ async def test_category(router_api_user, postgres_connection):
 
     resp = router_api_user.post("/api/v1/expense_category/", json=payload)
     resp.raise_for_status()
-    category_data = resp.json()
 
     resp_get = router_api_user.get("/api/v1/expense_category/", params={"name": category_name})
     resp_get.raise_for_status()
@@ -139,13 +138,14 @@ async def test_category(router_api_user, postgres_connection):
 
 
 @pytest_asyncio.fixture
-async def test_expense(router_api_user, test_category):
+async def api_router_expense(router_api_user, router_api_category):
     payload = {
         "amount": 99.9,
         "currency": "RUB",
-        "category_id": test_category["id"],
-        "name": "Groceries",
+        "category_id": router_api_category["id"],
+        "name": "Тест",
         "shared": False,
+        "expense_date": date.today().isoformat(),
     }
     resp = router_api_user.post("/api/v1/expense/", json=payload)
     assert resp.status_code == 201
