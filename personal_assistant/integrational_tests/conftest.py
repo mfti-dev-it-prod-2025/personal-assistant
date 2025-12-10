@@ -10,7 +10,7 @@ from starlette.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
 from uuid import uuid4
 from datetime import date, datetime,timezone
-
+import random
 from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
@@ -161,6 +161,8 @@ async def router_api_category(postgres_connection, router_api_user):
 
 @pytest_asyncio.fixture
 async def router_api_expense(router_api_user, router_api_category, postgres_connection):
+    random_suffix = random.randint(1, 99999)
+    category_name = f"Тест-{random_suffix}"
     payload = {
         "amount": 99.9,
         "currency": "RUB",
