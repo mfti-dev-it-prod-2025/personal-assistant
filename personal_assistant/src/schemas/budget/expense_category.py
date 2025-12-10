@@ -6,8 +6,8 @@ class ExpenseCategoryCreate(BaseModel):
     description: str
 
 class ExpenseCategoryUpdate(BaseModel):
-    name: str
-    description: str
+    name: str | None = None
+    description: str | None = None
 
 class ExpenseCategoryResponse(BaseModel):
     id: uuid.UUID

@@ -8,6 +8,8 @@ from alembic.config import Config
 from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
+from uuid import uuid4
+
 
 from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.configs.app import settings
@@ -16,6 +18,7 @@ from personal_assistant.src.models.database_session import get_session
 from personal_assistant.src.models.user import UserRole
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserCreate
+from personal_assistant.src.models.budget import ExpenseCategoryTable
 
 @pytest.fixture(scope="session", autouse=True)
 def _bootstrap_db() -> Generator[None, Any, None]:
@@ -116,24 +119,34 @@ async def router_api_user(postgres_connection):
 
 
 
-import pytest_asyncio
-from uuid import uuid4
-from personal_assistant.src.models.budget import ExpenseCategoryTable
+@pytest_asyncio.fixture
+async def test_category(router_api_user, postgres_connection):
+    category_name = "Тест"
+    payload = {
+        "name": category_name,
+        "description": "Тестовая категория"
+    }
+
+    resp = router_api_user.post("/api/v1/expense_category/", json=payload)
+    resp.raise_for_status()
+    category_data = resp.json()
+
+    resp_get = router_api_user.get("/api/v1/expense_category/", params={"name": category_name})
+    resp_get.raise_for_status()
+    category_data = resp_get.json()
+
+    yield category_data
+
 
 @pytest_asyncio.fixture
-async def create_category(postgres_connection):
-    db_session = postgres_connection
-
-    category = ExpenseCategoryTable(
-        id=uuid4(),
-        name="Test Category",
-        description="Test description",
-    )
-    db_session.add(category)
-    await db_session.commit()
-    await db_session.refresh(category)
-
-    yield category
-
-    await db_session.delete(category)
-    await db_session.commit()
+async def test_expense(router_api_user, test_category):
+    payload = {
+        "amount": 99.9,
+        "currency": "RUB",
+        "category_id": test_category["id"],
+        "name": "Groceries",
+        "shared": False,
+    }
+    resp = router_api_user.post("/api/v1/expense/", json=payload)
+    assert resp.status_code == 201
+    return resp.json()
