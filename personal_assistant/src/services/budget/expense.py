@@ -71,6 +71,7 @@ class ExpenseService:
             )
 
         await self.repo.delete_expense(expense_id)
+
 async def get_expense_service(
     repo: ExpenseRepository = Depends(get_expense_repository),
 ) -> ExpenseService:

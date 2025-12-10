@@ -36,7 +36,7 @@ def upgrade() -> None:
         sa.Column("amount", sa.Float, nullable=False),
         sa.Column("currency", sa.String, nullable=False),
         sa.Column("user_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("category_id", postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column("category_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("tag", sa.String, nullable=True),
         sa.Column("shared", sa.Boolean, nullable=False),
         sa.Column("expense_date", sa.Date, nullable=True),

@@ -17,12 +17,6 @@ class ExpenseCategoryService:
     async def get_all(self, skip: int, limit: int) -> list[ExpenseCategoryResponse]:
         res = await self.repo.get_all_categories(skip=skip, limit=limit)
 
-        if not res:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Категории не найдены",
-            )
-
         return res
 
     async def get_by_name(self, name) -> ExpenseCategoryResponse:
@@ -42,7 +36,7 @@ class ExpenseCategoryService:
         if not res:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Категория с таким именем не существует",
+                detail="Категория с таким id не существует",
             )
 
         return res

@@ -10,9 +10,6 @@ jwt_access_token_expire_minutes = 30
 jwt_bypass_auth = false
 
 [db_settings]
-#db_name = "postgres"
-#db_user = "postgres"
-#db_password = "pass"
 db_name = "test_db"
 db_user = "user"
 db_password = "password"

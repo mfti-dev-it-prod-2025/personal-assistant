@@ -25,7 +25,7 @@ async def get_expense(
     params: Annotated[ExpenseParams, Depends()],
     current_user: Annotated[UserTable, Security(get_current_user_dependency, scopes=[])],
     service: ExpenseService = Depends(get_expense_service),
-)->ExpenseResponse:
+) -> ExpenseResponse:
     """Получить расход по id или name"""
     if params.id is not None:
         return await service.get_by_id(params.id)

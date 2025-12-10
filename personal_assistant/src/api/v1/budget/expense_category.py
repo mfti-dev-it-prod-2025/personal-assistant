@@ -47,9 +47,14 @@ async def create_category(
     """
     Создать новую категорию
     """
-
-    res = await service.add_category(category_data)
-    return res
+    try:
+        res = await service.add_category(category_data)
+        return res
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
 
 @expense_category_router.get(
@@ -63,7 +68,7 @@ async def get_category(
         UserTable, Security(get_current_user_dependency, scopes=[])
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
-)->ExpenseCategoryResponse:
+) -> ExpenseCategoryResponse:
     """
     Получить категорию по id или name
     """
@@ -74,9 +79,10 @@ async def get_category(
         return await service.get_by_name(params.name)
 
     raise HTTPException(
-        status_code=400,
+        status_code=status.HTTP_400_BAD_REQUEST,
         detail="Необходимо указать 'id' либо 'name'."
     )
+
 @expense_category_router.put(
     "/{category_name}",
     summary="Обновить категорию",
@@ -93,9 +99,19 @@ async def update_category(
     Обновить данные категории
     """
 
-    category = await service.update(category_name, update_data)
-
-    return category
+    try:
+        category = await service.update(category_name, update_data)
+        if not category:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Категория не найдена."
+            )
+        return category
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
 @expense_category_router.delete(
     "/{category_name}",
@@ -108,4 +124,15 @@ async def delete_category(
     """
     Удалить категорию
     """
-    await service.delete(category_name)
+    try:
+        deleted = await service.delete(category_name)
+        if not deleted:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Категория не найдена."
+            )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )

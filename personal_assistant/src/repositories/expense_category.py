@@ -13,11 +13,17 @@ class ExpenseCategoryRepository:
         self.db_session = db_session
 
     async def get_all_categories(self, skip: int = 0, limit: int = 100) -> list[ExpenseCategoryTable]:
+        """
+         Получает все существующие категории расходов.
+         """
         stmt = select(ExpenseCategoryTable).offset(skip).limit(limit)
         result = await self.db_session.exec(stmt)
         return result.all()
 
     async def get_expense_category_by_id(self, id: uuid.UUID) -> ExpenseCategoryTable | None:
+        """
+         Получает категорию расходов по id.
+         """
         return (
             await self.db_session.exec(
                 select(ExpenseCategoryTable).where(ExpenseCategoryTable.id == id)
@@ -25,6 +31,9 @@ class ExpenseCategoryRepository:
         ).one_or_none()
 
     async def get_expense_category_by_name(self, name: str) -> ExpenseCategoryTable | None:
+        """
+        Получает категорию расходов по имени.
+        """
         return (
             await self.db_session.exec(
                 select(ExpenseCategoryTable).where(ExpenseCategoryTable.name == name)
@@ -36,7 +45,7 @@ class ExpenseCategoryRepository:
         expense_category_data: ExpenseCategoryCreate,
     ) -> ExpenseCategoryTable:
         """
-        Создаёт новую категоррию расходов.
+        Создаёт новую категорию расходов.
         """
         new_expense_category = ExpenseCategoryTable.model_validate(expense_category_data.model_dump())
 
@@ -51,7 +60,7 @@ class ExpenseCategoryRepository:
         expense_category_data: str,
         update_data: ExpenseCategoryUpdate,
     ) -> ExpenseCategoryTable | None:
-        """ Обновляет существующий расход."""
+        """ Обновляет существующую категорию расходов."""
         expense = await self.get_expense_category_by_name(expense_category_data)
         if not expense:
             return None

@@ -8,12 +8,10 @@ from .base import BaseTable
 class ExpenseTable(BaseTable, table=True):
     __tablename__ = "expenses"
 
-    # Основные поля
     name: str = Field(nullable=False)
     amount: float = Field(nullable=False)
     currency: str = Field(default="RUB", nullable=False)
 
-    # UUID foreign keys
     user_id: uuid.UUID = Field(foreign_key="usertable.id", nullable=False)
     category_id: uuid.UUID = Field(foreign_key="expenses_categories.id", nullable=False)
 
@@ -21,7 +19,6 @@ class ExpenseTable(BaseTable, table=True):
     shared: bool = Field(default=False, nullable=False)
     expense_date: date = Field(nullable=False)
 
-    # Связи
     user: Optional["UserTable"] = Relationship(back_populates="expenses")
     category: Optional["ExpenseCategoryTable"] = Relationship(back_populates="expenses")
 
@@ -38,5 +35,4 @@ class ExpenseCategoryTable(BaseTable, table=True):
     name: str = Field(unique=True, nullable=False)
     description: str | None = Field(default=None, nullable=True)
 
-    # Связь с расходами
     expenses: List["ExpenseTable"] = Relationship(back_populates="category")
