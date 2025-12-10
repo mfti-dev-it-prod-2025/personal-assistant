@@ -1,8 +1,9 @@
-import pytest
 import uuid
+
+import pytest
 from sqlmodel import select
+
 from personal_assistant.src.models.todo import Task
-from personal_assistant.src.schemas.tasks.schemas import TaskResponse, TaskListResponse
 
 
 @pytest.mark.asyncio
@@ -136,20 +137,20 @@ async def test_mark_task_completed__sets_is_completed_true(postgres_connection, 
     create_response = router_api_user.post("/api/v1/tasks/", json=task_data)
     assert create_response.status_code == 201
     task_id = create_response.json()["id"]
-    assert create_response.json()["is_completed"] == False
+    assert create_response.json()["is_completed"] is False
 
     response = router_api_user.put(f"/api/v1/tasks/{task_id}", json={**task_data, "is_completed": True})
 
     assert response.status_code == 200
     completed_task_data = response.json()
-    assert completed_task_data["is_completed"] == True
+    assert completed_task_data["is_completed"] is True
 
     db_result = await postgres_connection.exec(
         select(Task).where(Task.id == uuid.UUID(task_id))
     )
     db_task = db_result.first()
     assert db_task is not None
-    assert db_task.is_completed == True
+    assert db_task.is_completed is True
 
 
 @pytest.mark.asyncio
@@ -161,20 +162,20 @@ async def test_mark_task_uncompleted__sets_is_completed_false(postgres_connectio
 
     complete_response = router_api_user.put(f"/api/v1/tasks/{task_id}", json={**task_data, "is_completed": True})
     assert complete_response.status_code == 200
-    assert complete_response.json()["is_completed"] == True
+    assert complete_response.json()["is_completed"] is True
 
     response = router_api_user.put(f"/api/v1/tasks/{task_id}", json={**task_data, "is_completed": False})
 
     assert response.status_code == 200
     uncompleted_task_data = response.json()
-    assert uncompleted_task_data["is_completed"] == False
+    assert uncompleted_task_data["is_completed"] is False
 
     db_result = await postgres_connection.exec(
         select(Task).where(Task.id == uuid.UUID(task_id))
     )
     db_task = db_result.first()
     assert db_task is not None
-    assert db_task.is_completed == False
+    assert db_task.is_completed is False
 
 
 @pytest.mark.asyncio
@@ -222,7 +223,9 @@ async def test_get_tasks_with_completed_filter__returns_only_completed(postgres_
     task2_data = {"title": "Pending Task", "description": "Description 2"}
 
     create_response1 = router_api_user.post("/api/v1/tasks/", json=task1_data)
+    create_response1.raise_for_status()
     create_response2 = router_api_user.post("/api/v1/tasks/", json=task2_data)
+    create_response2.raise_for_status()
 
     task1_id = create_response1.json()["id"]
     router_api_user.put(f"/api/v1/tasks/{task1_id}", json={**task1_data, "is_completed": True})

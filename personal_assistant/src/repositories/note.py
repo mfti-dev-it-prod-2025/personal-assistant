@@ -1,8 +1,9 @@
-from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select, and_
-from typing import List, Optional
-from datetime import datetime, timezone
 import uuid
+from typing import List, Optional
+
+from sqlmodel import select, and_
+from sqlmodel.ext.asyncio.session import AsyncSession
+
 from ..models.note import Note
 from ..schemas.note import NoteCreate, NoteUpdate
 

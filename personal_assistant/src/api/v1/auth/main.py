@@ -1,14 +1,11 @@
-from datetime import timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from personal_assistant.src.api.dependencies import DbSessionDepends
-from personal_assistant.src.configs.app import settings
 from personal_assistant.src.schemas.auth.token import Token
 from personal_assistant.src.services.auth.authenticate import AuthAuthenticate
-
 
 auth_router = APIRouter()
 

@@ -1,5 +1,3 @@
-import uuid
-
 import sqlalchemy
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
