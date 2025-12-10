@@ -44,6 +44,7 @@ async def test_create_user__then_get_user(router_api_admin):
     assert found_user
     assert found_user == response_post.json()
 
+
 @pytest.mark.asyncio
 async def test_create_user_uppercase_email__then_get_user_lowercase_email(router_api_admin):
     email = random_email().upper()
@@ -61,9 +62,9 @@ async def test_create_user_uppercase_email__then_get_user_lowercase_email(router
         if user["id"] == response_post.json()["id"]:
             found_user = user
 
-
     assert found_user
     assert found_user["email"] == email.lower()
+
 
 @pytest.mark.asyncio
 async def test_create_user_uppercase_email__then_user_email_in_db_lowercase(postgres_connection, router_api_admin):

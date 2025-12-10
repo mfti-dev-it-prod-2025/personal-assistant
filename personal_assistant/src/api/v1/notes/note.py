@@ -1,17 +1,15 @@
+import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status, Security
-from sqlmodel.ext.asyncio.session import AsyncSession
-import uuid
-from ....models.database_session import get_session
-from ....services.note_service import NoteService
-from ....schemas.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
+
 from ...dependencies import (
-    get_current_user_dependency as get_current_user,
     get_current_user_dependency,
     DbSessionDepends,
 )
 from ....models.user import UserTable
+from ....schemas.note import NoteCreate, NoteUpdate, NoteRead, NoteReadUpdate
+from ....services.note_service import NoteService
 
 router = APIRouter(prefix="", tags=["notes"])
 

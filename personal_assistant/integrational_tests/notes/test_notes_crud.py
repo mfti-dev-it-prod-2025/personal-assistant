@@ -1,18 +1,17 @@
-import pytest
 import uuid
+from datetime import datetime
 
+import pytest
 from dateutil.parser import isoparse
 from sqlmodel import select
-from datetime import datetime, timezone
-from personal_assistant.integrational_tests.utils import random_email
+
 from personal_assistant.src.models.note import Note
 from personal_assistant.src.schemas.note import NoteRead, NoteReadUpdate
-from personal_assistant.src.models.user import UserTable
 
 
 @pytest.mark.asyncio
 async def test_create_note__then_note_exists_in_db_and_returned(postgres_connection, router_api_user):
-    
+
     note_data = {"title": "Test Note Title", "content": "Test Note Content"}
 
     response = router_api_user.post("/api/v1/notes/", json=note_data)
@@ -37,6 +36,7 @@ async def test_create_note__then_note_exists_in_db_and_returned(postgres_connect
     assert db_note.content == note_data["content"]
     assert db_note.created_at is not None
     assert db_note.updated_at is not None
+
 
 @pytest.mark.asyncio
 async def test_read_note_by_id__existing_note(postgres_connection, router_api_user):
@@ -116,7 +116,7 @@ async def test_update_note__changes_data_in_db_and_returns_updated(postgres_conn
 
 @pytest.mark.asyncio
 async def test_delete_note__removes_from_db_and_get_returns_404(postgres_connection, router_api_user):
-    
+
     note_data = {"title": "Delete Test Note", "content": "Delete Test Content"}
     create_response = router_api_user.post("/api/v1/notes/", json=note_data)
     assert create_response.status_code == 201

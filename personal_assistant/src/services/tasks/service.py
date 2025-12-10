@@ -1,5 +1,6 @@
-from typing import List, Optional
+from typing import Optional
 from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from personal_assistant.src.repositories.task import TaskRepository
@@ -10,7 +11,6 @@ from personal_assistant.src.schemas.tasks.schemas import (
     TaskListResponse,
     TasksStats,
 )
-from personal_assistant.src.models.todo import Task
 
 
 class TaskService:
