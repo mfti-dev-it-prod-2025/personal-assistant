@@ -167,7 +167,7 @@ async def router_api_expense(router_api_user, router_api_category, postgres_conn
         "amount": 99.9,
         "currency": "RUB",
         "category_id": router_api_category["id"],
-        "name": "Тест",
+        "name": category_name,
         "shared": False,
         "expense_date": date.today().isoformat(),
     }
