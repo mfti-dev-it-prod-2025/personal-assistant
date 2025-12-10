@@ -7,6 +7,10 @@ type:
 	@echo "check typing"
 	poetry run mypy $(ROOT_PATH)
 
+lint:
+	@echo "check PEP8"
+	flake8 .
+
 run:
 	@echo "start prod server"
 	fastapi run $(ROOT_PATH)/main.py
@@ -18,6 +22,10 @@ dev:
 ddev:
 	@echo "start docker dev containers"
 	docker compose -f docker/docker-compose.test.yml up
+
+dprod:
+	@echo "start docker prod containers"
+	docker compose -f docker/docker-compose.prod.yml up
 
 mkmigrate:
 	@echo "create alembic migrations $(if $(BRANCH),with label $(BRANCH),without branch label)"

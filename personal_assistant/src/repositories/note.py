@@ -1,9 +1,11 @@
-from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlmodel import select, and_
-from typing import List, Optional
-from datetime import datetime, timezone
 import uuid
-from ..models.note import Note, NoteCreate, NoteUpdate
+from typing import List, Optional
+
+from sqlmodel import select, and_
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from ..models.note import Note
+from ..schemas.note import NoteCreate, NoteUpdate
 
 
 class NoteRepository:
@@ -17,17 +19,27 @@ class NoteRepository:
         await self.session.refresh(db_note)
         return db_note
 
-    async def get_note_by_id(self, note_id: uuid.UUID, user_id: uuid.UUID) -> Optional[Note]:
-        statement = select(Note).where(and_(Note.id == note_id, Note.user_id == user_id))
+    async def get_note_by_id(
+        self, note_id: uuid.UUID, user_id: uuid.UUID
+    ) -> Optional[Note]:
+        statement = select(Note).where(
+            and_(Note.id == note_id, Note.user_id == user_id)
+        )
         result = await self.session.exec(statement)
         return result.first()
 
-    async def get_notes_by_user(self, user_id: uuid.UUID, skip: int = 0, limit: int = 1000) -> List[Note]:
-        statement = select(Note).where(Note.user_id == user_id).offset(skip).limit(limit)
+    async def get_notes_by_user(
+        self, user_id: uuid.UUID, skip: int = 0, limit: int = 1000
+    ) -> List[Note]:
+        statement = (
+            select(Note).where(Note.user_id == user_id).offset(skip).limit(limit)
+        )
         result = await self.session.exec(statement)
         return result.all()
 
-    async def update_note(self, note_id: uuid.UUID, user_id: uuid.UUID, note_data: NoteUpdate) -> Optional[Note]:
+    async def update_note(
+        self, note_id: uuid.UUID, user_id: uuid.UUID, note_data: NoteUpdate
+    ) -> Optional[Note]:
         db_note = await self.get_note_by_id(note_id, user_id)
         if not db_note:
             return None
