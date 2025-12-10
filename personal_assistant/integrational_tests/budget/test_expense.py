@@ -3,7 +3,7 @@ import pytest
 @pytest.mark.asyncio
 async def test_create_expense(router_api_user, router_api_category):
     payload = {
-        "name": "Coffee",
+        "name": "Кофе",
         "amount": 50.0,
         "currency": "RUB",
         "category_id": router_api_category["id"],
@@ -15,7 +15,7 @@ async def test_create_expense(router_api_user, router_api_category):
     assert resp.status_code == 201
 
     body = resp.json()
-    assert body["name"] == "Coffee"
+    assert body["name"] == "Кофе"
     assert body["amount"] == 50.0
     assert body["currency"] == "RUB"
     assert body["category_id"] == router_api_category["id"]
@@ -24,38 +24,38 @@ async def test_create_expense(router_api_user, router_api_category):
 
 
 @pytest.mark.asyncio
-async def test_get_expense_by_id(router_api_user, api_router_expense):
-    resp = router_api_user.get(f"/api/v1/expense/?id={api_router_expense['id']}")
+async def test_get_expense_by_id(router_api_user, router_api_expense):
+    resp = router_api_user.get(f"/api/v1/expense/?id={router_api_expense['id']}")
     assert resp.status_code == 200
 
     body = resp.json()
-    assert body["id"] == api_router_expense["id"]
-    assert body["name"] == api_router_expense["name"]
-    assert body["amount"] == api_router_expense["amount"]
+    assert body["id"] == router_api_expense["id"]
+    assert body["name"] == router_api_expense["name"]
+    assert body["amount"] == router_api_expense["amount"]
 
 @pytest.mark.asyncio
-async def test_get_expense_by_name_(router_api_user, api_router_expense):
+async def test_get_expense_by_name_(router_api_user, router_api_expense):
 
-    resp = router_api_user.get(f"/api/v1/expense/?name={api_router_expense['name']}")
+    resp = router_api_user.get(f"/api/v1/expense/?name={router_api_expense['name']}")
 
     assert resp.status_code == 200
 
     body = resp.json()
-    assert body["id"] == api_router_expense["id"]
-    assert body["name"] == api_router_expense["name"]
-    assert body["amount"] == api_router_expense["amount"]
+    assert body["id"] == router_api_expense["id"]
+    assert body["name"] == router_api_expense["name"]
+    assert body["amount"] == router_api_expense["amount"]
 
 
 import pytest
 from datetime import date
 
 @pytest.mark.asyncio
-async def test_get_all_expenses(router_api_user, api_router_expense, router_api_category):
+async def test_get_all_expenses(router_api_user, router_api_expense, router_api_category):
     resp = router_api_user.get("/api/v1/expense/all")
     assert resp.status_code == 200
     expenses = resp.json()
     assert isinstance(expenses, list)
-    assert any(exp["id"] == api_router_expense["id"] for exp in expenses)
+    assert any(exp["id"] == router_api_expense["id"] for exp in expenses)
 
     resp_category = router_api_user.get(
         f"/api/v1/expense_category/?name={router_api_category['name']}"
@@ -65,10 +65,10 @@ async def test_get_all_expenses(router_api_user, api_router_expense, router_api_
     resp_category = router_api_user.get(f"/api/v1/expense/all?category_name={category_name}")
     assert resp_category.status_code == 200
     expenses_category = resp_category.json()
-    assert all(exp["category_id"] == api_router_expense["category_id"] for exp in expenses_category)
+    assert all(exp["category_id"] == router_api_expense["category_id"] for exp in expenses_category)
 
-    start_date = api_router_expense["expense_date"]
-    end_date = api_router_expense["expense_date"]
+    start_date = router_api_expense["expense_date"]
+    end_date = router_api_expense["expense_date"]
     resp_date = router_api_user.get(f"/api/v1/expense/all?start_date={start_date}&end_date={end_date}")
     assert resp_date.status_code == 200
     expenses_date = resp_date.json()
@@ -76,28 +76,28 @@ async def test_get_all_expenses(router_api_user, api_router_expense, router_api_
 
 
 @pytest.mark.asyncio
-async def test_update_expense(router_api_user, api_router_expense):
+async def test_update_expense(router_api_user, router_api_expense):
     payload = {"amount": 120.0}
 
     resp = router_api_user.put(
-        f"/api/v1/expense/{api_router_expense['id']}",
+        f"/api/v1/expense/{router_api_expense['id']}",
         json=payload,
     )
     assert resp.status_code == 200
 
     body = resp.json()
-    assert body["id"] == api_router_expense["id"]
+    assert body["id"] == router_api_expense["id"]
     assert body["amount"] == 120.0
-    assert body["name"] == api_router_expense["name"]
-    assert body["currency"] == api_router_expense["currency"]
-    assert body["category_id"] == api_router_expense["category_id"]
-    assert body["shared"] == api_router_expense["shared"]
+    assert body["name"] == router_api_expense["name"]
+    assert body["currency"] == router_api_expense["currency"]
+    assert body["category_id"] == router_api_expense["category_id"]
+    assert body["shared"] == router_api_expense["shared"]
 
 
 @pytest.mark.asyncio
-async def test_delete_expense(router_api_user, api_router_expense):
-    resp = router_api_user.delete(f"/api/v1/expense/{api_router_expense['id']}")
+async def test_delete_expense(router_api_user, router_api_expense):
+    resp = router_api_user.delete(f"/api/v1/expense/{router_api_expense['id']}")
     assert resp.status_code == 204
 
-    get_resp = router_api_user.get(f"/api/v1/expense/?id={api_router_expense['id']}")
+    get_resp = router_api_user.get(f"/api/v1/expense/?id={router_api_expense['id']}")
     assert get_resp.status_code == 400 or get_resp.status_code == 404

@@ -120,7 +120,7 @@ async def router_api_user(postgres_connection):
 
 
 @pytest_asyncio.fixture
-async def router_api_category(router_api_user, postgres_connection):
+async def router_api_category(router_api_user):
     category_name = "Тест"
     payload = {
         "name": category_name,
@@ -128,17 +128,15 @@ async def router_api_category(router_api_user, postgres_connection):
     }
 
     resp = router_api_user.post("/api/v1/expense_category/", json=payload)
+    print(resp.status_code, resp.text)  # <-- для отладки
     resp.raise_for_status()
-
-    resp_get = router_api_user.get("/api/v1/expense_category/", params={"name": category_name})
-    resp_get.raise_for_status()
-    category_data = resp_get.json()
+    category_data = resp.json()
 
     yield category_data
 
 
 @pytest_asyncio.fixture
-async def api_router_expense(router_api_user, router_api_category):
+async def router_api_expense(router_api_user, router_api_category):
     payload = {
         "amount": 99.9,
         "currency": "RUB",
