@@ -1,6 +1,7 @@
 import random
 import pytest
 
+
 @pytest.mark.asyncio
 async def test_create_expense_category(router_api_user):
     payload = {"name": f"category_{random.randint(1, 10000)}", "description": "тестовая категория"}
@@ -11,6 +12,7 @@ async def test_create_expense_category(router_api_user):
     data = response.json()
     assert data["name"] == payload["name"]
     assert "id" in data
+
 
 @pytest.mark.asyncio
 async def test_get_category_by_id(router_api_user, router_api_category):
@@ -31,6 +33,7 @@ async def test_get_category_by_name(router_api_user, router_api_category):
     assert resp.status_code == 200
     assert resp.json()["id"] == router_api_category["id"]
 
+
 @pytest.mark.asyncio
 async def test_get_all_categories(router_api_user, router_api_category):
     resp = router_api_user.get("/api/v1/expense_category/all")
@@ -40,6 +43,7 @@ async def test_get_all_categories(router_api_user, router_api_category):
     assert isinstance(categories, list)
     assert len(categories) > 0
     assert any(cat["id"] == router_api_category["id"] for cat in categories)
+
 
 def test_update_category(router_api_user, router_api_category):
     payload = {"description": "Обновленное описание"}
@@ -55,6 +59,7 @@ def test_update_category(router_api_user, router_api_category):
     assert resp.status_code == 200
     assert data["description"] == "Обновленное описание"
 
+
 @pytest.mark.asyncio
 async def test_delete_category(router_api_user, router_api_category):
     resp = router_api_user.delete(
@@ -62,4 +67,5 @@ async def test_delete_category(router_api_user, router_api_category):
     )
 
     assert resp.status_code == 204
+
 

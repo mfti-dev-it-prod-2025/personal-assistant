@@ -1,6 +1,7 @@
 import pytest
 from datetime import date
 
+
 @pytest.mark.asyncio
 async def test_create_expense(router_api_user, router_api_category):
     payload = {
@@ -34,6 +35,7 @@ async def test_get_expense_by_id(router_api_user, router_api_expense):
     assert body["name"] == router_api_expense["name"]
     assert body["amount"] == router_api_expense["amount"]
 
+
 @pytest.mark.asyncio
 async def test_get_expense_by_name_(router_api_user, router_api_expense):
 
@@ -45,6 +47,7 @@ async def test_get_expense_by_name_(router_api_user, router_api_expense):
     assert body["id"] == router_api_expense["id"]
     assert body["name"] == router_api_expense["name"]
     assert body["amount"] == router_api_expense["amount"]
+
 
 @pytest.mark.asyncio
 async def test_get_all_expenses(router_api_user, router_api_expense, router_api_category):
