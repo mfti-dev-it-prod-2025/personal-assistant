@@ -229,5 +229,3 @@ async def clean_database(postgres_connection):
     await postgres_connection.exec(delete(Task))
     await postgres_connection.commit()
     yield
-
-

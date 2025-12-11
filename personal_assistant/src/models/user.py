@@ -1,6 +1,6 @@
 from enum import Enum
 
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 
 from pydantic import EmailStr, field_serializer, field_validator
 from sqlmodel import SQLModel, Field, Relationship

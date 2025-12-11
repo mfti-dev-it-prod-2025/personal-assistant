@@ -20,7 +20,7 @@ class ExpenseTable(BaseTable, table=True):
     shared: bool = Field(default=False, nullable=False)
     expense_date: date = Field(nullable=False)
 
-    user: Optional["UserTable"] = Relationship(back_populates="expenses")
+    user: Optional["UserTable"] = Relationship(back_populates="expenses") # type: ignore
     category: Optional["ExpenseCategoryTable"] = Relationship(back_populates="expenses")
 
     def __repr__(self) -> str:

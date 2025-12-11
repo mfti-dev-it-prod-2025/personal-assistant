@@ -67,5 +67,3 @@ async def test_delete_category(router_api_user, router_api_category):
     )
 
     assert resp.status_code == 204
-
-

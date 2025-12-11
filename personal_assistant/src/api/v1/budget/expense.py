@@ -44,7 +44,7 @@ async def get_expense(
 
 @expense_router.get(
     "/all",
-    summary="Получить расходы по параметрам (если параметры не указаны - будут выведены все расходы)",
+    summary="Получить расходы по параметрам (если не указаны - будут выведены все)",
 )
 async def get_expenses(
     params: Annotated[ExpensesParams, Depends()],
