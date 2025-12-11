@@ -3,6 +3,7 @@ from datetime import date
 from pydantic import BaseModel
 from typing import Optional
 
+
 class ExpenseCreate(BaseModel):
     name: str
     amount: float
@@ -11,6 +12,7 @@ class ExpenseCreate(BaseModel):
     tag: Optional[str] = None
     shared: bool = False
     expense_date: date
+
 
 class ExpenseUpdate(BaseModel):
     name: Optional[str] = None
@@ -21,6 +23,7 @@ class ExpenseUpdate(BaseModel):
     tag: Optional[str] = None
     shared: Optional[bool] = None
     expense_date: Optional[date] = None
+
 
 class ExpenseResponse(BaseModel):
     id: uuid.UUID

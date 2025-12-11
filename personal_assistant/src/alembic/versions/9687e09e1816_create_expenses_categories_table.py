@@ -5,6 +5,7 @@ Revises: 047f07327d97
 Create Date: 2025-12-02 20:51:48.408684
 
 """
+
 from typing import Sequence, Union
 from sqlalchemy.dialects import postgresql
 
@@ -13,8 +14,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '9687e09e1816'
-down_revision: Union[str, Sequence[str], None] = '9ccd99dcd2aa'
+revision: str = "9687e09e1816"
+down_revision: Union[str, Sequence[str], None] = "9ccd99dcd2aa"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -32,8 +33,12 @@ def upgrade() -> None:
         ),
         sa.Column("name", sa.String(100), nullable=False),
         sa.Column("description", sa.Text, nullable=True),
-        sa.Column("created_at", sa.DateTime, nullable=True, server_default=sa.text("now()")),
-        sa.Column("updated_at", sa.DateTime, nullable=True, server_default=sa.text("now()")),
+        sa.Column(
+            "created_at", sa.DateTime, nullable=True, server_default=sa.text("now()")
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime, nullable=True, server_default=sa.text("now()")
+        ),
         sa.UniqueConstraint("name", name="expenses_categories_name_key"),
     )
 

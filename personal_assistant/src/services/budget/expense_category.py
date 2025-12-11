@@ -1,6 +1,9 @@
 from fastapi import Depends
 
-from personal_assistant.src.repositories.expense_category import ExpenseCategoryRepository, get_expense_category_repository
+from personal_assistant.src.repositories.expense_category import (
+    ExpenseCategoryRepository,
+    get_expense_category_repository,
+)
 from personal_assistant.src.schemas.budget.expense_category import (
     ExpenseCategoryCreate,
     ExpenseCategoryResponse,
@@ -41,7 +44,9 @@ class ExpenseCategoryService:
 
         return res
 
-    async def add_category(self, in_data: ExpenseCategoryCreate) -> ExpenseCategoryResponse:
+    async def add_category(
+        self, in_data: ExpenseCategoryCreate
+    ) -> ExpenseCategoryResponse:
         try:
             new_category = await self.repo.create_expense_category(in_data)
         except IntegrityError:
@@ -58,14 +63,15 @@ class ExpenseCategoryService:
             )
         return new_category
 
-    async def update(self, name: str, in_data: ExpenseCategoryUpdate) -> ExpenseCategoryResponse:
+    async def update(
+        self, name: str, in_data: ExpenseCategoryUpdate
+    ) -> ExpenseCategoryResponse:
         existing_category = await self.repo.get_expense_category_by_name(name)
         if not existing_category:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Категория с таким именем не существует",
             )
-
 
         res = await self.repo.update_expense_category(name, in_data)
         return res
@@ -79,6 +85,7 @@ class ExpenseCategoryService:
             )
 
         await self.repo.delete_expense_category(name)
+
 
 async def get_category_service(
     repo: ExpenseCategoryRepository = Depends(get_expense_category_repository),

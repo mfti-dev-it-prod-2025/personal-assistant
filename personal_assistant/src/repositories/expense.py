@@ -11,11 +11,14 @@ from personal_assistant.src.models.budget import ExpenseTable, ExpenseCategoryTa
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense import ExpenseCreate, ExpenseUpdate
 
+
 class ExpenseRepository:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def get_all_expenses(self, skip: int = 0, limit: int = 100) -> list[ExpenseTable]:
+    async def get_all_expenses(
+        self, skip: int = 0, limit: int = 100
+    ) -> list[ExpenseTable]:
         stmt = select(ExpenseTable).offset(skip).limit(limit)
         result = await self.db_session.exec(stmt)
         return result.all()
@@ -34,7 +37,6 @@ class ExpenseRepository:
             )
         ).one_or_none()
 
-
     async def get_by_user(self, email: str) -> list[ExpenseTable]:
         result = await self.db_session.exec(
             select(ExpenseTable)
@@ -46,15 +48,16 @@ class ExpenseRepository:
     async def get_expenses_by_category(self, category: str) -> list[ExpenseTable]:
         result = await self.db_session.exec(
             select(ExpenseTable)
-            .join(ExpenseCategoryTable, ExpenseTable.category_id == ExpenseCategoryTable.id)
-            .where(ExpenseCategoryTable.name == category))
+            .join(
+                ExpenseCategoryTable,
+                ExpenseTable.category_id == ExpenseCategoryTable.id,
+            )
+            .where(ExpenseCategoryTable.name == category)
+        )
         return result.all()
 
-
     async def get_expenses_by_date_range(
-            self,
-            start_date: Optional[str] = None,
-            end_date: Optional[str] = None
+        self, start_date: Optional[str] = None, end_date: Optional[str] = None
     ) -> list[ExpenseTable]:
         """
         Возвращает список расходов в заданном диапазоне дат.
@@ -76,9 +79,7 @@ class ExpenseRepository:
         return result.all()
 
     async def create_expense(
-        self,
-        expense_data: ExpenseCreate,
-        current_user: UserTable
+        self, expense_data: ExpenseCreate, current_user: UserTable
     ) -> ExpenseTable:
         """
         Создаёт новый расход для текущего пользователя.
@@ -114,7 +115,6 @@ class ExpenseRepository:
 
         return expense
 
-
     async def delete_expense(self, expense_id: uuid.UUID) -> None:
         """
         Удаляет расход по id.
@@ -125,6 +125,7 @@ class ExpenseRepository:
 
         await self.db_session.delete(expense)
         await self.db_session.commit()
+
 
 async def get_expense_repository(
     db: AsyncSession = Depends(get_session),

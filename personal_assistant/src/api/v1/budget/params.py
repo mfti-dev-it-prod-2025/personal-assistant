@@ -36,9 +36,11 @@ class ExpensesParams(SQLModel):
                 raise ValueError("Конечная дата не может быть раньше начальной")
         return v
 
+
 class ExpenseParams(SQLModel):
     id: uuid.UUID | None = None
     name: str | None = None
+
 
 class ExpenseCategoryParams(SQLModel):
     id: uuid.UUID | None = None

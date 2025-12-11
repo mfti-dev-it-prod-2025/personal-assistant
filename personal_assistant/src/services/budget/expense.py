@@ -2,10 +2,14 @@ from uuid import UUID
 from fastapi import HTTPException, status
 from typing import List, Optional
 from fastapi import Depends
-from personal_assistant.src.repositories.expense import ExpenseRepository, get_expense_repository
+from personal_assistant.src.repositories.expense import (
+    ExpenseRepository,
+    get_expense_repository,
+)
 
 from personal_assistant.src.schemas.budget.expense import ExpenseCreate, ExpenseUpdate
 from personal_assistant.src.models.budget import ExpenseTable
+
 
 class ExpenseService:
     def __init__(self, repo: ExpenseRepository):
@@ -41,15 +45,21 @@ class ExpenseService:
         expenses = await self.repo.get_expenses_by_category(category)
         return expenses
 
-    async def get_by_date_range(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> List[ExpenseTable]:
-        expenses = await self.repo.get_expenses_by_date_range(start_date=start_date, end_date=end_date)
+    async def get_by_date_range(
+        self, start_date: Optional[str] = None, end_date: Optional[str] = None
+    ) -> List[ExpenseTable]:
+        expenses = await self.repo.get_expenses_by_date_range(
+            start_date=start_date, end_date=end_date
+        )
         return expenses
 
     async def add_expense(self, in_data: ExpenseCreate, current_user) -> ExpenseTable:
         new_expense = await self.repo.create_expense(in_data, current_user)
         return new_expense
 
-    async def update_expense(self, expense_id: UUID, in_data: ExpenseUpdate) -> ExpenseTable:
+    async def update_expense(
+        self, expense_id: UUID, in_data: ExpenseUpdate
+    ) -> ExpenseTable:
         updated_expense = await self.repo.update_expense(expense_id, in_data)
         if not updated_expense:
             raise HTTPException(
@@ -57,7 +67,6 @@ class ExpenseService:
                 detail="Расход не найден",
             )
         return updated_expense
-
 
     async def delete_expense(self, expense_id: UUID) -> None:
         """
@@ -71,6 +80,7 @@ class ExpenseService:
             )
 
         await self.repo.delete_expense(expense_id)
+
 
 async def get_expense_service(
     repo: ExpenseRepository = Depends(get_expense_repository),
