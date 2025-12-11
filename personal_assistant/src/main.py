@@ -13,6 +13,9 @@ from personal_assistant.src.exception_handlers import (
 )
 from personal_assistant.src.exceptions import UserAlreadyExist
 
+from personal_assistant.src.api.v1.tasks.endpoints import router as tasks_router
+
+
 app = FastAPI(title="Personal assistant")
 
 api_base_prefix = "/api/v1/"
@@ -26,9 +29,12 @@ app.include_router(user_router, prefix=f"{api_base_prefix}user", tags=["user"])
 app.include_router(note_router, prefix=f"{api_base_prefix}notes", tags=["notes"])
 
 
+
 app.include_router(expense_router, prefix=f"{api_base_prefix}expense", tags=["expense"])
 
 app.include_router(expense_category_router, prefix=f"{api_base_prefix}expense_category", tags=["expense_category"])
+
+app.include_router(tasks_router, prefix=f"{api_base_prefix}tasks", tags=["tasks"])
 
 app.add_exception_handler(
     exc_class_or_status_code=UserAlreadyExist,

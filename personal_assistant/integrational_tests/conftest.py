@@ -1,10 +1,11 @@
+import os
 from typing import Generator, Any
 
-import os
 import pytest
 import pytest_asyncio
 from alembic import command
 from alembic.config import Config
+from sqlmodel import delete
 from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
@@ -15,6 +16,7 @@ from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
 from personal_assistant.src.models.database_session import get_session
+from personal_assistant.src.models.todo import Task
 from personal_assistant.src.models.user import UserRole
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserCreate
@@ -118,7 +120,6 @@ async def router_api_user(postgres_connection):
     client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client
 
-
 @pytest_asyncio.fixture
 async def router_api_category(postgres_connection, router_api_user):
     category_name = f"Тест-{uuid4().hex[:6]}"
@@ -214,3 +215,15 @@ async def router_api_expense(router_api_user, router_api_category, postgres_conn
         "created_at": now.isoformat(),
         "updated_at": now.isoformat(),
     }
+
+@pytest_asyncio.fixture(autouse=True)
+async def clean_database(postgres_connection):
+    """
+    Фикстура для автоматической очистки таблицы задач перед каждым тестом.
+    Удаляет все задачи, чтобы тесты были изолированы.
+    """
+    # Очищаем только таблицу задач (tasks)
+    await postgres_connection.exec(delete(Task))
+    await postgres_connection.commit()
+    yield
+

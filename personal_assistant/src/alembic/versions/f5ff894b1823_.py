@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 4aef60b10c63
-Revises: 04ad9941b0dc, f9a4cbe57362
-Create Date: 2025-12-05 06:26:03.042848
+Revision ID: f5ff894b1823
+Revises: 1f5f227a5a6b, 4aef60b10c63
+Create Date: 2025-12-09 22:51:38.252156
 
 """
 
@@ -14,8 +14,8 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = "4aef60b10c63"
-down_revision: Union[str, Sequence[str], None] = ("04ad9941b0dc", "f9a4cbe57362")
+revision: str = "f5ff894b1823"
+down_revision: Union[str, Sequence[str], None] = ("1f5f227a5a6b", "4aef60b10c63")
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
