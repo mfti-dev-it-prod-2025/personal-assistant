@@ -10,7 +10,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
 from uuid import uuid4
-from datetime import date, datetime,timezone
+from datetime import date, datetime, timezone
 import random
 from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.configs.app import settings
@@ -22,6 +22,7 @@ from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserCreate
 from personal_assistant.src.models.budget import ExpenseCategoryTable
 from personal_assistant.src.models.budget import ExpenseTable
+
 
 @pytest.fixture(scope="session", autouse=True)
 def _bootstrap_db() -> Generator[None, Any, None]:
@@ -120,6 +121,7 @@ async def router_api_user(postgres_connection):
     client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client
 
+
 @pytest_asyncio.fixture
 async def router_api_category(postgres_connection, router_api_user):
     category_name = f"Тест-{uuid4().hex[:6]}"
@@ -136,8 +138,7 @@ async def router_api_category(postgres_connection, router_api_user):
         resp.raise_for_status()
         category_data = resp.json()
 
-    except Exception as e:
-        from datetime import datetime, timezone
+    except Exception:
 
         category_id = uuid4()
         now = datetime.now(tz=timezone.utc)
@@ -159,6 +160,7 @@ async def router_api_category(postgres_connection, router_api_user):
         }
 
     yield category_data
+
 
 @pytest_asyncio.fixture
 async def router_api_expense(router_api_user, router_api_category, postgres_connection):
@@ -216,6 +218,7 @@ async def router_api_expense(router_api_user, router_api_category, postgres_conn
         "updated_at": now.isoformat(),
     }
 
+
 @pytest_asyncio.fixture(autouse=True)
 async def clean_database(postgres_connection):
     """
@@ -226,4 +229,5 @@ async def clean_database(postgres_connection):
     await postgres_connection.exec(delete(Task))
     await postgres_connection.commit()
     yield
+
 
