@@ -22,7 +22,8 @@ async def test_filter_by_email_exact(router_api_admin):
 
     r = router_api_admin.get(f"/api/v1/user/?email={user1['email']}")
     r.raise_for_status()
-    data = r.json()
+    data = r.json()["result"]
+    assert r.json()["total"] == 1
 
     assert len(data) == 1
     assert data[0]["id"] == user1["id"]
@@ -40,7 +41,8 @@ async def test_filter_by_email_contains(router_api_admin):
 
     r = router_api_admin.get(f"/api/v1/user/?email__contains={q}")
     r.raise_for_status()
-    data = r.json()
+    data = r.json()["result"]
+    assert r.json()["total"] == 2
 
     assert len(data) == 2
     assert all(q in u["email"] for u in data)
@@ -56,7 +58,8 @@ async def test_filter_by_name_contains(router_api_admin):
 
     r = router_api_admin.get(f"/api/v1/user/?name__contains={marker}")
     r.raise_for_status()
-    data = r.json()
+    data = r.json()["result"]
+    assert r.json()["total"] == 2
 
     assert len(data) == 2
     assert all(marker in u["name"] for u in data)
@@ -78,14 +81,16 @@ async def test_filter_by_role_with_contains(router_api_admin):
         f"/api/v1/user/?email__contains={q}&role=user"
     )
     r_user.raise_for_status()
-    data_user = r_user.json()
+    data_user = r_user.json()["result"]
+    assert r_user.json()["total"] == 2
     assert len(data_user) == 2
 
     r_admin = router_api_admin.get(
         f"/api/v1/user/?email__contains={q}&role=administrator"
     )
     r_admin.raise_for_status()
-    data_admin = r_admin.json()
+    data_admin = r_admin.json()["result"]
+    assert r_admin.json()["total"] == 0
     assert data_admin == []
 
 
@@ -103,7 +108,8 @@ async def test_filter_with_pagination_limit_offset(router_api_admin):
         f"/api/v1/user/?email__contains={q}&limit=2"
     )
     r_limit2.raise_for_status()
-    data_limit2 = r_limit2.json()
+    data_limit2 = r_limit2.json()["result"]
+    assert r_limit2.json()["total"] == 3
     assert len(data_limit2) == 2
     assert all(q in u["email"] for u in data_limit2)
 
@@ -111,7 +117,8 @@ async def test_filter_with_pagination_limit_offset(router_api_admin):
         f"/api/v1/user/?email__contains={q}&limit=5&offset=2"
     )
     r_offset2.raise_for_status()
-    data_offset2 = r_offset2.json()
+    data_offset2 = r_offset2.json()["result"]
+    assert r_offset2.json()["total"] == 3
     # We created 3, so after skipping 2 there should be 1 left
     assert len(data_offset2) == 1
     assert q in data_offset2[0]["email"]

@@ -6,9 +6,9 @@ from personal_assistant.src.api.dependencies import (
     DbSessionDepends,
     get_current_user_dependency,
 )
-from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.auth.user import UserGet, UserCreate
+from personal_assistant.src.schemas.user import UserListResponse, UserParams
 from personal_assistant.src.services.user_service import UserService
 
 user_router = APIRouter()
@@ -28,7 +28,7 @@ async def get_user(
         UserTable, Security(get_current_user_dependency, scopes=["users:read"])
     ],
     user_params: Annotated[UserParams, Depends()],
-) -> list[UserGet]:
+) -> UserListResponse:
     return await user_service.get_users(params=user_params)
 
 

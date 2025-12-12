@@ -37,7 +37,7 @@ async def test_create_user__then_get_user(router_api_admin):
     response_get = router_api_admin.get("/api/v1/user/")
     response_get.raise_for_status()
     found_user = None
-    for user in response_get.json():
+    for user in response_get.json()["result"]:
         if user["id"] == response_post.json()["id"]:
             found_user = user
 
@@ -58,7 +58,7 @@ async def test_create_user_uppercase_email__then_get_user_lowercase_email(router
     response_get = router_api_admin.get("/api/v1/user/")
     response_get.raise_for_status()
     found_user = None
-    for user in response_get.json():
+    for user in response_get.json()["result"]:
         if user["id"] == response_post.json()["id"]:
             found_user = user
 

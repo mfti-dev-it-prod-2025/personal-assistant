@@ -1,23 +1,21 @@
 import uuid
 from datetime import timedelta, datetime, timezone
-
-from personal_assistant.src.api.v1.user.params import UserParams
-from personal_assistant.src.logger import logger
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from personal_assistant.src.configs.auth import ROLES_TO_SCOPES, oauth2_scheme
-from personal_assistant.src.models import UserTable
-from personal_assistant.src.schemas.auth.token import Token
-from personal_assistant.src.schemas.auth.user import UserGet
-from personal_assistant.src.services.auth.password import Password
 from typing import Annotated
 
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import SecurityScopes, OAuth2PasswordRequestForm
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.configs.app import settings
+from personal_assistant.src.configs.auth import ROLES_TO_SCOPES, oauth2_scheme
+from personal_assistant.src.logger import logger
+from personal_assistant.src.models import UserTable
+from personal_assistant.src.repositories.user import UserRepository
+from personal_assistant.src.schemas.auth.token import Token
+from personal_assistant.src.schemas.auth.user import UserGet
+from personal_assistant.src.schemas.user import UserParams
+from personal_assistant.src.services.auth.password import Password
 
 
 class AuthAuthenticate:

@@ -1,9 +1,17 @@
 import uuid
 
-from pydantic import EmailStr
+from pydantic import BaseModel, EmailStr
 from sqlmodel import SQLModel, Field
 
 from personal_assistant.src.models.user import UserRole, name_pattern
+from personal_assistant.src.schemas.auth.user import UserGet
+
+
+class UserListResponse(BaseModel):
+    result: list[UserGet]
+    limit: int
+    offset: int
+    total: int
 
 
 class UserParams(SQLModel):
@@ -14,5 +22,5 @@ class UserParams(SQLModel):
     email__contains: str | None = None
     name: str | None = Field(default=None, regex=name_pattern)
     name__contains: str | None = None
-    limit: int = 0
+    limit: int = 20
     offset: int = 0
