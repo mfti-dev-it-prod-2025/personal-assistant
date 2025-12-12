@@ -1,6 +1,10 @@
+from typing import Any
+
 import sqlalchemy
+from sqlalchemy import GenerativeSelect, func
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
+from sqlmodel.sql._expression_select_cls import SelectOfScalar
 
 from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.exceptions import UserAlreadyExist
@@ -19,6 +23,10 @@ class UserRepository:
             statement = statement.limit(params.limit)
         if params.offset:
             statement = statement.offset(params.offset)
+        statement = self._filter_by_params(params, statement)
+        return (await self.db_session.exec(statement)).all()
+
+    def _filter_by_params(self, params: UserParams, statement: SelectOfScalar[Any] | GenerativeSelect | Any) -> Any:
         for param, value in params.model_dump().items():
             if value is None:
                 continue
@@ -32,7 +40,13 @@ class UserRepository:
                     )
                     continue
             statement = statement.where(getattr(UserTable, param) == value)
-        return (await self.db_session.exec(statement)).all()
+        return statement
+
+    async def get_response_count(self, params: UserParams) -> int:
+        statement = select(UserTable).select(func.count())
+        statement = self._filter_by_params(params=params,statement=statement)
+        return await self.db_session.scalar(statement)
+
 
     async def create_user(self, user: UserCreate) -> UserTable:
         user_table = UserTable.model_validate(

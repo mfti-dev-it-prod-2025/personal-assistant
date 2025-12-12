@@ -14,5 +14,5 @@ class UserParams(SQLModel):
     email__contains: str | None = None
     name: str | None = Field(default=None, regex=name_pattern)
     name__contains: str | None = None
-    limit: int = 0
+    limit: int = 20
     offset: int = 0
