@@ -43,7 +43,7 @@ class UserRepository:
         return statement
 
     async def get_response_count(self, params: UserParams) -> int:
-        statement = select(UserTable).select(func.count())
+        statement = select(func.count()).select_from(UserTable)
         statement = self._filter_by_params(params=params,statement=statement)
         return await self.db_session.scalar(statement)
 
