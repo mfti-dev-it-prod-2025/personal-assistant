@@ -18,7 +18,6 @@ class ExpenseUpdate(BaseModel):
     name: Optional[str] = None
     amount: Optional[float] = None
     currency: Optional[str] = None
-    # user_id: Optional[uuid.UUID] = None
     category_id: Optional[uuid.UUID] = None
     tag: Optional[str] = None
     shared: Optional[bool] = None

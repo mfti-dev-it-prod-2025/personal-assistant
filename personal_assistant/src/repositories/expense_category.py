@@ -33,6 +33,7 @@ class ExpenseCategoryRepository:
         result = await self.db_session.exec(stmt)
         return result.all()
 
+
     async def get_expense_category_by_id(
         self,
         id: uuid.UUID,
@@ -47,6 +48,7 @@ class ExpenseCategoryRepository:
         )
         return (await self.db_session.exec(stmt)).one_or_none()
 
+
     async def get_expense_category_by_name(
         self,
         name: str,
@@ -60,6 +62,7 @@ class ExpenseCategoryRepository:
             ExpenseCategoryTable.user_id == user_id,
         )
         return (await self.db_session.exec(stmt)).one_or_none()
+
 
     async def create_expense_category(
         self,
@@ -79,6 +82,7 @@ class ExpenseCategoryRepository:
         await self.db_session.refresh(new_expense_category)
 
         return new_expense_category
+
 
     async def update_expense_category(
         self,
@@ -101,6 +105,7 @@ class ExpenseCategoryRepository:
         await self.db_session.refresh(expense)
 
         return expense
+
 
     async def delete_expense_category(
         self,
