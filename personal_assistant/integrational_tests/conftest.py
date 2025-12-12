@@ -12,8 +12,6 @@ from testcontainers.postgres import PostgresContainer
 from uuid import uuid4
 from datetime import date, datetime, timezone
 import random
-from personal_assistant.src.api.v1.user.params import UserParams
-
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
 from personal_assistant.src.models.database_session import get_session
