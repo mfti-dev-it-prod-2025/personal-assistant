@@ -22,11 +22,11 @@ expense_category_router = APIRouter()
 
 @expense_category_router.get(
     "/all",
-    summary="Получить все категории текущего пользователя",  # 🔥 UPDATED
+    summary="Получить все категории текущего пользователя",
 )
 async def get_all_categories(
     current_user: Annotated[
-            UserTable, Security(get_current_user_dependency, scopes=[])
+            UserTable, Security(get_current_user_dependency, scopes=["expense_categories:read"])
         ],
     skip: int = Query(0, ge=0, description="Количество записей для пропуска"),
     limit: int = Query(100, ge=1, le=1000, description="Лимит записей"),
@@ -52,12 +52,12 @@ async def get_all_categories(
 async def create_category(
     category_data: ExpenseCategoryCreate,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=[])
+        UserTable, Security(get_current_user_dependency, scopes=["expense_categories:write"])
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
     """
-    Создать новую категорию (только для текущего юзера)
+    Создать новую категорию (только для текущего пользователя)
     """
     try:
         res = await service.add_category(category_data, user_id=current_user.id)
@@ -73,15 +73,14 @@ async def create_category(
 async def get_category(
     params: Annotated[ExpenseCategoryParams, Depends()],
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=[])
+        UserTable, Security(get_current_user_dependency, scopes=["expense_categories:read"])
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
     """
-    Получить категорию пользователя по id или name     # 🔥 UPDATED
+    Получить категорию пользователя по id или name
     """
 
-    # 🔥 UPDATED — добавляем фильтрацию по user_id
     if params.id is not None:
         return await service.get_by_id(params.id, user_id=current_user.id)
 
@@ -102,7 +101,7 @@ async def update_category(
     category_name: str,
     update_data: ExpenseCategoryUpdate,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=[])
+        UserTable, Security(get_current_user_dependency, scopes=["expense_categories:write"])
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
@@ -134,7 +133,7 @@ async def update_category(
 async def delete_category(
     category_name: str,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=[])
+        UserTable, Security(get_current_user_dependency, scopes=["expense_categories:write"])
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
 ):

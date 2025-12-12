@@ -79,6 +79,8 @@ async def test_get_all_expenses(router_api_user, router_api_expense, router_api_
     assert all("user_id" in exp for exp in expenses_date)
 
 
+
+
 @pytest.mark.asyncio
 async def test_update_expense(router_api_user, router_api_expense):
     payload = {"amount": 120.0}

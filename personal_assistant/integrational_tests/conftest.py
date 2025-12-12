@@ -121,6 +121,25 @@ async def router_api_user(postgres_connection):
     client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client
 
+#
+# @pytest_asyncio.fixture
+# async def router_api_category(router_api_user: TestClient):
+#     """
+#     Создаёт категорию через API для текущего пользователя.
+#     router_api_user уже содержит Authorization header с токеном.
+#     """
+#     category_name = f"Тест-{uuid4().hex[:6]}"
+#     payload = {
+#         "name": category_name,
+#         "description": "Тестовая категория"
+#     }
+#
+#     # POST с авторизацией
+#     resp = router_api_user.post("/api/v1/expense_category/", json=payload)
+#     resp.raise_for_status()  # Если статус >= 400, выбросит ошибку
+#     category_data = resp.json()
+#
+#     yield category_data
 
 @pytest_asyncio.fixture
 async def router_api_category(postgres_connection, router_api_user):
@@ -129,6 +148,13 @@ async def router_api_category(postgres_connection, router_api_user):
         "name": category_name,
         "description": "Тестовая категория"
     }
+
+    user_repository = UserRepository(db_session=postgres_connection)
+    user_email = "user@test.ru"
+    user_list = await user_repository.get_users(params=UserParams(email=user_email))
+    if not user_list:
+        raise Exception("User for category creation not found")
+    user_id = user_list[0].id
 
     try:
         resp = router_api_user.post("/api/v1/expense_category/", json=payload)
@@ -139,7 +165,6 @@ async def router_api_category(postgres_connection, router_api_user):
         category_data = resp.json()
 
     except Exception:
-
         category_id = uuid4()
         now = datetime.now(tz=timezone.utc)
         query = ExpenseCategoryTable(
@@ -147,7 +172,8 @@ async def router_api_category(postgres_connection, router_api_user):
             created_at=now,
             updated_at=now,
             name=category_name,
-            description="Тестовая категория"
+            description="Тестовая категория",
+            user_id=user_id
         )
         postgres_connection.add(query)
         await postgres_connection.commit()
@@ -156,7 +182,8 @@ async def router_api_category(postgres_connection, router_api_user):
             "name": category_name,
             "description": "Тестовая категория",
             "created_at": now.isoformat(),
-            "updated_at": now.isoformat()
+            "updated_at": now.isoformat(),
+            "user_id": str(user_id)
         }
 
     yield category_data

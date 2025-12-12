@@ -11,6 +11,10 @@ SCOPES: dict[str, str] = {
     "note:create": "Создание пользователем заметки",
     "note:update": "Обновление заметки пользователем",
     "note:delete": "Удаление заметки пользователем",
+    "expenses:read": "Чтение расходов",
+    "expenses:write": "Создание и изменение расходов",
+    "expense_categories:read": "Чтение категорий расходов",
+    "expense_categories:write": "Создание и изменение категорий расходов",
 }
 
 ROLES_TO_SCOPES = {
@@ -25,6 +29,11 @@ ROLES_TO_SCOPES = {
         "tasks:write",
         "tasks:update",
         "tasks:delete",
+        "expenses:read",
+        "expenses:write",
+        "expense_categories:read",
+        "expense_categories:write",
+
     ],
 }
 oauth2_scheme = OAuth2PasswordBearer(
