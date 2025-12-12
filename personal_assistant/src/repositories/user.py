@@ -26,7 +26,11 @@ class UserRepository:
         statement = self._filter_by_params(params, statement)
         return (await self.db_session.exec(statement)).all()
 
-    def _filter_by_params(self, params: UserParams, statement: SelectOfScalar[Any] | GenerativeSelect | Any) -> Any:
+    def _filter_by_params(
+        self,
+        params: UserParams,
+        statement: SelectOfScalar[Any] | GenerativeSelect | Any,
+    ) -> Any:
         for param, value in params.model_dump().items():
             if value is None:
                 continue
@@ -44,9 +48,8 @@ class UserRepository:
 
     async def get_response_count(self, params: UserParams) -> int:
         statement = select(func.count()).select_from(UserTable)
-        statement = self._filter_by_params(params=params,statement=statement)
+        statement = self._filter_by_params(params=params, statement=statement)
         return await self.db_session.scalar(statement)
-
 
     async def create_user(self, user: UserCreate) -> UserTable:
         user_table = UserTable.model_validate(
