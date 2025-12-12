@@ -86,7 +86,7 @@ class ExpenseService:
                 detail="Расход не найден или не принадлежит текущему пользователю",
             )
 
-        await self.repo.delete_expense(expense_id)
+        await self.repo.delete_expense(expense_id, user_id=user_id)
 
 
 async def get_expense_service(

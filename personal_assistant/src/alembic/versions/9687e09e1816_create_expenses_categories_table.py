@@ -46,7 +46,7 @@ def upgrade() -> None:
         ),
         sa.UniqueConstraint("name", "user_id", name="expenses_categories_name_user_key"),
         sa.ForeignKeyConstraint(
-            ["user_id"], ["users.id"], ondelete="CASCADE"
+            ["user_id"], ["usertable.id"], ondelete="CASCADE"
         ),
     )
 
