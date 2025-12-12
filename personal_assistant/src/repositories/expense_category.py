@@ -1,5 +1,4 @@
 import uuid
-
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import Depends
@@ -17,48 +16,62 @@ class ExpenseCategoryRepository:
         self.db_session = db_session
 
     async def get_all_categories(
-        self, skip: int = 0, limit: int = 100
+        self,
+        user_id: uuid.UUID,
+        skip: int = 0,
+        limit: int = 100,
     ) -> list[ExpenseCategoryTable]:
         """
-        Получает все существующие категории расходов.
+        Получает все категории пользователя.
         """
-        stmt = select(ExpenseCategoryTable).offset(skip).limit(limit)
+        stmt = (
+            select(ExpenseCategoryTable)
+            .where(ExpenseCategoryTable.user_id == user_id)
+            .offset(skip)
+            .limit(limit)
+        )
         result = await self.db_session.exec(stmt)
         return result.all()
 
     async def get_expense_category_by_id(
-        self, id: uuid.UUID
+        self,
+        id: uuid.UUID,
+        user_id: uuid.UUID,
     ) -> ExpenseCategoryTable | None:
         """
-        Получает категорию расходов по id.
+        Получает категорию по id только для данного пользователя.
         """
-        return (
-            await self.db_session.exec(
-                select(ExpenseCategoryTable).where(ExpenseCategoryTable.id == id)
-            )
-        ).one_or_none()
+        stmt = select(ExpenseCategoryTable).where(
+            ExpenseCategoryTable.id == id,
+            ExpenseCategoryTable.user_id == user_id,
+        )
+        return (await self.db_session.exec(stmt)).one_or_none()
 
     async def get_expense_category_by_name(
-        self, name: str
+        self,
+        name: str,
+        user_id: uuid.UUID,
     ) -> ExpenseCategoryTable | None:
         """
-        Получает категорию расходов по имени.
+        Получает категорию по имени только для данного пользователя.
         """
-        return (
-            await self.db_session.exec(
-                select(ExpenseCategoryTable).where(ExpenseCategoryTable.name == name)
-            )
-        ).one_or_none()
+        stmt = select(ExpenseCategoryTable).where(
+            ExpenseCategoryTable.name == name,
+            ExpenseCategoryTable.user_id == user_id,
+        )
+        return (await self.db_session.exec(stmt)).one_or_none()
 
     async def create_expense_category(
         self,
         expense_category_data: ExpenseCategoryCreate,
+        user_id: uuid.UUID,
     ) -> ExpenseCategoryTable:
         """
-        Создаёт новую категорию расходов.
+        Создаёт категорию для конкретного пользователя.
         """
-        new_expense_category = ExpenseCategoryTable.model_validate(
-            expense_category_data.model_dump()
+        new_expense_category = ExpenseCategoryTable(
+            **expense_category_data.model_dump(),
+            user_id=user_id,
         )
 
         self.db_session.add(new_expense_category)
@@ -69,11 +82,14 @@ class ExpenseCategoryRepository:
 
     async def update_expense_category(
         self,
-        expense_category_data: str,
+        name: str,
         update_data: ExpenseCategoryUpdate,
+        user_id: uuid.UUID,
     ) -> ExpenseCategoryTable | None:
-        """Обновляет существующую категорию расходов."""
-        expense = await self.get_expense_category_by_name(expense_category_data)
+        """
+        Обновляет категорию пользователя.
+        """
+        expense = await self.get_expense_category_by_name(name, user_id)
         if not expense:
             return None
 
@@ -86,11 +102,15 @@ class ExpenseCategoryRepository:
 
         return expense
 
-    async def delete_expense_category(self, expense_category_name: str) -> None:
+    async def delete_expense_category(
+        self,
+        name: str,
+        user_id: uuid.UUID,
+    ) -> None:
         """
-        Удаляет категорию расходов по имени.
+        Удаляет категорию пользователя.
         """
-        category = await self.get_expense_category_by_name(expense_category_name)
+        category = await self.get_expense_category_by_name(name, user_id)
         if not category:
             return
 

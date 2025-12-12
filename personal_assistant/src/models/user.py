@@ -6,7 +6,7 @@ from pydantic import EmailStr, field_serializer, field_validator
 from sqlmodel import SQLModel, Field, Relationship
 
 from personal_assistant.src.models.base import BaseTable
-from personal_assistant.src.models.budget import ExpenseTable
+from personal_assistant.src.models.budget import ExpenseTable, ExpenseCategoryTable
 
 if TYPE_CHECKING:
     pass
@@ -37,3 +37,5 @@ class UserTable(UserBase, BaseTable, table=True):
     role: UserRole = Field(default=UserRole.user)
     telegram_id: int | None = Field(default=None, unique=True)
     expenses: List["ExpenseTable"] = Relationship(back_populates="user")
+    categories: List["ExpenseCategoryTable"] = Relationship(back_populates="user")
+

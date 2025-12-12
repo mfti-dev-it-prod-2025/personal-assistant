@@ -37,7 +37,10 @@ class ExpenseTable(BaseTable, table=True):
 class ExpenseCategoryTable(BaseTable, table=True):
     __tablename__ = "expenses_categories"
 
-    name: str = Field(unique=True, nullable=False)
+    name: str = Field(nullable=False, index=True)
     description: str | None = Field(default=None, nullable=True)
+
+    user_id: uuid.UUID = Field(foreign_key="usertable.id", nullable=False)
+    user: Optional["UserTable"] = Relationship(back_populates="categories")
 
     expenses: List["ExpenseTable"] = Relationship(back_populates="category")

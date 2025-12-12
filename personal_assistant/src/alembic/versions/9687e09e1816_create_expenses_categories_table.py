@@ -39,7 +39,15 @@ def upgrade() -> None:
         sa.Column(
             "updated_at", sa.DateTime, nullable=True, server_default=sa.text("now()")
         ),
-        sa.UniqueConstraint("name", name="expenses_categories_name_key"),
+        sa.Column(
+            "user_id",
+            postgresql.UUID(as_uuid=True),
+            nullable=False,
+        ),
+        sa.UniqueConstraint("name", "user_id", name="expenses_categories_name_user_key"),
+        sa.ForeignKeyConstraint(
+            ["user_id"], ["users.id"], ondelete="CASCADE"
+        ),
     )
 
 

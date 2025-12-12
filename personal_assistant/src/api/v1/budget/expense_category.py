@@ -20,20 +20,27 @@ from personal_assistant.src.api.dependencies import (
 
 expense_category_router = APIRouter()
 
-
 @expense_category_router.get(
     "/all",
-    summary="Получить все категории",
+    summary="Получить все категории текущего пользователя",  # 🔥 UPDATED
 )
 async def get_all_categories(
+    current_user: Annotated[
+            UserTable, Security(get_current_user_dependency, scopes=[])
+        ],
     skip: int = Query(0, ge=0, description="Количество записей для пропуска"),
     limit: int = Query(100, ge=1, le=1000, description="Лимит записей"),
+
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> List[ExpenseCategoryResponse]:
     """
-    Получить список всех категорий
+    Получить список всех категорий текущего пользователя
     """
-    expense_categories = await service.get_all(skip=skip, limit=limit)
+    expense_categories = await service.get_all(
+        skip=skip,
+        limit=limit,
+        user_id=current_user.id,
+    )
     return expense_categories
 
 
@@ -50,10 +57,10 @@ async def create_category(
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
     """
-    Создать новую категорию
+    Создать новую категорию (только для текущего юзера)
     """
     try:
-        res = await service.add_category(category_data)
+        res = await service.add_category(category_data, user_id=current_user.id)
         return res
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -71,13 +78,15 @@ async def get_category(
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
     """
-    Получить категорию по id или name
+    Получить категорию пользователя по id или name     # 🔥 UPDATED
     """
+
+    # 🔥 UPDATED — добавляем фильтрацию по user_id
     if params.id is not None:
-        return await service.get_by_id(params.id)
+        return await service.get_by_id(params.id, user_id=current_user.id)
 
     if params.name is not None:
-        return await service.get_by_name(params.name)
+        return await service.get_by_name(params.name, user_id=current_user.id)
 
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -98,14 +107,19 @@ async def update_category(
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
     """
-    Обновить данные категории
+    Обновить данные своей категории
     """
 
     try:
-        category = await service.update(category_name, update_data)
+        category = await service.update(
+            category_name,
+            update_data,
+            user_id=current_user.id,
+        )
         if not category:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Категория не найдена."
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Категория не найдена.",
             )
         return category
     except Exception as e:
@@ -118,9 +132,14 @@ async def update_category(
     summary="Удалить категорию",
 )
 async def delete_category(
-    category_name: str, service: ExpenseCategoryService = Depends(get_category_service)
+    category_name: str,
+    current_user: Annotated[
+        UserTable, Security(get_current_user_dependency, scopes=[])
+    ],
+    service: ExpenseCategoryService = Depends(get_category_service),
 ):
     """
-    Удалить категорию
+    Удалить свою категорию
     """
-    await service.delete(category_name)
+
+    await service.delete(category_name, user_id=current_user.id)
