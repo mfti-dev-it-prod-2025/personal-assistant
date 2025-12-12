@@ -12,10 +12,9 @@ class UserService:
     async def get_users(self, params: UserParams) -> UserListResponse:
         result = await self.repository.get_users(params)
         result_count = await self.repository.get_response_count(params=params)
-        return UserListResponse(limit=params.limit,
-                                offset=params.offset,
-                                result=result,
-                                total=result_count)
+        return UserListResponse(
+            limit=params.limit, offset=params.offset, result=result, total=result_count
+        )
 
     async def create_user(self, user) -> UserTable:
         return await self.repository.create_user(user)
