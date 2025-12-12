@@ -40,11 +40,6 @@ class ExpenseService:
         return expense
 
 
-    async def get_by_user(self, email: str) -> List[ExpenseTable]:
-        expenses = await self.repo.get_by_user(email)
-        return expenses
-
-
     async def get_by_category(self, category: str, user_id: UUID) -> List[ExpenseTable]:
         expenses = await self.repo.get_expenses_by_category(category, user_id=user_id)
         return expenses

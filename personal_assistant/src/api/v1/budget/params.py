@@ -7,7 +7,6 @@ from sqlmodel import SQLModel
 
 
 class ExpensesParams(SQLModel):
-    email: EmailStr | None = Field(default=None)
     category_name: str | None = Field(default=None)
 
     start_date: Optional[str] = Field(

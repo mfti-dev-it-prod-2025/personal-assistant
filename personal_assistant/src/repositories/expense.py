@@ -39,15 +39,6 @@ class ExpenseRepository:
             )
         ).one_or_none()
 
-    async def get_by_user(self, email: str) -> list[ExpenseTable]:
-
-        result = await self.db_session.exec(
-            select(ExpenseTable)
-            .join(UserTable, ExpenseTable.user_id == UserTable.id)
-            .where(UserTable.email == email)
-        )
-        return result.all()
-
 
     async def get_expenses_by_category(self, category: str, user_id: uuid.UUID) -> list[ExpenseTable]:
         result = await self.db_session.exec(

@@ -57,15 +57,11 @@ async def get_expenses(
 ) -> list[ExpenseResponse]:
     """
     Получить список расходов с фильтрами (одновременно работает только 1 фильтр):
-    - email
     - category_name
     - start_date, end_date
     - если параметры не указаны — вернуть все расходы.
     """
     user_id = current_user.id
-
-    if params.email:
-        return await service.get_by_user(params.email)
 
     if params.category_name:
         return await service.get_by_category(params.category_name, user_id)
