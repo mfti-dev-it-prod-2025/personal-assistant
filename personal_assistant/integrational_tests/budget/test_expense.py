@@ -1,6 +1,5 @@
 import pytest
 from datetime import date
-from uuid import UUID
 
 
 @pytest.mark.asyncio
@@ -24,7 +23,7 @@ async def test_create_expense(router_api_user, router_api_category):
     assert body["category_id"] == router_api_category["id"]
     assert body["shared"] is False
     assert "id" in body
-    assert "user_id" in body  # теперь проверяем, что есть user_id, фиксированное значение можно не проверять
+    assert "user_id" in body
 
 
 @pytest.mark.asyncio

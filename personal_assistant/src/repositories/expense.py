@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, date
+from datetime import  date
 from typing import Optional
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -7,7 +7,6 @@ from fastapi import Depends
 
 from personal_assistant.src.models.database_session import get_session
 from personal_assistant.src.models.budget import ExpenseTable, ExpenseCategoryTable
-from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense import ExpenseCreate, ExpenseUpdate
 
 
