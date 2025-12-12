@@ -6,10 +6,10 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel.sql._expression_select_cls import SelectOfScalar
 
-from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.exceptions import UserAlreadyExist
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.auth.user import UserCreate
+from personal_assistant.src.schemas.user import UserParams
 from personal_assistant.src.services.auth.password import Password
 
 

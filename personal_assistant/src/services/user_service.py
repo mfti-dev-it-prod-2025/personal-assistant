@@ -1,9 +1,8 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from personal_assistant.src.api.v1.user.params import UserParams
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.repositories import UserRepository
-from personal_assistant.src.schemas.user import UserListResponse
+from personal_assistant.src.schemas.user import UserListResponse, UserParams
 
 
 class UserService:
