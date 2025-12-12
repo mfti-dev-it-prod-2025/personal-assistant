@@ -1,4 +1,5 @@
 from uuid import UUID
+from datetime import date
 from fastapi import HTTPException, status
 from typing import List, Optional
 from fastapi import Depends
@@ -46,7 +47,7 @@ class ExpenseService:
 
 
     async def get_by_date_range(
-        self, start_date: Optional[str] = None, end_date: Optional[str] = None, user_id: UUID = None
+        self, start_date: Optional[date] = None, end_date: Optional[date] = None, user_id: UUID = None
     ) -> List[ExpenseTable]:
         expenses = await self.repo.get_expenses_by_date_range(
             start_date=start_date, end_date=end_date, user_id=user_id

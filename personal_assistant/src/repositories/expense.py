@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -50,14 +50,11 @@ class ExpenseRepository:
 
 
     async def get_expenses_by_date_range(
-        self, start_date: Optional[str] = None, end_date: Optional[str] = None, user_id: uuid.UUID = None
+            self, start_date: Optional[date] = None, end_date: Optional[date] = None, user_id: uuid.UUID = None
     ) -> list[ExpenseTable]:
-        if start_date:
-            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-        if end_date:
-            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
 
         stmt = select(ExpenseTable).where(ExpenseTable.user_id == user_id)
+
         if start_date:
             stmt = stmt.where(ExpenseTable.expense_date >= start_date)
         if end_date:
