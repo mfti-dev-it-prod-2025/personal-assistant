@@ -34,10 +34,12 @@ async def get_expense(
 ) -> ExpenseResponse:
     """Получить расход по id или name"""
     if params.id is not None:
-        return await service.get_by_id(params.id)
+
+        return await service.get_by_id(params.id, current_user.id)
 
     if params.name is not None:
-        return await service.get_by_name(params.name)
+
+        return await service.get_by_name(params.name, current_user.id)
 
     raise HTTPException(status_code=400, detail="Необходимо указать 'id' либо 'name'.")
 
@@ -60,20 +62,22 @@ async def get_expenses(
     - start_date, end_date
     - если параметры не указаны — вернуть все расходы.
     """
+    user_id = current_user.id
 
     if params.email:
         return await service.get_by_user(params.email)
 
     if params.category_name:
-        return await service.get_by_category(params.category_name)
+        return await service.get_by_category(params.category_name, user_id)
 
     if params.start_date or params.end_date:
         return await service.get_by_date_range(
             start_date=params.start_date,
             end_date=params.end_date,
+            user_id=user_id,
         )
 
-    return await service.get_all()
+    return await service.get_all(user_id=user_id)
 
 
 @expense_router.post(
@@ -89,6 +93,7 @@ async def create_expense(
     service: ExpenseService = Depends(get_expense_service),
 ) -> ExpenseResponse:
     """Создать новый расход"""
+
     new_expense = await service.add_expense(expense_data, current_user)
     return new_expense
 
@@ -106,7 +111,8 @@ async def update_expense(
     service: ExpenseService = Depends(get_expense_service),
 ) -> ExpenseResponse:
     """Обновить существующий расход"""
-    updated_expense = await service.update_expense(expense_id, update_data)
+
+    updated_expense = await service.update_expense(expense_id, update_data, current_user.id)
     return updated_expense
 
 
@@ -123,4 +129,5 @@ async def delete_expense(
     service: ExpenseService = Depends(get_expense_service),
 ):
     """Удалить расход"""
-    await service.delete_expense(expense_id)
+
+    await service.delete_expense(expense_id, current_user.id)

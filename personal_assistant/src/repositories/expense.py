@@ -1,9 +1,8 @@
 import uuid
 from datetime import datetime
-
+from typing import Optional
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from typing import Optional
 from fastapi import Depends
 
 from personal_assistant.src.models.database_session import get_session
@@ -16,28 +15,32 @@ class ExpenseRepository:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
+
     async def get_all_expenses(
-        self, skip: int = 0, limit: int = 100
+        self, user_id: uuid.UUID, skip: int = 0, limit: int = 100
     ) -> list[ExpenseTable]:
-        stmt = select(ExpenseTable).offset(skip).limit(limit)
+        stmt = select(ExpenseTable).where(ExpenseTable.user_id == user_id).offset(skip).limit(limit)
         result = await self.db_session.exec(stmt)
         return result.all()
 
-    async def get_expense_by_id(self, id: uuid.UUID) -> ExpenseTable | None:
+
+    async def get_expense_by_id(self, id: uuid.UUID, user_id: uuid.UUID) -> ExpenseTable | None:
         return (
             await self.db_session.exec(
-                select(ExpenseTable).where(ExpenseTable.id == id)
+                select(ExpenseTable).where(ExpenseTable.id == id, ExpenseTable.user_id == user_id)
             )
         ).one_or_none()
 
-    async def get_expense_by_name(self, name: str) -> ExpenseTable | None:
+
+    async def get_expense_by_name(self, name: str, user_id: uuid.UUID) -> ExpenseTable | None:
         return (
             await self.db_session.exec(
-                select(ExpenseTable).where(ExpenseTable.name == name)
+                select(ExpenseTable).where(ExpenseTable.name == name, ExpenseTable.user_id == user_id)
             )
         ).one_or_none()
 
     async def get_by_user(self, email: str) -> list[ExpenseTable]:
+
         result = await self.db_session.exec(
             select(ExpenseTable)
             .join(UserTable, ExpenseTable.user_id == UserTable.id)
@@ -45,31 +48,25 @@ class ExpenseRepository:
         )
         return result.all()
 
-    async def get_expenses_by_category(self, category: str) -> list[ExpenseTable]:
+
+    async def get_expenses_by_category(self, category: str, user_id: uuid.UUID) -> list[ExpenseTable]:
         result = await self.db_session.exec(
             select(ExpenseTable)
-            .join(
-                ExpenseCategoryTable,
-                ExpenseTable.category_id == ExpenseCategoryTable.id,
-            )
-            .where(ExpenseCategoryTable.name == category)
+            .join(ExpenseCategoryTable, ExpenseTable.category_id == ExpenseCategoryTable.id)
+            .where(ExpenseCategoryTable.name == category, ExpenseTable.user_id == user_id)
         )
         return result.all()
 
+
     async def get_expenses_by_date_range(
-        self, start_date: Optional[str] = None, end_date: Optional[str] = None
+        self, start_date: Optional[str] = None, end_date: Optional[str] = None, user_id: uuid.UUID = None
     ) -> list[ExpenseTable]:
-        """
-        Возвращает список расходов в заданном диапазоне дат.
-        Если start_date не указан — с начала,
-        если end_date не указан — до конца.
-        """
         if start_date:
             start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
         if end_date:
             end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
 
-        stmt = select(ExpenseTable)
+        stmt = select(ExpenseTable).where(ExpenseTable.user_id == user_id)
         if start_date:
             stmt = stmt.where(ExpenseTable.expense_date >= start_date)
         if end_date:
@@ -78,31 +75,27 @@ class ExpenseRepository:
         result = await self.db_session.exec(stmt)
         return result.all()
 
+
     async def create_expense(
-        self, expense_data: ExpenseCreate, current_user: UserTable
+        self, expense_data: ExpenseCreate, user_id: uuid.UUID
     ) -> ExpenseTable:
-        """
-        Создаёт новый расход для текущего пользователя.
-        """
         in_data = expense_data.model_dump()
-        in_data["user_id"] = current_user.id
+        in_data["user_id"] = user_id
         new_expense = ExpenseTable.model_validate(in_data)
 
         self.db_session.add(new_expense)
         await self.db_session.commit()
         await self.db_session.refresh(new_expense)
-
         return new_expense
+
 
     async def update_expense(
         self,
         expense_id: uuid.UUID,
         update_data: ExpenseUpdate,
+        user_id: uuid.UUID
     ) -> ExpenseTable | None:
-        """
-        Обновляет существующий расход.
-        """
-        expense = await self.get_expense_by_id(expense_id)
+        expense = await self.get_expense_by_id(expense_id, user_id=user_id)
         if not expense:
             return None
 
@@ -112,14 +105,11 @@ class ExpenseRepository:
 
         await self.db_session.commit()
         await self.db_session.refresh(expense)
-
         return expense
 
-    async def delete_expense(self, expense_id: uuid.UUID) -> None:
-        """
-        Удаляет расход по id.
-        """
-        expense = await self.get_expense_by_id(expense_id)
+
+    async def delete_expense(self, expense_id: uuid.UUID, user_id: uuid.UUID) -> None:
+        expense = await self.get_expense_by_id(expense_id, user_id=user_id)
         if not expense:
             return
 
