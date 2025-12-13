@@ -2,12 +2,11 @@ import uuid
 from datetime import date
 from typing import Optional
 
-from fastapi import Depends
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from personal_assistant.src.api.dependencies import DbSessionDepends
 from personal_assistant.src.models.budget import ExpenseTable, ExpenseCategoryTable
-from personal_assistant.src.models.database_session import get_session
 from personal_assistant.src.schemas.budget.expense import ExpenseCreate, ExpenseUpdate
 
 
@@ -105,8 +104,7 @@ class ExpenseRepository:
             return None
 
         update_fields = update_data.model_dump(exclude_unset=True)
-        for field, value in update_fields.items():
-            setattr(expense, field, value)
+        expense.sqlmodel_update(update_fields)
 
         await self.db_session.commit()
         await self.db_session.refresh(expense)
@@ -122,6 +120,6 @@ class ExpenseRepository:
 
 
 async def get_expense_repository(
-    db: AsyncSession = Depends(get_session),
+    db: DbSessionDepends,
 ) -> ExpenseRepository:
     return ExpenseRepository(db)

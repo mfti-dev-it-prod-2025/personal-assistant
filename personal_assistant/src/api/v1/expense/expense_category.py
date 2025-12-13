@@ -7,14 +7,14 @@ from fastapi import status, Query, HTTPException
 from personal_assistant.src.api.dependencies import (
     get_current_user_dependency,
 )
-from personal_assistant.src.schemas.budget.params import ExpenseCategoryParams
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense_category import (
     ExpenseCategoryResponse,
     ExpenseCategoryCreate,
     ExpenseCategoryUpdate,
 )
-from personal_assistant.src.services.budget.expense_category import (
+from personal_assistant.src.schemas.budget.params import ExpenseCategoryParams
+from personal_assistant.src.services.expense_category import (
     ExpenseCategoryService,
     get_category_service,
 )

@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Optional
+from typing import List, Optional, Annotated
 from uuid import UUID
 
 from fastapi import Depends
@@ -90,6 +90,6 @@ class ExpenseService:
 
 
 async def get_expense_service(
-    repo: ExpenseRepository = Depends(get_expense_repository),
+    repo: Annotated[ExpenseRepository, Depends(get_expense_repository)],
 ) -> ExpenseService:
     return ExpenseService(repo)

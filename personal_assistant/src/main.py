@@ -2,21 +2,16 @@ import uvicorn
 from fastapi import FastAPI
 
 from personal_assistant.src.api.v1.auth.main import auth_router
+from personal_assistant.src.api.v1.expense.expense import expense_router
 from personal_assistant.src.api.v1.misc import router as misc_router
-from personal_assistant.src.api.v1.user.user import user_router
 from personal_assistant.src.api.v1.notes.note import router as note_router
-from personal_assistant.src.api.v1.budget.expense_category import (
-    expense_category_router,
-)
-from personal_assistant.src.api.v1.budget.expense import expense_router
+from personal_assistant.src.api.v1.tasks.endpoints import router as tasks_router
+from personal_assistant.src.api.v1.user.user import user_router
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.exception_handlers import (
     user_already_exists_exception_handler,
 )
 from personal_assistant.src.exceptions import UserAlreadyExist
-
-from personal_assistant.src.api.v1.tasks.endpoints import router as tasks_router
-
 
 app = FastAPI(title="Personal assistant")
 
@@ -33,11 +28,6 @@ app.include_router(note_router, prefix=f"{api_base_prefix}notes", tags=["notes"]
 
 app.include_router(expense_router, prefix=f"{api_base_prefix}expense", tags=["expense"])
 
-app.include_router(
-    expense_category_router,
-    prefix=f"{api_base_prefix}expense_category",
-    tags=["expense_category"],
-)
 
 app.include_router(tasks_router, prefix=f"{api_base_prefix}tasks", tags=["tasks"])
 

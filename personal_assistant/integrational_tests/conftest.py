@@ -1,8 +1,5 @@
 import os
-import random
-from datetime import date, datetime, timezone
 from typing import Generator, Any
-from uuid import uuid4
 
 import pytest
 import pytest_asyncio
@@ -15,8 +12,6 @@ from testcontainers.postgres import PostgresContainer
 
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
-from personal_assistant.src.models.budget import ExpenseCategoryTable
-from personal_assistant.src.models.budget import ExpenseTable
 from personal_assistant.src.models.database_session import get_session
 from personal_assistant.src.models.todo import Task
 from personal_assistant.src.models.user import UserRole
@@ -121,131 +116,6 @@ async def router_api_user(postgres_connection):
     auth_response.raise_for_status()
     client.headers["Authorization"] = f"Bearer {auth_response.json()['access_token']}"
     yield client
-
-#
-# @pytest_asyncio.fixture
-# async def router_api_category(router_api_user: TestClient):
-#     """
-#     Создаёт категорию через API для текущего пользователя.
-#     router_api_user уже содержит Authorization header с токеном.
-#     """
-#     category_name = f"Тест-{uuid4().hex[:6]}"
-#     payload = {
-#         "name": category_name,
-#         "description": "Тестовая категория"
-#     }
-#
-#     # POST с авторизацией
-#     resp = router_api_user.post("/api/v1/expense_category/", json=payload)
-#     resp.raise_for_status()  # Если статус >= 400, выбросит ошибку
-#     category_data = resp.json()
-#
-#     yield category_data
-
-
-@pytest_asyncio.fixture
-async def router_api_category(postgres_connection, router_api_user):
-    category_name = f"Тест-{uuid4().hex[:6]}"
-    payload = {
-        "name": category_name,
-        "description": "Тестовая категория"
-    }
-
-    user_repository = UserRepository(db_session=postgres_connection)
-    user_email = "user@test.ru"
-    user_list = await user_repository.get_users(params=UserParams(email=user_email))
-    if not user_list:
-        raise Exception("User for category creation not found")
-    user_id = user_list[0].id
-
-    try:
-        resp = router_api_user.post("/api/v1/expense_category/", json=payload)
-        if resp.status_code >= 400:
-            raise Exception("API returned an error")
-
-        resp.raise_for_status()
-        category_data = resp.json()
-
-    except Exception:
-        category_id = uuid4()
-        now = datetime.now(tz=timezone.utc)
-        query = ExpenseCategoryTable(
-            id=category_id,
-            created_at=now,
-            updated_at=now,
-            name=category_name,
-            description="Тестовая категория",
-            user_id=user_id
-        )
-        postgres_connection.add(query)
-        await postgres_connection.commit()
-        category_data = {
-            "id": str(category_id),
-            "name": category_name,
-            "description": "Тестовая категория",
-            "created_at": now.isoformat(),
-            "updated_at": now.isoformat(),
-            "user_id": str(user_id)
-        }
-
-    yield category_data
-
-
-@pytest_asyncio.fixture
-async def router_api_expense(router_api_user, router_api_category, postgres_connection):
-    random_suffix = random.randint(1, 99999)
-    category_name = f"Тест-{random_suffix}"
-    payload = {
-        "amount": 99.9,
-        "currency": "RUB",
-        "category_id": router_api_category["id"],
-        "name": category_name,
-        "shared": False,
-        "expense_date": date.today().isoformat(),
-    }
-
-    resp = router_api_user.post("/api/v1/expense/", json=payload)
-
-    if resp.status_code == 201:
-        yield resp.json()
-        return
-
-    if resp.status_code == 409:
-        get_resp = router_api_user.get(
-            f"/api/v1/expense/?name={payload['name']}&amount={payload['amount']}"
-        )
-        assert get_resp.status_code == 200
-        yield get_resp.json()
-        return
-
-    expense_id = uuid4()
-    now = datetime.now(tz=timezone.utc)
-    query = ExpenseTable(
-        id=expense_id,
-        created_at=now,
-        updated_at=now,
-        amount=payload["amount"],
-        currency=payload["currency"],
-        category_id=router_api_category["id"],
-        name=payload["name"],
-        shared=payload["shared"],
-        expense_date=date.fromisoformat(payload["expense_date"]),
-    )
-
-    postgres_connection.add(query)
-    await postgres_connection.commit()
-
-    yield {
-        "id": str(expense_id),
-        "amount": payload["amount"],
-        "currency": payload["currency"],
-        "category_id": router_api_category["id"],
-        "name": payload["name"],
-        "shared": payload["shared"],
-        "expense_date": payload["expense_date"],
-        "created_at": now.isoformat(),
-        "updated_at": now.isoformat(),
-    }
 
 
 @pytest_asyncio.fixture(autouse=True)

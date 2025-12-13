@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import Depends
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -87,12 +89,6 @@ class ExpenseCategoryService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Категория с таким именем уже существует",
             )
-        except Exception as exc:
-            await self.repo.db_session.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Ошибка при создании категории: {exc}",
-            )
         return new_category
 
     async def update(
@@ -142,6 +138,6 @@ class ExpenseCategoryService:
 
 
 async def get_category_service(
-    repo: ExpenseCategoryRepository = Depends(get_expense_category_repository),
+    repo: Annotated[ExpenseCategoryRepository,Depends(get_expense_category_repository)],
 ) -> ExpenseCategoryService:
     return ExpenseCategoryService(repo)

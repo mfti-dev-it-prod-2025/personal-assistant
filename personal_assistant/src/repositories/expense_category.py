@@ -1,11 +1,10 @@
 import uuid
 
-from fastapi import Depends
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
+from personal_assistant.src.api.dependencies import DbSessionDepends
 from personal_assistant.src.models.budget import ExpenseCategoryTable
-from personal_assistant.src.models.database_session import get_session
 from personal_assistant.src.schemas.budget.expense_category import (
     ExpenseCategoryCreate,
     ExpenseCategoryUpdate,
@@ -70,10 +69,8 @@ class ExpenseCategoryRepository:
         """
         Создаёт категорию для конкретного пользователя.
         """
-        new_expense_category = ExpenseCategoryTable(
-            **expense_category_data.model_dump(),
-            user_id=user_id,
-        )
+        new_expense_category = ExpenseCategoryTable.model_validate(expense_category_data,
+                                                                   update={"user_id": user_id,})
 
         self.db_session.add(new_expense_category)
         await self.db_session.commit()
@@ -94,9 +91,7 @@ class ExpenseCategoryRepository:
         if not expense:
             return None
 
-        update_fields = update_data.model_dump(exclude_unset=True)
-        for field, value in update_fields.items():
-            setattr(expense, field, value)
+        expense.sqlmodel_update(update_data.model_dump(exclude_unset=True))
 
         await self.db_session.commit()
         await self.db_session.refresh(expense)
@@ -120,6 +115,6 @@ class ExpenseCategoryRepository:
 
 
 async def get_expense_category_repository(
-    db: AsyncSession = Depends(get_session),
+    db: DbSessionDepends,
 ) -> ExpenseCategoryRepository:
     return ExpenseCategoryRepository(db)

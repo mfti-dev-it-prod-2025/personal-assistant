@@ -61,7 +61,7 @@ async def test_get_all_expenses(router_api_user, router_api_expense, router_api_
     assert all("user_id" in exp for exp in expenses)
 
     resp_category = router_api_user.get(
-        f"/api/v1/expense_category/?name={router_api_category['name']}"
+        f"/api/v1/expense/category/?name={router_api_category['name']}"
     )
     category_name = resp_category.json()['name']
 
