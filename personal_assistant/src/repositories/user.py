@@ -10,7 +10,7 @@ from personal_assistant.src.exceptions import UserAlreadyExist
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.auth.user import UserCreate
 from personal_assistant.src.schemas.user import UserParams
-from personal_assistant.src.services.auth.password import Password
+from personal_assistant.src.services.password import Password
 
 
 class UserRepository:

@@ -45,9 +45,7 @@ class NoteRepository:
             return None
 
         update_data = note_data.model_dump(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(db_note, field, value)
-
+        db_note.sqlmodel_update(update_data)
         self.session.add(db_note)
         await self.session.commit()
         await self.session.refresh(db_note)

@@ -15,7 +15,7 @@ from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.token import Token
 from personal_assistant.src.schemas.auth.user import UserGet
 from personal_assistant.src.schemas.user import UserParams
-from personal_assistant.src.services.auth.password import Password
+from personal_assistant.src.services.password import Password
 
 
 class AuthAuthenticate:

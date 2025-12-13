@@ -12,9 +12,9 @@ from testcontainers.postgres import PostgresContainer
 
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
-from personal_assistant.src.models.database_session import get_session
 from personal_assistant.src.models.todo import Task
 from personal_assistant.src.models.user import UserRole
+from personal_assistant.src.repositories.database_session import get_session
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserCreate
 from personal_assistant.src.schemas.user import UserParams

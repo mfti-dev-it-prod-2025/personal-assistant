@@ -1,8 +1,8 @@
 from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlalchemy.orm import sessionmaker
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from personal_assistant.src.configs.app import settings
 

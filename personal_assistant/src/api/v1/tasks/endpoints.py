@@ -15,7 +15,7 @@ from personal_assistant.src.schemas.tasks.schemas import (
     TaskListResponse,
     TasksStats,
 )
-from personal_assistant.src.services.tasks.service import TaskService
+from personal_assistant.src.services.tasks import TaskService
 
 router = APIRouter(tags=["tasks"])
 
