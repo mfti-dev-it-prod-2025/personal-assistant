@@ -256,6 +256,7 @@ personal_assistant/
 - `dev` — запуск dev-сервера (`fastapi dev`)
 - `run` — запуск prod-сервера (`fastapi run`)
 - `ddev` — поднять тестовый postgres из `docker-compose` (`docker/docker-compose.test.yml`)
+- `dprod` — поднять продовый postgres из `docker-compose` (`docker/docker-compose.prod.yml`)
 - `mkmigrate` — сгенерировать новую миграцию Alembic (с опциональной меткой ветки через `BRANCH=`).
 - `migrate` — применить миграции Alembic
 - `utest` — запустить юнит-тесты
