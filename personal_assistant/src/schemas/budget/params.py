@@ -8,12 +8,8 @@ from sqlmodel import SQLModel, Field
 class ExpensesParams(SQLModel):
     category_name: Optional[str] = Field(default=None)
 
-    start_date: Optional[date] = Field(
-        default=None, description="Начальная дата"
-    )
-    end_date: Optional[date] = Field(
-        default=None, description="Конечная дата"
-    )
+    start_date: Optional[date] = Field(default=None, description="Начальная дата")
+    end_date: Optional[date] = Field(default=None, description="Конечная дата")
 
 
 class ExpenseParams(SQLModel):

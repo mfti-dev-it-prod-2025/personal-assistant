@@ -13,12 +13,12 @@ SCOPES: dict[str, str] = {
     "note:delete": "Удаление заметки пользователем",
     "expenses:read": "Чтение расходов",
     "expenses:create": "Создание расходов",
-    "expenses:update":"Изменение расходов",
+    "expenses:update": "Изменение расходов",
     "expenses:delete": "Удаление расходов",
     "expense_categories:read": "Чтение категорий расходов",
     "expense_categories:create": "Создание категорий расходов",
     "expense_categories:update": "изменение категорий расходов",
-    "expense_categories:delete": "удаление категорий расходов"
+    "expense_categories:delete": "удаление категорий расходов",
 }
 
 ROLES_TO_SCOPES = {

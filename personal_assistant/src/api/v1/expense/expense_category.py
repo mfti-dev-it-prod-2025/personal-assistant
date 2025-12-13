@@ -59,11 +59,9 @@ async def create_category(
     category_data: ExpenseCategoryCreate,
     current_user: Annotated[
         UserTable,
-        Security(
-            get_current_user_dependency, scopes=["expense_categories:create"]
-        ),
+        Security(get_current_user_dependency, scopes=["expense_categories:create"]),
     ],
-        service: category_service_depends,
+    service: category_service_depends,
 ) -> ExpenseCategoryResponse:
     """
     Создать новую категорию (только для текущего пользователя)
@@ -109,9 +107,7 @@ async def update_category(
     update_data: ExpenseCategoryUpdate,
     current_user: Annotated[
         UserTable,
-        Security(
-            get_current_user_dependency, scopes=["expense_categories:create"]
-        ),
+        Security(get_current_user_dependency, scopes=["expense_categories:create"]),
     ],
     service: category_service_depends,
 ) -> ExpenseCategoryResponse:
@@ -141,9 +137,7 @@ async def delete_category(
     category_name: str,
     current_user: Annotated[
         UserTable,
-        Security(
-            get_current_user_dependency, scopes=["expense_categories:create"]
-        ),
+        Security(get_current_user_dependency, scopes=["expense_categories:create"]),
     ],
     service: category_service_depends,
 ):

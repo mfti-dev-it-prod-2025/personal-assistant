@@ -7,11 +7,10 @@ Create Date: 2025-12-02 20:51:48.408684
 """
 
 from typing import Sequence, Union
-from sqlalchemy.dialects import postgresql
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "9687e09e1816"
@@ -44,10 +43,10 @@ def upgrade() -> None:
             postgresql.UUID(as_uuid=True),
             nullable=False,
         ),
-        sa.UniqueConstraint("name", "user_id", name="expenses_categories_name_user_key"),
-        sa.ForeignKeyConstraint(
-            ["user_id"], ["usertable.id"], ondelete="CASCADE"
+        sa.UniqueConstraint(
+            "name", "user_id", name="expenses_categories_name_user_key"
         ),
+        sa.ForeignKeyConstraint(["user_id"], ["usertable.id"], ondelete="CASCADE"),
     )
 
 

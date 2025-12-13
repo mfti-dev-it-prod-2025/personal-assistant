@@ -38,15 +38,13 @@ async def get_expense(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:read"])
     ],
-    service: expense_service_dep
+    service: expense_service_dep,
 ) -> ExpenseResponse:
     """Получить расход по id или name"""
     if params.id is not None:
-
         return await service.get_by_id(params.id, current_user.id)
 
     if params.name is not None:
-
         return await service.get_by_name(params.name, current_user.id)
 
     raise HTTPException(status_code=400, detail="Необходимо указать 'id' либо 'name'.")
@@ -61,7 +59,7 @@ async def get_expenses(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:read"])
     ],
-    service: expense_service_dep
+    service: expense_service_dep,
 ) -> list[ExpenseResponse]:
     """
     Получить список расходов с фильтрами (одновременно работает только 1 фильтр):
@@ -94,7 +92,7 @@ async def create_expense(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:create"])
     ],
-    service: expense_service_dep
+    service: expense_service_dep,
 ) -> ExpenseResponse:
     """Создать новый расход"""
 
@@ -112,7 +110,7 @@ async def update_expense(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:update"])
     ],
-    service: expense_service_dep
+    service: expense_service_dep,
 ) -> ExpenseResponse:
     """Обновить существующий расход"""
 
@@ -132,7 +130,7 @@ async def delete_expense(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:delete"])
     ],
-    service: expense_service_dep
+    service: expense_service_dep,
 ):
     """Удалить расход"""
 

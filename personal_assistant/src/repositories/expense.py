@@ -70,7 +70,6 @@ class ExpenseRepository:
         end_date: Optional[date] = None,
         user_id: uuid.UUID = None,
     ) -> list[ExpenseTable]:
-
         stmt = select(ExpenseTable).where(ExpenseTable.user_id == user_id)
 
         if start_date:
@@ -94,10 +93,7 @@ class ExpenseRepository:
         return new_expense
 
     async def update_expense(
-        self,
-        expense_id: uuid.UUID,
-        update_data: ExpenseUpdate,
-        user_id: uuid.UUID
+        self, expense_id: uuid.UUID, update_data: ExpenseUpdate, user_id: uuid.UUID
     ) -> ExpenseTable | None:
         expense = await self.get_expense_by_id(expense_id, user_id=user_id)
         if not expense:

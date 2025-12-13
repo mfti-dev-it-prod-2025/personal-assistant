@@ -65,8 +65,7 @@ class ExpenseCategoryService:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=(
-                    "Категория с таким id не существует или "
-                    "не принадлежит пользователю"
+                    "Категория с таким id не существует или не принадлежит пользователю"
                 ),
             )
 
