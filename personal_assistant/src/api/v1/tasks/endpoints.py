@@ -1,5 +1,6 @@
 from typing import Annotated
 from uuid import UUID
+
 from fastapi import APIRouter, HTTPException, status, Query, Security, Depends
 
 from personal_assistant.src.api.dependencies import (
@@ -31,7 +32,7 @@ async def create_task(
     task_data: TaskCreate,
     task_service: task_service_dependency,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["tasks:write"])
+        UserTable, Security(get_current_user_dependency, scopes=["tasks:create"])
     ],
 ) -> TaskResponse:
     return await task_service.create_task(current_user.id, task_data)
