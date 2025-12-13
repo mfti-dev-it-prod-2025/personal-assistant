@@ -7,7 +7,8 @@ from fastapi import status, HTTPException
 from personal_assistant.src.api.dependencies import (
     get_current_user_dependency,
 )
-from personal_assistant.src.api.v1.budget.params import ExpensesParams, ExpenseParams
+from personal_assistant.src.api.v1.budget.expense_category import expense_category_router
+from personal_assistant.src.schemas.budget.params import ExpensesParams, ExpenseParams
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense import (
     ExpenseResponse,
@@ -21,9 +22,12 @@ from personal_assistant.src.services.budget.expense import (
 
 expense_router = APIRouter()
 
+expense_router.include_router(router=expense_category_router, prefix="/category")
+
+expense_service_dep = Annotated[ExpenseService, Depends(get_expense_service)]
 
 @expense_router.get(
-    "/",
+    "",
     summary="Получить расход",
 )
 async def get_expense(
@@ -31,7 +35,7 @@ async def get_expense(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:read"])
     ],
-    service: ExpenseService = Depends(get_expense_service),
+    service: expense_service_dep
 ) -> ExpenseResponse:
     """Получить расход по id или name"""
     if params.id is not None:
@@ -54,7 +58,7 @@ async def get_expenses(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:read"])
     ],
-    service: ExpenseService = Depends(get_expense_service),
+    service: expense_service_dep
 ) -> list[ExpenseResponse]:
     """
     Получить список расходов с фильтрами (одновременно работает только 1 фильтр):
@@ -78,7 +82,7 @@ async def get_expenses(
 
 
 @expense_router.post(
-    "/",
+    "",
     status_code=status.HTTP_201_CREATED,
     summary="Создать расход",
 )
@@ -87,7 +91,7 @@ async def create_expense(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:write"])
     ],
-    service: ExpenseService = Depends(get_expense_service),
+    service: expense_service_dep
 ) -> ExpenseResponse:
     """Создать новый расход"""
 
@@ -105,7 +109,7 @@ async def update_expense(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:write"])
     ],
-    service: ExpenseService = Depends(get_expense_service),
+    service: expense_service_dep
 ) -> ExpenseResponse:
     """Обновить существующий расход"""
 
@@ -125,7 +129,7 @@ async def delete_expense(
     current_user: Annotated[
         UserTable, Security(get_current_user_dependency, scopes=["expenses:write"])
     ],
-    service: ExpenseService = Depends(get_expense_service),
+    service: expense_service_dep
 ):
     """Удалить расход"""
 

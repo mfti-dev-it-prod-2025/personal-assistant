@@ -7,7 +7,7 @@ from fastapi import status, Query, HTTPException
 from personal_assistant.src.api.dependencies import (
     get_current_user_dependency,
 )
-from personal_assistant.src.api.v1.budget.params import ExpenseCategoryParams
+from personal_assistant.src.schemas.budget.params import ExpenseCategoryParams
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense_category import (
     ExpenseCategoryResponse,
@@ -21,20 +21,20 @@ from personal_assistant.src.services.budget.expense_category import (
 
 expense_category_router = APIRouter()
 
+category_service_depends = Annotated[ExpenseCategoryService,  Depends(get_category_service)]
 
 @expense_category_router.get(
     "/all",
     summary="Получить все категории текущего пользователя",
 )
 async def get_all_categories(
+    service: category_service_depends,
     current_user: Annotated[
         UserTable,
         Security(get_current_user_dependency, scopes=["expense_categories:read"]),
     ],
     skip: int = Query(0, ge=0, description="Количество записей для пропуска"),
     limit: int = Query(100, ge=1, le=1000, description="Лимит записей"),
-
-    service: ExpenseCategoryService = Depends(get_category_service),
 ) -> List[ExpenseCategoryResponse]:
     """
     Получить список всех категорий текущего пользователя
@@ -48,7 +48,7 @@ async def get_all_categories(
 
 
 @expense_category_router.post(
-    "/",
+    "",
     status_code=status.HTTP_201_CREATED,
     summary="Создать категорию",
 )
@@ -60,20 +60,17 @@ async def create_category(
             get_current_user_dependency, scopes=["expense_categories:write"]
         ),
     ],
-    service: ExpenseCategoryService = Depends(get_category_service),
+        service: category_service_depends,
 ) -> ExpenseCategoryResponse:
     """
     Создать новую категорию (только для текущего пользователя)
     """
-    try:
-        res = await service.add_category(category_data, user_id=current_user.id)
-        return res
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    res = await service.add_category(category_data, user_id=current_user.id)
+    return res
 
 
 @expense_category_router.get(
-    "/",
+    "",
     summary="Получить категорию",
 )
 async def get_category(
@@ -82,7 +79,7 @@ async def get_category(
         UserTable,
         Security(get_current_user_dependency, scopes=["expense_categories:read"]),
     ],
-    service: ExpenseCategoryService = Depends(get_category_service),
+    service: category_service_depends,
 ) -> ExpenseCategoryResponse:
     """
     Получить категорию пользователя по id или name
@@ -113,26 +110,23 @@ async def update_category(
             get_current_user_dependency, scopes=["expense_categories:write"]
         ),
     ],
-    service: ExpenseCategoryService = Depends(get_category_service),
+    service: category_service_depends,
 ) -> ExpenseCategoryResponse:
     """
     Обновить данные своей категории
     """
 
-    try:
-        category = await service.update(
-            category_name,
-            update_data,
-            user_id=current_user.id,
+    category = await service.update(
+        category_name,
+        update_data,
+        user_id=current_user.id,
+    )
+    if not category:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Категория не найдена.",
         )
-        if not category:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Категория не найдена.",
-            )
-        return category
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    return category
 
 
 @expense_category_router.delete(
@@ -148,7 +142,7 @@ async def delete_category(
             get_current_user_dependency, scopes=["expense_categories:write"]
         ),
     ],
-    service: ExpenseCategoryService = Depends(get_category_service),
+    service: category_service_depends,
 ):
     """
     Удалить свою категорию
