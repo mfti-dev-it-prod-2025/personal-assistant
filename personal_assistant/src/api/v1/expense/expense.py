@@ -92,7 +92,7 @@ async def get_expenses(
 async def create_expense(
     expense_data: ExpenseCreate,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["expenses:write"])
+        UserTable, Security(get_current_user_dependency, scopes=["expenses:create"])
     ],
     service: expense_service_dep
 ) -> ExpenseResponse:
@@ -110,7 +110,7 @@ async def update_expense(
     expense_id: UUID,
     update_data: ExpenseUpdate,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["expenses:write"])
+        UserTable, Security(get_current_user_dependency, scopes=["expenses:update"])
     ],
     service: expense_service_dep
 ) -> ExpenseResponse:
@@ -130,7 +130,7 @@ async def update_expense(
 async def delete_expense(
     expense_id: UUID,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["expenses:write"])
+        UserTable, Security(get_current_user_dependency, scopes=["expenses:delete"])
     ],
     service: expense_service_dep
 ):

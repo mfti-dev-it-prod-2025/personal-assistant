@@ -60,7 +60,7 @@ async def create_category(
     current_user: Annotated[
         UserTable,
         Security(
-            get_current_user_dependency, scopes=["expense_categories:write"]
+            get_current_user_dependency, scopes=["expense_categories:create"]
         ),
     ],
         service: category_service_depends,
@@ -110,7 +110,7 @@ async def update_category(
     current_user: Annotated[
         UserTable,
         Security(
-            get_current_user_dependency, scopes=["expense_categories:write"]
+            get_current_user_dependency, scopes=["expense_categories:create"]
         ),
     ],
     service: category_service_depends,
@@ -142,7 +142,7 @@ async def delete_category(
     current_user: Annotated[
         UserTable,
         Security(
-            get_current_user_dependency, scopes=["expense_categories:write"]
+            get_current_user_dependency, scopes=["expense_categories:create"]
         ),
     ],
     service: category_service_depends,

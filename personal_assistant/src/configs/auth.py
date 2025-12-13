@@ -2,19 +2,23 @@ from fastapi.security import OAuth2PasswordBearer
 
 SCOPES: dict[str, str] = {
     "users:read": "Чтение списка пользователей и их данных",
-    "users:write": "Создание и изменение пользователей",
+    "users:create": "Создание пользователей",
     "me:read": "Чтение собственных данных пользователя",
     "tasks:read": "Чтение задач",
-    "tasks:write": "Создание и изменение задач",
+    "tasks:create": "Создание задач",
     "tasks:delete": "Удаление задач",
     "tasks:update": "Обновление задач",
     "note:create": "Создание пользователем заметки",
     "note:update": "Обновление заметки пользователем",
     "note:delete": "Удаление заметки пользователем",
     "expenses:read": "Чтение расходов",
-    "expenses:write": "Создание и изменение расходов",
+    "expenses:create": "Создание расходов",
+    "expenses:update":"Изменение расходов",
+    "expenses:delete": "Удаление расходов",
     "expense_categories:read": "Чтение категорий расходов",
-    "expense_categories:write": "Создание и изменение категорий расходов",
+    "expense_categories:create": "Создание категорий расходов",
+    "expense_categories:update": "изменение категорий расходов",
+    "expense_categories:delete": "удаление категорий расходов"
 }
 
 ROLES_TO_SCOPES = {
@@ -26,14 +30,17 @@ ROLES_TO_SCOPES = {
         "note:delete",
         "note:read",
         "tasks:read",
-        "tasks:write",
+        "tasks:create",
         "tasks:update",
         "tasks:delete",
         "expenses:read",
-        "expenses:write",
+        "expenses:create",
+        "expenses:update",
+        "expenses:delete",
         "expense_categories:read",
-        "expense_categories:write",
-
+        "expense_categories:create",
+        "expense_categories:update",
+        "expense_categories:delete",
     ],
 }
 oauth2_scheme = OAuth2PasswordBearer(
