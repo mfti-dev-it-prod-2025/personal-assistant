@@ -138,6 +138,8 @@ class ExpenseCategoryService:
 
 
 async def get_category_service(
-    repo: Annotated[ExpenseCategoryRepository,Depends(get_expense_category_repository)],
+    repo: Annotated[
+        ExpenseCategoryRepository, Depends(get_expense_category_repository)
+    ],
 ) -> ExpenseCategoryService:
     return ExpenseCategoryService(repo)

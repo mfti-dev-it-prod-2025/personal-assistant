@@ -7,7 +7,9 @@ from fastapi import status, HTTPException
 from personal_assistant.src.api.dependencies import (
     get_current_user_dependency,
 )
-from personal_assistant.src.api.v1.expense.expense_category import expense_category_router
+from personal_assistant.src.api.v1.expense.expense_category import (
+    expense_category_router,
+)
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense import (
     ExpenseResponse,
@@ -25,6 +27,7 @@ expense_router = APIRouter()
 expense_router.include_router(router=expense_category_router, prefix="/category")
 
 expense_service_dep = Annotated[ExpenseService, Depends(get_expense_service)]
+
 
 @expense_router.get(
     "",

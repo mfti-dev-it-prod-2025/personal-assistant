@@ -69,8 +69,10 @@ class ExpenseCategoryRepository:
         """
         Создаёт категорию для конкретного пользователя.
         """
-        new_expense_category = ExpenseCategoryTable.model_validate(expense_category_data,
-                                                                   update={"user_id": user_id,})
+        new_expense_category = ExpenseCategoryTable.model_validate(
+            expense_category_data,
+            update={"user_id": user_id},
+        )
 
         self.db_session.add(new_expense_category)
         await self.db_session.commit()

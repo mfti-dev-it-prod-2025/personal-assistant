@@ -21,7 +21,10 @@ from personal_assistant.src.services.expense_category import (
 
 expense_category_router = APIRouter()
 
-category_service_depends = Annotated[ExpenseCategoryService,  Depends(get_category_service)]
+category_service_depends = Annotated[
+    ExpenseCategoryService, Depends(get_category_service)
+]
+
 
 @expense_category_router.get(
     "/all",
