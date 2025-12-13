@@ -1,11 +1,13 @@
 import uuid
 from datetime import date
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from sqlmodel import Field, Relationship
 
 from personal_assistant.src.models.base import BaseTable
-from personal_assistant.src.models.expense_category import ExpenseCategoryTable
+
+if TYPE_CHECKING:
+    from .expense_category import ExpenseCategoryTable
 
 
 class ExpenseTable(BaseTable, table=True):
@@ -22,5 +24,4 @@ class ExpenseTable(BaseTable, table=True):
     shared: bool = Field(default=False, nullable=False)
     expense_date: date = Field(nullable=False)
 
-    user: Optional["UserTable"] = Relationship(back_populates="expenses")
     category: Optional["ExpenseCategoryTable"] = Relationship(back_populates="expenses")
