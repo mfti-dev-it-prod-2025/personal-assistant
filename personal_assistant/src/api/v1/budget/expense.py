@@ -1,6 +1,14 @@
+from typing import Annotated
 from uuid import UUID
+
+from fastapi import APIRouter, Security, Depends
 from fastapi import status, HTTPException
 
+from personal_assistant.src.api.dependencies import (
+    get_current_user_dependency,
+)
+from personal_assistant.src.api.v1.budget.params import ExpensesParams, ExpenseParams
+from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense import (
     ExpenseResponse,
     ExpenseCreate,
@@ -10,13 +18,6 @@ from personal_assistant.src.services.budget.expense import (
     ExpenseService,
     get_expense_service,
 )
-from personal_assistant.src.api.v1.budget.params import ExpensesParams, ExpenseParams
-from typing import Annotated
-from fastapi import APIRouter, Security, Depends
-from personal_assistant.src.api.dependencies import (
-    get_current_user_dependency,
-)
-from personal_assistant.src.models import UserTable
 
 expense_router = APIRouter()
 
@@ -108,7 +109,9 @@ async def update_expense(
 ) -> ExpenseResponse:
     """Обновить существующий расход"""
 
-    updated_expense = await service.update_expense(expense_id, update_data, current_user.id)
+    updated_expense = await service.update_expense(
+        expense_id, update_data, current_user.id
+    )
     return updated_expense
 
 

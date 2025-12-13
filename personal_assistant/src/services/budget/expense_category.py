@@ -1,4 +1,6 @@
 from fastapi import Depends
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 
 from personal_assistant.src.repositories.expense_category import (
     ExpenseCategoryRepository,
@@ -9,15 +11,15 @@ from personal_assistant.src.schemas.budget.expense_category import (
     ExpenseCategoryResponse,
     ExpenseCategoryUpdate,
 )
-from sqlalchemy.exc import IntegrityError
-from fastapi import HTTPException, status
 
 
 class ExpenseCategoryService:
     def __init__(self, repo: ExpenseCategoryRepository):
         self.repo = repo
 
-    async def get_all(self, skip: int, limit: int, user_id) -> list[ExpenseCategoryResponse]:
+    async def get_all(
+        self, skip: int, limit: int, user_id
+    ) -> list[ExpenseCategoryResponse]:
         """
         Получить категории только текущего пользователя
         """
@@ -40,7 +42,10 @@ class ExpenseCategoryService:
         if not res:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Категория с таким именем не существует или не принадлежит пользователю",
+                detail=(
+                    "Категория с таким именем не существует "
+                    "или не принадлежит пользователю"
+                ),
             )
 
         return res
@@ -57,7 +62,10 @@ class ExpenseCategoryService:
         if not res:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Категория с таким id не существует или не принадлежит пользователю",
+                detail=(
+                    "Категория с таким id не существует или "
+                    "не принадлежит пользователю"
+                ),
             )
 
         return res
@@ -100,7 +108,10 @@ class ExpenseCategoryService:
         if not existing_category:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Категория с таким именем не существует или не принадлежит пользователю",
+                detail=(
+                    "Категория с таким именем не существует "
+                    "или не принадлежит пользователю"
+                ),
             )
 
         res = await self.repo.update_expense_category(
@@ -121,7 +132,10 @@ class ExpenseCategoryService:
         if not existing_category:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Категория с таким именем не существует или не принадлежит пользователю",
+                detail=(
+                    "Категория с таким именем не существует "
+                    "или не принадлежит пользователю"
+                ),
             )
 
         await self.repo.delete_expense_category(name, user_id=user_id)

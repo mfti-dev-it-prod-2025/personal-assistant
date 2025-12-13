@@ -1,5 +1,6 @@
-import pytest
 from datetime import date
+
+import pytest
 
 
 @pytest.mark.asyncio
@@ -77,8 +78,6 @@ async def test_get_all_expenses(router_api_user, router_api_expense, router_api_
     expenses_date = resp_date.json()
     assert all(exp["expense_date"] == start_date for exp in expenses_date)
     assert all("user_id" in exp for exp in expenses_date)
-
-
 
 
 @pytest.mark.asyncio

@@ -1,7 +1,14 @@
+from typing import Annotated
 from typing import List
-from fastapi import status, Query, HTTPException
-from personal_assistant.src.models import UserTable
 
+from fastapi import APIRouter, Security, Depends
+from fastapi import status, Query, HTTPException
+
+from personal_assistant.src.api.dependencies import (
+    get_current_user_dependency,
+)
+from personal_assistant.src.api.v1.budget.params import ExpenseCategoryParams
+from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.budget.expense_category import (
     ExpenseCategoryResponse,
     ExpenseCategoryCreate,
@@ -11,14 +18,9 @@ from personal_assistant.src.services.budget.expense_category import (
     ExpenseCategoryService,
     get_category_service,
 )
-from personal_assistant.src.api.v1.budget.params import ExpenseCategoryParams
-from typing import Annotated
-from fastapi import APIRouter, Security, Depends
-from personal_assistant.src.api.dependencies import (
-    get_current_user_dependency,
-)
 
 expense_category_router = APIRouter()
+
 
 @expense_category_router.get(
     "/all",
@@ -26,8 +28,9 @@ expense_category_router = APIRouter()
 )
 async def get_all_categories(
     current_user: Annotated[
-            UserTable, Security(get_current_user_dependency, scopes=["expense_categories:read"])
-        ],
+        UserTable,
+        Security(get_current_user_dependency, scopes=["expense_categories:read"]),
+    ],
     skip: int = Query(0, ge=0, description="Количество записей для пропуска"),
     limit: int = Query(100, ge=1, le=1000, description="Лимит записей"),
 
@@ -52,7 +55,10 @@ async def get_all_categories(
 async def create_category(
     category_data: ExpenseCategoryCreate,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["expense_categories:write"])
+        UserTable,
+        Security(
+            get_current_user_dependency, scopes=["expense_categories:write"]
+        ),
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
@@ -73,7 +79,8 @@ async def create_category(
 async def get_category(
     params: Annotated[ExpenseCategoryParams, Depends()],
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["expense_categories:read"])
+        UserTable,
+        Security(get_current_user_dependency, scopes=["expense_categories:read"]),
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
@@ -101,7 +108,10 @@ async def update_category(
     category_name: str,
     update_data: ExpenseCategoryUpdate,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["expense_categories:write"])
+        UserTable,
+        Security(
+            get_current_user_dependency, scopes=["expense_categories:write"]
+        ),
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
 ) -> ExpenseCategoryResponse:
@@ -133,7 +143,10 @@ async def update_category(
 async def delete_category(
     category_name: str,
     current_user: Annotated[
-        UserTable, Security(get_current_user_dependency, scopes=["expense_categories:write"])
+        UserTable,
+        Security(
+            get_current_user_dependency, scopes=["expense_categories:write"]
+        ),
     ],
     service: ExpenseCategoryService = Depends(get_category_service),
 ):

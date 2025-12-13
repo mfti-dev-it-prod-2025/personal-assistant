@@ -1,5 +1,8 @@
 import os
+import random
+from datetime import date, datetime, timezone
 from typing import Generator, Any
+from uuid import uuid4
 
 import pytest
 import pytest_asyncio
@@ -9,18 +12,16 @@ from sqlmodel import delete
 from sqlmodel.ext.asyncio.session import AsyncSession
 from starlette.testclient import TestClient
 from testcontainers.postgres import PostgresContainer
-from uuid import uuid4
-from datetime import date, datetime, timezone
-import random
+
 from personal_assistant.src.configs.app import settings
 from personal_assistant.src.main import app
+from personal_assistant.src.models.budget import ExpenseCategoryTable
+from personal_assistant.src.models.budget import ExpenseTable
 from personal_assistant.src.models.database_session import get_session
 from personal_assistant.src.models.todo import Task
 from personal_assistant.src.models.user import UserRole
 from personal_assistant.src.repositories.user import UserRepository
 from personal_assistant.src.schemas.auth.user import UserCreate
-from personal_assistant.src.models.budget import ExpenseCategoryTable
-from personal_assistant.src.models.budget import ExpenseTable
 from personal_assistant.src.schemas.user import UserParams
 
 
@@ -140,6 +141,7 @@ async def router_api_user(postgres_connection):
 #     category_data = resp.json()
 #
 #     yield category_data
+
 
 @pytest_asyncio.fixture
 async def router_api_category(postgres_connection, router_api_user):

@@ -1,5 +1,4 @@
 from enum import Enum
-
 from typing import List, TYPE_CHECKING
 
 from pydantic import EmailStr, field_serializer, field_validator
@@ -38,4 +37,3 @@ class UserTable(UserBase, BaseTable, table=True):
     telegram_id: int | None = Field(default=None, unique=True)
     expenses: List["ExpenseTable"] = Relationship(back_populates="user")
     categories: List["ExpenseCategoryTable"] = Relationship(back_populates="user")
-
