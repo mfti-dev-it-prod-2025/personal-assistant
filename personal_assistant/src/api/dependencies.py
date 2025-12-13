@@ -4,10 +4,10 @@ from fastapi.params import Depends
 from fastapi.security import SecurityScopes
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from personal_assistant.src.models import UserTable
-from personal_assistant.src.models.database_session import get_session
-from personal_assistant.src.services.auth.authenticate import AuthAuthenticate
 from personal_assistant.src.configs.auth import oauth2_scheme
+from personal_assistant.src.models import UserTable
+from personal_assistant.src.repositories.database_session import get_session
+from personal_assistant.src.services.authenticate import AuthAuthenticate
 
 DbSessionDepends = Annotated[AsyncSession, Depends(get_session)]
 

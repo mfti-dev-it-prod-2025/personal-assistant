@@ -5,7 +5,7 @@ from uuid import UUID
 from fastapi import Depends
 from fastapi import HTTPException, status
 
-from personal_assistant.src.models.budget import ExpenseTable
+from personal_assistant.src.models.expense import ExpenseTable
 from personal_assistant.src.repositories.expense import (
     ExpenseRepository,
     get_expense_repository,

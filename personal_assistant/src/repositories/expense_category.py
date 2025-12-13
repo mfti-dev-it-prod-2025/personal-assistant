@@ -4,7 +4,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from personal_assistant.src.api.dependencies import DbSessionDepends
-from personal_assistant.src.models.budget import ExpenseCategoryTable
+from personal_assistant.src.models.expense_category import ExpenseCategoryTable
 from personal_assistant.src.schemas.budget.expense_category import (
     ExpenseCategoryCreate,
     ExpenseCategoryUpdate,

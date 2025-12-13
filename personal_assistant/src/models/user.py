@@ -5,7 +5,8 @@ from pydantic import EmailStr, field_serializer, field_validator
 from sqlmodel import SQLModel, Field, Relationship
 
 from personal_assistant.src.models.base import BaseTable
-from personal_assistant.src.models.budget import ExpenseTable, ExpenseCategoryTable
+from personal_assistant.src.models.expense import ExpenseTable
+from personal_assistant.src.models.expense_category import ExpenseCategoryTable
 
 if TYPE_CHECKING:
     pass
