@@ -1,7 +1,8 @@
 from typing import Optional, List
 from uuid import UUID
-from sqlalchemy.ext.asyncio import AsyncSession
+
 from sqlalchemy import select, func
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from personal_assistant.src.models.todo import Task
 from personal_assistant.src.schemas.tasks.schemas import TaskCreate, TaskUpdate
@@ -49,8 +50,7 @@ class TaskRepository:
             return None
 
         update_data = task_data.model_dump(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(task, field, value)
+        task.sqlmodel_update(update_data)
 
         await self.session.commit()
         await self.session.refresh(task)
