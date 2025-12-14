@@ -9,7 +9,7 @@ type:
 
 lint:
 	@echo "check PEP8"
-	flake8 .
+	poetry run ruff check .
 
 run:
 	@echo "start prod server"
