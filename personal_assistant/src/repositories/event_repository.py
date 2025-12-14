@@ -1,5 +1,3 @@
-# personal_assistant/src/repositories/event_repository.py
-
 """
 Repository for events.
 """

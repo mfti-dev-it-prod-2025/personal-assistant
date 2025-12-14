@@ -1,5 +1,3 @@
-# personal_assistant/src/services/event_service.py
-
 """
 Service for events.
 """

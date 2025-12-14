@@ -1,5 +1,3 @@
-# personal_assistant/src/api/v1/events/routes.py
-
 """
 Router for managing events.
 """

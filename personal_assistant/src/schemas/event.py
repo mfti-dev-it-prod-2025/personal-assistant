@@ -1,5 +1,3 @@
-# personal_assistant/src/schemas/event.py
-
 """
 Schema for events.
 """

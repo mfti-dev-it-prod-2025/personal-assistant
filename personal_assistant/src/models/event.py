@@ -1,4 +1,3 @@
-# personal_assistant/src/models/event.py
 from datetime import datetime
 from sqlmodel import Field
 import uuid
