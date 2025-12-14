@@ -1,6 +1,10 @@
 from fastapi.security import OAuth2PasswordBearer
 
 SCOPES: dict[str, str] = {
+    "events:read": "Чтение событий",
+    "events:create": "Создание событий",
+    "events:update": "Обновление событий",
+    "events:delete": "Удаление событий",
     "users:read": "Чтение списка пользователей и их данных",
     "users:create": "Создание пользователей",
     "me:read": "Чтение собственных данных пользователя",
@@ -25,6 +29,10 @@ ROLES_TO_SCOPES = {
     "administrator": list(SCOPES.keys()),
     "user": [
         "me:read",
+        "events:read",
+        "events:create",
+        "events:update",
+        "events:delete",
         "note:create",
         "note:update",
         "note:delete",
