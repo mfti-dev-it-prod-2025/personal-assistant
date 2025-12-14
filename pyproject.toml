@@ -35,3 +35,14 @@ dev = [
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.lint.per-file-ignores]
+"personal_assistant/integrational_tests/*" = ["E501"]
+"personal_assistant/tests/*" = ["E501"]
+"personal_assistant/src/models/__init__.py" = ["F401"]
+
+[tool.ruff]
+exclude = [
+    "personal_assistant/src/alembic/"
+]
+line-length = 88
