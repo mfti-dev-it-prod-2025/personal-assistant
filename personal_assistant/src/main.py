@@ -1,9 +1,11 @@
+# personal_assistant/src/main.py
 import uvicorn
 from fastapi import FastAPI
 
 from personal_assistant.src.api.v1.auth.main import auth_router
 from personal_assistant.src.api.v1.expense.expense import expense_router
 from personal_assistant.src.api.v1.misc import router as misc_router
+from personal_assistant.src.api.v1.events.routes import router as events_router
 from personal_assistant.src.api.v1.notes.note import router as note_router
 from personal_assistant.src.api.v1.tasks.endpoints import router as tasks_router
 from personal_assistant.src.api.v1.user.user import user_router
@@ -23,8 +25,9 @@ app.include_router(auth_router, prefix=f"{api_base_prefix}auth", tags=["auth"])
 
 app.include_router(user_router, prefix=f"{api_base_prefix}user", tags=["user"])
 
-app.include_router(note_router, prefix=f"{api_base_prefix}notes", tags=["notes"])
+app.include_router(events_router, prefix=f"{api_base_prefix}events", tags=["events"])
 
+app.include_router(note_router, prefix=f"{api_base_prefix}notes", tags=["notes"])
 
 app.include_router(expense_router, prefix=f"{api_base_prefix}expense", tags=["expense"])
 
