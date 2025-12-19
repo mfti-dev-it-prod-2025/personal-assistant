@@ -152,6 +152,8 @@ export DYNACONF_JWT_SETTINGS__JWT_SECRET="your-very-secret"
 
 ### Работа с БД и миграциями
 
+Для того чтобы алембик увидел таблицу и сгенерирова миграции в автоматическом режиме, модель таблицы необходимо импортировать в [personal_assistant/src/models/__init__.py](personal_assistant/src/models/__init__.py)
+
 - Создать новую миграцию (с меткой ветки):
 
 ```bash
