@@ -22,6 +22,10 @@ dependencies = [
     "python-dateutil (>=2.9.0.post0,<3.0.0)",
 ]
 
+[project.scripts]
+pa-server = "personal_assistant.src.cli:main"
+pa-migrate = "personal_assistant.src.cli:run_migrations"
+
 [dependency-groups]
 dev = [
     "mypy (>=1.18.2,<2.0.0)",
