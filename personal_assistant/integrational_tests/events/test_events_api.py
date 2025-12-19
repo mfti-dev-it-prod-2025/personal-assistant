@@ -17,7 +17,8 @@ def api_path(path: str) -> str:
 async def test_create_event__then_event_exists_in_db(postgres_connection, router_api_user):
     event_data = {
         "title": "Test Note Title",
-        "start_time": "2025-12-15T10:00:00"
+        "start_time": "2025-12-15T10:00:00",
+        "end_time": "2025-12-15T11:00:00"
     }
 
     response = router_api_user.post("/api/v1/events/", json=event_data)
@@ -27,6 +28,7 @@ async def test_create_event__then_event_exists_in_db(postgres_connection, router
     created_event = EventResponse.model_validate(created_event_data)
     assert created_event.title == event_data["title"]
     assert created_event.start_time.strftime("%Y-%m-%dT%H:%M:%S") == event_data["start_time"]
+    assert created_event.end_time.strftime("%Y-%m-%dT%H:%M:%S") == event_data["end_time"]
 
     assert isinstance(created_event.id, uuid.UUID)
     assert isinstance(created_event.created_at, datetime)
@@ -41,6 +43,7 @@ async def test_create_event__then_event_exists_in_db(postgres_connection, router
     assert db_event is not None
     assert db_event.title == event_data["title"]
     assert db_event.start_time.strftime("%Y-%m-%dT%H:%M:%S") == event_data["start_time"]
+    assert db_event.end_time.strftime("%Y-%m-%dT%H:%M:%S") == event_data["end_time"]
     assert db_event.created_at is not None
     assert db_event.updated_at is not None
 
@@ -49,7 +52,8 @@ async def test_create_event__then_event_exists_in_db(postgres_connection, router
 async def test_list_events__then_return_non_empty_list(postgres_connection, router_api_user):
     event_data = {
         "title": "Test Note Title",
-        "start_time": "2025-12-15T10:00:00"
+        "start_time": "2025-12-15T10:00:00",
+        "end_time": "2025-12-15T11:00:00"
     }
 
     router_api_user.post("/api/v1/events/", json=event_data)
@@ -65,7 +69,8 @@ async def test_list_events__then_return_non_empty_list(postgres_connection, rout
 async def test_get_event_by_id__then_return_correct_event(postgres_connection, router_api_user):
     event_data = {
         "title": "Test Note Title",
-        "start_time": "2025-12-15T10:00:00"
+        "start_time": "2025-12-15T10:00:00",
+        "end_time": "2025-12-15T11:00:00"
     }
 
     response = router_api_user.post("/api/v1/events/", json=event_data)
@@ -84,7 +89,8 @@ async def test_get_event_by_id__then_return_correct_event(postgres_connection, r
 async def test_update_event__then_db_reflects_changes(postgres_connection, router_api_user):
     event_data = {
         "title": "Test Note Title",
-        "start_time": "2025-12-15T10:00:00"
+        "start_time": "2025-12-15T10:00:00",
+        "end_time": "2025-12-15T11:00:00"
     }
 
     response = router_api_user.post("/api/v1/events/", json=event_data)
@@ -92,10 +98,10 @@ async def test_update_event__then_db_reflects_changes(postgres_connection, route
     assert response.status_code == 201
     created_event_data = response.json()
 
-    update_data = {"title": "Updated Title", "description": "New description", "start_time": "2025-12-15T10:00:00"}
+    update_data = {"title": "Updated Title", "description": "New description", "start_time": "2025-12-15T10:00:00", "end_time": "2025-12-15T12:00:00"}
     update_response = router_api_user.put(api_path(f"events/{created_event_data["id"]}"), json=update_data)
     assert update_response.status_code == 200
-    updated_event_data = response.json()
+    updated_event_data = update_response.json()
 
     db_result = await postgres_connection.exec(
         select(Event).where(Event.id == updated_event_data["id"])
@@ -104,13 +110,16 @@ async def test_update_event__then_db_reflects_changes(postgres_connection, route
 
     assert db_event.title == update_data["title"]
     assert db_event.description == update_data["description"]
+    assert db_event.start_time.strftime("%Y-%m-%dT%H:%M:%S") == update_data["start_time"]
+    assert db_event.end_time.strftime("%Y-%m-%dT%H:%M:%S") == update_data["end_time"]
 
 
 @pytest.mark.asyncio
 async def test_delete_event__then_event_not_in_db(postgres_connection, router_api_user):
     event_data = {
         "title": "Test Note Title",
-        "start_time": "2025-12-15T10:00:00"
+        "start_time": "2025-12-15T10:00:00",
+        "end_time": "2025-12-15T11:00:00"
     }
 
     create_response = router_api_user.post("/api/v1/events/", json=event_data)
