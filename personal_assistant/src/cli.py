@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import os
 
@@ -5,13 +6,9 @@ import uvicorn
 from alembic import command
 from alembic.config import Config
 
-from personal_assistant.src.configs.app import settings
-
 
 async def start_server():
-    """
-    Запускает uvicorn сервер асинхронно.
-    """
+    from personal_assistant.src.configs.app import settings
     config = uvicorn.Config(
         "personal_assistant.src.main:app",
         host=settings.app.app_host,
@@ -23,15 +20,22 @@ async def start_server():
 
 
 def run_migrations():
-    """
-    Выполняет миграции базы данных до последней версии (heads).
-    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", required=True, help="Path to config file")
+    args, _ = parser.parse_known_args()
+    os.environ["CONFIG_PATH"] = args.config
+
     base_path = os.path.dirname(__file__)
     alembic_cfg = Config(os.path.join(base_path, "alembic.ini"))
     command.upgrade(alembic_cfg, "heads")
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", required=True, help="Path to config file")
+    args = parser.parse_args()
+    os.environ["CONFIG_PATH"] = args.config
+
     asyncio.run(start_server())
 
 

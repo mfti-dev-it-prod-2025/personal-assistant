@@ -1,3 +1,5 @@
+import os
+
 from dynaconf import Dynaconf
 from pydantic import BaseModel
 
@@ -40,7 +42,7 @@ class Settings(BaseModel):
     jwt: JWTConfig
 
 
-env_settings = Dynaconf(settings_file=["settings.toml"])
+env_settings = Dynaconf(settings_file=[os.getenv("CONFIG_PATH", "settings.toml")])
 
 settings = Settings(
     app=env_settings["app_settings"],

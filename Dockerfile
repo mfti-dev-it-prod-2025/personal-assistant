@@ -23,4 +23,6 @@ COPY --from=builder /app/dist /tmp/dist
 RUN pip install --no-cache-dir /tmp/dist/*.whl \
   && rm -rf /tmp/dist
 
-CMD ["pa-server"]
+COPY settings.toml .
+
+CMD ["pa-server", "--config", "settings.toml"]
