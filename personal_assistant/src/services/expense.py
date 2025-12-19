@@ -10,7 +10,7 @@ from personal_assistant.src.repositories.expense import (
     ExpenseRepository,
     get_expense_repository,
 )
-from personal_assistant.src.schemas.budget.expense import ExpenseCreate, ExpenseUpdate
+from personal_assistant.src.schemas.expense import ExpenseCreate, ExpenseUpdate
 
 
 class ExpenseService:

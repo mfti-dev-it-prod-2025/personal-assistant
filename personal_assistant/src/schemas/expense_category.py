@@ -1,5 +1,8 @@
 import uuid
+from typing import Optional
+
 from pydantic import BaseModel
+from sqlmodel import SQLModel
 
 
 class ExpenseCategoryCreate(BaseModel):
@@ -19,3 +22,8 @@ class ExpenseCategoryResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ExpenseCategoryParams(SQLModel):
+    id: Optional[uuid.UUID] = None
+    name: Optional[str] = None

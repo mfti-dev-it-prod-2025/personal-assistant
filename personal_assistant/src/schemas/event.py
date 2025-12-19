@@ -13,12 +13,12 @@ class EventBase(BaseModel):
     title: str
     description: Optional[str] = None
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime
 
     @field_validator("end_time")
     @classmethod
     def validate_time_interval(cls, v, info):
-        if v is not None and "start_time" in info.data:
+        if "start_time" in info.data:
             if v <= info.data["start_time"]:
                 raise ValueError("Время окончания должно быть позже времени начала")
         return v
@@ -37,7 +37,7 @@ class EventResponse(BaseModel):
     title: str
     description: Optional[str] = None
     start_time: datetime
-    end_time: Optional[datetime] = None
+    end_time: datetime
     user_id: uuid.UUID
     created_at: datetime
     updated_at: datetime

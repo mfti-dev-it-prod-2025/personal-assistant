@@ -1,5 +1,6 @@
-from pydantic import BaseModel, Field, ConfigDict
 import uuid
+
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class TaskCreate(BaseModel):
