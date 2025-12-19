@@ -16,8 +16,6 @@ RUN poetry build --format wheel
 FROM python:3.12-slim AS runtime
 
 
-WORKDIR /app
-
 COPY --from=builder /app/dist /tmp/dist
 
 RUN pip install --no-cache-dir /tmp/dist/*.whl \
@@ -25,4 +23,4 @@ RUN pip install --no-cache-dir /tmp/dist/*.whl \
 
 COPY settings.toml .
 
-CMD ["pa-server", "--config", "settings.toml"]
+CMD pa-migrate --config settings.toml && pa-server --config settings.toml
