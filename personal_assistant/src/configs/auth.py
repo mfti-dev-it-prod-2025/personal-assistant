@@ -15,6 +15,7 @@ SCOPES: dict[str, str] = {
     "note:create": "Создание пользователем заметки",
     "note:update": "Обновление заметки пользователем",
     "note:delete": "Удаление заметки пользователем",
+    "note:read": "Чтение заметок",
     "expenses:read": "Чтение расходов",
     "expenses:create": "Создание расходов",
     "expenses:update": "Изменение расходов",
