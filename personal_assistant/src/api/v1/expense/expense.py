@@ -14,7 +14,9 @@ from personal_assistant.src.models import UserTable
 from personal_assistant.src.schemas.expense import (
     ExpenseResponse,
     ExpenseCreate,
-    ExpenseUpdate, ExpensesParams, ExpenseParams,
+    ExpenseUpdate,
+    ExpensesParams,
+    ExpenseParams,
 )
 from personal_assistant.src.services.expense import (
     ExpenseService,

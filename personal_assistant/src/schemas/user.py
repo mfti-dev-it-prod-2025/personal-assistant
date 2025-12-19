@@ -33,5 +33,3 @@ class UserParams(SQLModel):
     name__contains: str | None = None
     limit: int = 20
     offset: int = 0
-
-

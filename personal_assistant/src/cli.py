@@ -9,6 +9,7 @@ from alembic.config import Config
 
 async def start_server():
     from personal_assistant.src.configs.app import settings
+
     config = uvicorn.Config(
         "personal_assistant.src.main:app",
         host=settings.app.app_host,

@@ -7,7 +7,12 @@ from personal_assistant.src.api.dependencies import (
     get_current_user_dependency,
 )
 from personal_assistant.src.models import UserTable
-from personal_assistant.src.schemas.user import UserListResponse, UserParams, UserCreate, UserGet
+from personal_assistant.src.schemas.user import (
+    UserListResponse,
+    UserParams,
+    UserCreate,
+    UserGet,
+)
 from personal_assistant.src.services.user_service import UserService
 
 user_router = APIRouter()
