@@ -8,7 +8,7 @@ from personal_assistant.src.repositories.expense_category import (
     ExpenseCategoryRepository,
     get_expense_category_repository,
 )
-from personal_assistant.src.schemas.budget.expense_category import (
+from personal_assistant.src.schemas.expense_category import (
     ExpenseCategoryCreate,
     ExpenseCategoryResponse,
     ExpenseCategoryUpdate,

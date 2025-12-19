@@ -11,12 +11,11 @@ from personal_assistant.src.api.v1.expense.expense_category import (
     expense_category_router,
 )
 from personal_assistant.src.models import UserTable
-from personal_assistant.src.schemas.budget.expense import (
+from personal_assistant.src.schemas.expense import (
     ExpenseResponse,
     ExpenseCreate,
-    ExpenseUpdate,
+    ExpenseUpdate, ExpensesParams, ExpenseParams,
 )
-from personal_assistant.src.schemas.budget.params import ExpensesParams, ExpenseParams
 from personal_assistant.src.services.expense import (
     ExpenseService,
     get_expense_service,

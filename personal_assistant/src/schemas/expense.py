@@ -1,7 +1,9 @@
 import uuid
 from datetime import date
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
+from sqlmodel import SQLModel, Field
 
 
 class ExpenseCreate(BaseModel):
@@ -37,3 +39,15 @@ class ExpenseResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ExpensesParams(SQLModel):
+    category_name: Optional[str] = Field(default=None)
+
+    start_date: Optional[date] = Field(default=None, description="Начальная дата")
+    end_date: Optional[date] = Field(default=None, description="Конечная дата")
+
+
+class ExpenseParams(SQLModel):
+    id: Optional[uuid.UUID] = None
+    name: Optional[str] = None

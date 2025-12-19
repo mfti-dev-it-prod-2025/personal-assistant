@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from personal_assistant.src.api.dependencies import DbSessionDepends
-from personal_assistant.src.schemas.auth.token import Token
+from personal_assistant.src.schemas.token import Token
 from personal_assistant.src.services.authenticate import AuthAuthenticate
 
 auth_router = APIRouter()

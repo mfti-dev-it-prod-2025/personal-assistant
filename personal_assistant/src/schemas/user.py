@@ -3,8 +3,17 @@ import uuid
 from pydantic import BaseModel, EmailStr
 from sqlmodel import SQLModel, Field
 
-from personal_assistant.src.models.user import UserRole, name_pattern
-from personal_assistant.src.schemas.auth.user import UserGet
+from personal_assistant.src.models.user import UserRole, name_pattern, UserBase
+
+
+class UserCreate(UserBase):
+    password: str
+
+
+class UserGet(UserBase):
+    id: uuid.UUID
+    telegram_id: int | None
+    role: UserRole
 
 
 class UserListResponse(BaseModel):
@@ -24,3 +33,5 @@ class UserParams(SQLModel):
     name__contains: str | None = None
     limit: int = 20
     offset: int = 0
+
+

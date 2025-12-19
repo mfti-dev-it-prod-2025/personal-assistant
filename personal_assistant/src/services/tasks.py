@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from personal_assistant.src.repositories.task import TaskRepository
-from personal_assistant.src.schemas.tasks.schemas import (
+from personal_assistant.src.schemas.tasks import (
     TaskCreate,
     TaskUpdate,
     TaskResponse,

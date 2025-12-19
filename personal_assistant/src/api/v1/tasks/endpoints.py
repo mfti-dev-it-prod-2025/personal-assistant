@@ -8,7 +8,7 @@ from personal_assistant.src.api.dependencies import (
     DbSessionDepends,
 )
 from personal_assistant.src.models import UserTable
-from personal_assistant.src.schemas.tasks.schemas import (
+from personal_assistant.src.schemas.tasks import (
     TaskCreate,
     TaskUpdate,
     TaskResponse,

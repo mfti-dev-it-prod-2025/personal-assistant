@@ -5,7 +5,7 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from personal_assistant.src.models.todo import Task
-from personal_assistant.src.schemas.tasks.schemas import TaskCreate, TaskUpdate
+from personal_assistant.src.schemas.tasks import TaskCreate, TaskUpdate
 
 
 class TaskRepository:

@@ -12,9 +12,8 @@ from personal_assistant.src.configs.auth import ROLES_TO_SCOPES, oauth2_scheme
 from personal_assistant.src.logger import logger
 from personal_assistant.src.models import UserTable
 from personal_assistant.src.repositories.user import UserRepository
-from personal_assistant.src.schemas.auth.token import Token
-from personal_assistant.src.schemas.auth.user import UserGet
-from personal_assistant.src.schemas.user import UserParams
+from personal_assistant.src.schemas.token import Token
+from personal_assistant.src.schemas.user import UserParams, UserGet
 from personal_assistant.src.services.password import Password
 
 
