@@ -41,8 +41,8 @@ mrmigrate:
 
 itest:
 	@echo "run integrational tests"
-	pytest personal_assistant/integrational_tests
+	pytest personal_assistant/integrational_tests --junitxml=integration-test-results.xml
 
 utest:
 	@echo "run unit test"
-	pytest personal_assistant/tests
+	pytest personal_assistant/tests --junitxml=unit-test-results.xml
